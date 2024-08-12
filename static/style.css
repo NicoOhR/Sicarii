@@ -1,0 +1,138 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 90%;
+  background-color: #f7f3e7;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 0;
+  position: relative;
+  text-wrap: balance;
+  text-align: center;
+  padding-bottom: 2vh;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+}
+
+.title-wrapper {
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+  max-width: 600px;
+
+}
+
+.title-wrapper::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  background-color: red;
+  position: flex;
+  bottom: 5;
+  left: 0;
+}
+
+.text {
+  font-size: 18px;
+  max-width: 600px;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+  text-indent: 2em; /* Indentation for the first line */
+}
+
+.author {
+  font-size: 15px;
+  font-weight: 525;
+  font-family: "Iosevka", monospace;
+}
+
+.date {
+  font-size: 15px;
+  font-weight: 525;
+  font-family: "Iosevka", monospace;
+  margin-left: 15vh;
+}
+
+.author-date {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.navbar {
+  width: 100%;
+  background-color: #333;
+  padding: 10px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-around; /* Space out links by percentage */
+  width: 100%;
+}
+
+.navbar li {
+  flex: 1; /* Ensure each list item takes up equal space */
+  text-align: center; /* Center text within each list item */
+  position: relative; /* Positioning context for the hover effect */
+}
+
+.navbar li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #555; /* Hover background color */
+  z-index: -1; /* Place the background behind the link text */
+  opacity: 0; /* Start with no opacity */
+  transition: opacity 0.3s ease; /* Smooth transition effect */
+}
+
+.navbar li:hover::before {
+  opacity: 1; /* Show the background on hover */
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-family: 'EB Garamond', serif;
+  padding: 8px 15px;
+  display: block; /* Make the link fill the list item */
+  height: 100%; /* Ensure the link takes up full height */
+  width: 100%; /* Ensure the link takes up full width */
+  transition: color 0.3s ease; /* Smooth transition for text color */
+}
+
+.navbar li:hover a {
+  color: yellow; /* Change text color on hover */
+}
+

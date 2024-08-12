@@ -14,15 +14,18 @@ fn render_to_file(content: &String, path: &String) -> io::Result<()> {
     Ok(())
 }
 
-fn main() {
-    let test_article = structs::EditorialTemplate {
+fn main() -> io::Result<()> {
+    let test_article = structs::Article {
         title: String::from("The life of times of qud"),
+        subtitle: String::from("lmfao"),
         author: String::from("Joesphus"),
-        content: String::from("../static/articles/article.md"),
-        date: Local::now().date_naive().to_string(),
+        path: String::from("static/articles/article.md"),
+        date: Local::now().date_naive(),
     };
 
-    let rendered = test_article.render().unwrap();
-
-    println!("{rendered}");
+    render_to_file(
+        &test_article.create_template()?.render().unwrap(),
+        &String::from("static/articles/test_article/test.html"),
+    )?;
+    Ok(())
 }

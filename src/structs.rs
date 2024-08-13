@@ -3,6 +3,7 @@ use chrono::prelude::*;
 use markdown;
 use std::fs::File;
 use std::io::{self, Read};
+
 pub struct Article {
     pub title: String,
     pub subtitle: String,
@@ -12,8 +13,8 @@ pub struct Article {
 }
 
 impl Article {
-    pub fn create_template(self) -> io::Result<EditorialTemplate> {
-        let mut file = File::open(self.path)?;
+    pub fn create_template(&self) -> io::Result<EditorialTemplate> {
+        let mut file = File::open(&self.path)?;
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
         let html = markdown::to_html(&contents);
@@ -28,7 +29,11 @@ impl Article {
         Ok(template)
     }
 }
-
+#[derive(Template)]
+#[template(path = "home.html")]
+pub struct HomeTemplate<'a> {
+    pub articles: &'a [Article],
+}
 #[derive(Template)]
 #[template(path = "editorial.html")]
 pub struct EditorialTemplate {

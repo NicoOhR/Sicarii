@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Iosevka:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../style.css">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <nav class="navbar">
@@ -31,18 +30,9 @@
       </div>
     </div>
     <div class="underline"></div>
-      <div class="text" id="markdown-content"> * lorem ipusum et nurem
+      <div class="text" markdown="1"> * lorem ipusum et nurem
 </div>
   </div>
-
-      <script>
-      document.addEventListener("DOMContentLoaded", function() {
-          var markdownContent = document.getElementById("markdown-content").innerHTML;
-          var htmlContent = marked(markdownContent);
-          document.getElementById("markdown-content").innerHTML = htmlContent;
-      });
-  </script>
-
 </body>
 
 </html>

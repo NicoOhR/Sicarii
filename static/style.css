@@ -2,7 +2,7 @@ body,
 html {
   margin: 0;
   padding: 0;
-  height: 90%;
+  height: 65%;
   background-color: #f7f3e7;
 }
 
@@ -33,7 +33,7 @@ html {
   position: relative;
   display: inline-block;
   margin-bottom: 20px;
-  max-width: 600px;
+  max-width: 1000px;
 
 }
 
@@ -41,8 +41,8 @@ html {
   content: "";
   display: block;
   width: 100%;
-  height: 1px;
-  background-color: red;
+  height: 2px;
+  background-color: #800020;
   position: flex;
   bottom: 5;
   left: 0;
@@ -80,7 +80,7 @@ html {
 
 .navbar {
   width: 100%;
-  background-color: #333;
+  background-color: #800020;
   padding: 10px 0;
   position: fixed;
   top: 0;
@@ -133,6 +133,6 @@ html {
 }
 
 .navbar li:hover a {
-  color: yellow; /* Change text color on hover */
+  color: red; /* Change text color on hover */
 }
 

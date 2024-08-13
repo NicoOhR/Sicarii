@@ -1,8 +1,8 @@
 use askama::Template;
 use chrono::prelude::*;
-use std::fs;
-use std::io;
-
+use markdown;
+use std::fs::File;
+use std::io::{self, Read};
 pub struct Article {
     pub title: String,
     pub subtitle: String,
@@ -13,13 +13,18 @@ pub struct Article {
 
 impl Article {
     pub fn create_template(self) -> io::Result<EditorialTemplate> {
+        let mut file = File::open(self.path)?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)?;
+        let html = markdown::to_html(&contents);
+
         let template = EditorialTemplate {
             title: self.title.clone(),
             author: self.author.clone(),
             date: self.date.to_string(),
-            content: fs::read_to_string(self.path)?,
+            content: markdown::to_html(&contents),
         };
-
+        println!("{html}");
         Ok(template)
     }
 }

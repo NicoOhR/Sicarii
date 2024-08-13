@@ -29,14 +29,9 @@
           <div class="date">{{ date }}</div>
       </div>
     </div>
-    <div class="underline"></div> 
-    <div id="content"></div>
-      <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-      <script>
-        document.getElementById('content').innerHTML =
-      marked.parse('{{ content }}');
-      </script>
-  </div>
+    <div class="underline"></div>    
+      <div class="text">{{ content|safe }}</div>
+    </div>
 </body>
 
 </html>

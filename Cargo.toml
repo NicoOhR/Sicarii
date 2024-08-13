@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 askama = "0.12.1"
 chrono = "0.4"
+markdown = "1.0.0-alpha.19"

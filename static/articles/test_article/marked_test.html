@@ -1,29 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown Rendering Example</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta charset="utf-8"/>
+  <title>Marked in the browser</title>
 </head>
 <body>
-    <div id="markdown-content">
-        # Hello World!
-        This is a Markdown example.
-
-        ## Features
-        - Simple
-        - Flexible
-        - Easy to use
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var markdownContent = document.getElementById("markdown-content").innerHTML;
-            var htmlContent = marked(markdownContent);
-            document.getElementById("markdown-content").innerHTML = htmlContent;
-        });
-    </script>
+  <div id="content"></div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    document.getElementById('content').innerHTML =
+      marked.parse('# Marked in the browser\n\nRendered by **marked**.');
+  </script>
 </body>
 </html>
-`

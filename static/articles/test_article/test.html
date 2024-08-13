@@ -29,9 +29,12 @@
           <div class="date">2024-08-12</div>
       </div>
     </div>
-    <div class="underline"></div>
-      <div class="text" markdown="1"> * lorem ipusum et nurem
-</div>
+    <div class="underline"></div> 
+      <script>
+        document.getElementById('content').innerHTML =
+      marked.parse(' * lorem ipusum et nurem
+');
+      </script>
   </div>
 </body>
 

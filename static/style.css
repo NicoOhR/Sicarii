@@ -76,7 +76,6 @@ html {
     margin-top: 15px;
     margin-bottom: 5px;
 }
-
 .navbar {
   width: 100%;
   background-color: #800020;
@@ -92,33 +91,30 @@ html {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: space-around; /* Space out links by percentage */
+  justify-content: space-around; /* Space out links evenly */
   width: 100%;
 }
 
 .navbar li {
   flex: 1; /* Ensure each list item takes up equal space */
   text-align: center; /* Center text within each list item */
-  position: relative; /* Positioning context for the hover effect */
 }
 
-.navbar li::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  heighfamily: 'EB Garamond', serif;
-  padding: 8px 15px;
+.navbar a {
+  text-decoration: none;
+  color: white;
   display: block; /* Make the link fill the list item */
+  padding: 8px 15px; /* Add some padding for better clickability */
   height: 100%; /* Ensure the link takes up full height */
   width: 100%; /* Ensure the link takes up full width */
+  box-sizing: border-box; /* Include padding in width/height calculation */
   transition: color 0.3s ease; /* Smooth transition for text color */
 }
 
 .navbar li:hover a {
   color: red; /* Change text color on hover */
 }
+
 
 body#homepage {
     font-family: Arial, sans-serif;
@@ -201,7 +197,7 @@ t: 100%;
 
 body#homepage {
     font-family: Arial, sans-serif;
-    background-color: #f7f3e7;
+    background-color: white;
     margin-top: 20px;
 }
 

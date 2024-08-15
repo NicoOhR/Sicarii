@@ -20,7 +20,8 @@ fn main() -> io::Result<()> {
         title: String::from("The life of times of qud"),
         subtitle: String::from("lmfao"),
         author: String::from("Joesphus"),
-        path: String::from("static/articles/article.md"),
+        content_path: String::from("static/assets/roman_satire/roman_satire.md"),
+        link: String::from("static/articles/roman_satire.html"),
         date: Local::now().date_naive(),
     }];
     let homepage = HomeTemplate {
@@ -33,10 +34,7 @@ fn main() -> io::Result<()> {
     )?;
 
     for article in articles.iter() {
-        render_to_file(
-            article.create_template()?.render().unwrap(),
-            &String::from("static/articles/test_article/test.html"),
-        )?;
+        render_to_file(article.create_template()?.render().unwrap(), &article.link)?;
     }
     Ok(())
 }

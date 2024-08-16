@@ -3,6 +3,7 @@ use chrono::prelude::*;
 use markdown;
 use std::fs::File;
 use std::io::{self, Read};
+use std::path::PathBuf;
 
 pub struct Article {
     pub title: String,
@@ -15,7 +16,10 @@ pub struct Article {
 
 impl Article {
     pub fn create_template(&self) -> io::Result<EditorialTemplate> {
-        let mut file = File::open(&self.content_path)?;
+        let mut static_path = PathBuf::from("static/");
+        static_path.push(&self.content_path);
+
+        let mut file = File::open(static_path)?;
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
         let html = markdown::to_html(&contents);

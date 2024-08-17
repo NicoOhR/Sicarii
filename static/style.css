@@ -49,11 +49,16 @@ html {
 
 .text {
   font-size: 18px;
-  max-width: 1500px;
+  width: 30%
   text-align: left;
   margin-left: auto;
   margin-right: auto;
+  font-family: 'Wittgenstein', serif;
   text-indent: 2em; /* Indentation for the first line */
+}
+.text::first-letter {
+  initial-letter: 3;
+  margin-top: -0.4em;
 }
 
 .author {

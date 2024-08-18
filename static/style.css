@@ -49,15 +49,13 @@ html {
 
 .text {
   font-size: 18px;
-  width: 30%
-  text-align: left;
+  width: 60%;
   margin-left: auto;
   margin-right: auto;
   font-family: 'Wittgenstein', serif;
-  text-indent: 2em; /* Indentation for the first line */
 }
 .text::first-letter {
-  initial-letter: 3;
+  initial-letter: 2;
   margin-top: -0.4em;
 }
 
@@ -156,6 +154,11 @@ main {
     background-color: #f0f0f0;
 }
 
+article {
+  font-family: 'Wittgenstein', serif;
+  font-style: italic;
+}
+
 article h2 {
     margin-top: 0;
 }
@@ -164,15 +167,6 @@ article p {
     margin: 10px 0;
 }
 
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 10px 0;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-}
 t: 100%;
   background-color: #555; /* Hover background color */
   z-index: -1; /* Place the background behind the link text */

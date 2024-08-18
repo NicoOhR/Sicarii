@@ -6,8 +6,8 @@ use std::io::Write;
 use std::path::PathBuf;
 use structs::HomeTemplate;
 
+mod article_meta;
 mod structs;
-
 fn render_to_file(content: String, path: &String) -> io::Result<()> {
     let mut content_path = PathBuf::from("./static/");
     content_path.push(path);
@@ -21,14 +21,8 @@ fn render_to_file(content: String, path: &String) -> io::Result<()> {
 }
 
 fn main() -> io::Result<()> {
-    let articles = [structs::Article {
-        title: String::from("The life of times of qud"),
-        subtitle: String::from("lmfao"),
-        author: String::from("Joesphus"),
-        content_path: String::from("assets/roman_satire/roman_satire.md"),
-        link: String::from("articles/roman_satire.html"),
-        date: Local::now().date_naive(),
-    }];
+    let articles = article_meta::get_articles();
+
     let homepage = HomeTemplate {
         articles: &articles,
     };

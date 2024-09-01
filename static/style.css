@@ -64,7 +64,14 @@ html {
   font-weight: 525;
   font-family: "Iosevka", monospace;
 }
-
+.sic-title{
+  text-align: center;
+}
+sicarii {
+  font-family: "Baskervville SC", serif;
+  font-size: 4em;
+  font-style: italic;
+}
 .date {
   font-size: 15px;
   font-weight: 525;
@@ -120,16 +127,42 @@ html {
 
 
 body#homepage {
-    font-family: Arial, sans-serif;
     background-color: white;
-    padding: 20vb;
+    padding: 0vb;
 }
 
+body#about {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Wittgenstein', serif;
+  margin: 0;
+  padding: 0;
+}
+header#about {
+  font-size: 48px;
+  font-weight: bold;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  text-align: left;
+  border-bottom: 2px solid red;
+  padding: 20px 0;
+  max-width: 500px;
+}
+
+main#about {
+    max-width: 500px;
+    margin: 20px auto;
+    margin-top: 25vh;
+    padding: 10px;
+}
 
 main {
     max-width: 800px;
     margin: 20px auto;
-    padding: 10px;
+    padding: 0px;
 }
 
 .articles {
@@ -197,7 +230,6 @@ t: 100%;
 body#homepage {
     font-family: Arial, sans-serif;
     background-color: white;
-    margin-top: 20px;
 }
 
 

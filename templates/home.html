@@ -10,18 +10,22 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Iosevka:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baskervville+SC&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <nav class="navbar">
   <ul>
-    <li><a href="/static/index.html">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li><a href="/contact">Contact</a></li>
+    <li><a href="/index.html">Home</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/contact.html">Contact</a></li>
   </ul>
 </nav>
 <body id="homepage">
     <main>
+      <div class="sic-title">
+        <sicarii>Sicarii<sicarii>
+      </div>
     <section class = "articles">
       {% for article in articles %}
         <a href="{{ article.link }}" class = "article-link">

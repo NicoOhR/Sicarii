@@ -1,17 +1,19 @@
 use askama::Template;
 use chrono::prelude::*;
 use markdown;
+use serde::Deserialize;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::PathBuf;
 
+#[derive(Deserialize)]
 pub struct Article {
     pub title: String,
     pub subtitle: String,
     pub author: String,
     pub content_path: String,
     pub link: String,
-    pub date: NaiveDate,
+    pub date: String,
 }
 
 impl Article {

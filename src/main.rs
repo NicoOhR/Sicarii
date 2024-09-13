@@ -21,7 +21,7 @@ fn render_to_file(content: String, path: &String) -> io::Result<()> {
 }
 
 fn main() -> io::Result<()> {
-    let articles = article_meta::get_articles();
+    let articles = article_meta::get_articles()?;
 
     let homepage = HomeTemplate {
         articles: &articles,

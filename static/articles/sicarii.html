@@ -31,11 +31,14 @@
         <h1 class="title">Side Quest Sicarii</h1>
       <div class="author-date">
           <div class="author">Nico O.</div>
-          <div class="date">2024-08-31</div>
+          <div class="date">2024-09-13</div>
       </div>
     </div>
     <div class="underline"></div>    
-      <div class="text"><p>Rendering to file happpens like so:</p>
+      <div class="text"><p>Generally, I don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks.</p>
+<p>To my delight, in the last couple of years a sort of <em>post-modern</em> web app tech stack has emerged. Using HTMX and some templating program (typically via a library in your language of choice), you can avoid the &quot;web&quot; part of &quot;web app development&quot; almost entierly. This site, which is not yet a web app, is an experiment in building a website &quot;in the wrong way&quot;.</p>
+<p>I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>
+<p>Rendering to file happpens like so:</p>
 <pre><code class="language-rust">
 
 fn render_to_file(content: String, path: &amp;String) -&gt; io::Result&lt;()&gt; {

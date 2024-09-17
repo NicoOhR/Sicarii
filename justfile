@@ -1,6 +1,6 @@
-alias b := build
+alias r := run
 
-build:
+run:
   cargo run
 
 serve:

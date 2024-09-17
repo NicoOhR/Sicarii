@@ -8,8 +8,6 @@ I decided to use Rust (because I use Rust for everything at this point), with th
 Rendering to file happpens like so:
 
 ```rust 
-
-
 fn render_to_file(content: String, path: &String) -> io::Result<()> {
     let mut content_path = PathBuf::from("./static/");
     content_path.push(path);
@@ -25,18 +23,16 @@ fn render_to_file(content: String, path: &String) -> io::Result<()> {
 This function is used in main
 
 ```rust
+render_to_file(homepage.render().unwrap(), &String::from("index.html"))?;
 
-    render_to_file(homepage.render().unwrap(), &String::from("index.html"))?;
-    
-    for article in articles.iter() {
-        render_to_file(article.create_template()?.render().unwrap(), &article.link)?;
-    }
+for article in articles.iter() {
+    render_to_file(article.create_template()?.render().unwrap(), &article.link)?;
+}
 ```
 
 Each article is a struct made of the meta data of the article. Originally I hada function returning a long list of the article structs, and it worked... fine?I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.
 
 ```rust
-
 fn read_toml(s: &str) -> structs::Article {
     let article: structs::Article = toml::from_str(s).unwrap();
     article

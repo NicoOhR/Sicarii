@@ -39,9 +39,7 @@
 <p>To my delight, in the last couple of years a sort of <em>post-modern</em> web app tech stack has emerged. Using HTMX and some templating program (typically via a library in your language of choice), you can avoid the &quot;web&quot; part of &quot;web app development&quot; almost entierly. This site, which is not yet a web app, is an experiment in building a website &quot;in the wrong way&quot;.</p>
 <p>I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>
 <p>Rendering to file happpens like so:</p>
-<pre><code class="language-rust">
-
-fn render_to_file(content: String, path: &amp;String) -&gt; io::Result&lt;()&gt; {
+<pre><code class="language-rust">fn render_to_file(content: String, path: &amp;String) -&gt; io::Result&lt;()&gt; {
     let mut content_path = PathBuf::from(&quot;./static/&quot;);
     content_path.push(path);
 
@@ -53,16 +51,14 @@ fn render_to_file(content: String, path: &amp;String) -&gt; io::Result&lt;()&gt;
 
 </code></pre>
 <p>This function is used in main</p>
-<pre><code class="language-rust">
-    render_to_file(homepage.render().unwrap(), &amp;String::from(&quot;index.html&quot;))?;
-    
-    for article in articles.iter() {
-        render_to_file(article.create_template()?.render().unwrap(), &amp;article.link)?;
-    }
+<pre><code class="language-rust">render_to_file(homepage.render().unwrap(), &amp;String::from(&quot;index.html&quot;))?;
+
+for article in articles.iter() {
+    render_to_file(article.create_template()?.render().unwrap(), &amp;article.link)?;
+}
 </code></pre>
 <p>Each article is a struct made of the meta data of the article. Originally I hada function returning a long list of the article structs, and it worked... fine?I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.</p>
-<pre><code class="language-rust">
-fn read_toml(s: &amp;str) -&gt; structs::Article {
+<pre><code class="language-rust">fn read_toml(s: &amp;str) -&gt; structs::Article {
     let article: structs::Article = toml::from_str(s).unwrap();
     article
 }

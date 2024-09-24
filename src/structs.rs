@@ -1,6 +1,4 @@
 use askama::Template;
-use chrono::prelude::*;
-use markdown;
 use serde::Deserialize;
 use std::fs::File;
 use std::io::{self, Read};

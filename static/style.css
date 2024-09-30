@@ -102,28 +102,28 @@ sicarii {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: space-around; /* Space out links evenly */
+  justify-content: space-around; 
   width: 100%;
 }
 
 .navbar li {
-  flex: 1; /* Ensure each list item takes up equal space */
-  text-align: center; /* Center text within each list item */
+  flex: 1; 
+  text-align: center; 
 }
 
 .navbar a {
   text-decoration: none;
   color: white;
-  display: block; /* Make the link fill the list item */
-  padding: 8px 15px; /* Add some padding for better clickability */
-  height: 100%; /* Ensure the link takes up full height */
-  width: 100%; /* Ensure the link takes up full width */
-  box-sizing: border-box; /* Include padding in width/height calculation */
-  transition: color 0.3s ease; /* Smooth transition for text color */
+  display: block; 
+  padding: 8px 15px; 
+  height: 100%; 
+  width: 100%; 
+  box-sizing: border-box; 
+  transition: color 0.3s ease; 
 }
 
 .navbar li:hover a {
-  color: red; /* Change text color on hover */
+  color: red; 
 }
 
 
@@ -163,7 +163,6 @@ main {
     margin: 20px auto;
     padding: 0px;
 }
-
 .articles {
     display: flex;
     flex-direction: column;
@@ -171,19 +170,40 @@ main {
 }
 
 .article-link {
+    position: relative; 
     text-decoration: none;
     color: inherit;
 }
 
 .article-link article {
+    position: relative;
     padding: 15px 0;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s ease;
+    overflow: hidden; 
 }
 
-.article-link:hover article {
-    background-color: #f0f0f0;
+.article-link article::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #800020; 
+    transform: scaleY(0) skewY(-9deg); 
+    transform-origin: top left; 
+    transition: transform 0.3s ease; 
+    z-index: 3;
+}
+
+.article-link article:hover::before {
+    transform: scaleY(0.2) skewY(-9deg); 
+}
+
+.article-link article * {
+    position: relative;
+    z-index: 0; 
 }
 
 article {
@@ -200,14 +220,14 @@ article p {
 }
 
 t: 100%;
-  background-color: #555; /* Hover background color */
-  z-index: -1; /* Place the background behind the link text */
-  opacity: 0; /* Start with no opacity */
-  transition: opacity 0.3s ease; /* Smooth transition effect */
+  background-color: #555; 
+  z-index: -1; 
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
 }
 
 .navbar li:hover::before {
-  opacity: 1; /* Show the background on hover */
+  opacity: 1; 
 }
 
 .navbar a {
@@ -216,14 +236,14 @@ t: 100%;
   font-size: 1.2rem;
   font-family: 'EB Garamond', serif;
   padding: 8px 15px;
-  display: block; /* Make the link fill the list item */
-  height: 100%; /* Ensure the link takes up full height */
-  width: 100%; /* Ensure the link takes up full width */
-  transition: color 0.3s ease; /* Smooth transition for text color */
+  display: block; 
+  height: 100%; 
+  width: 100%; 
+  transition: color 0.3s ease; 
 }
 
 .navbar li:hover a {
-  color: red; /* Change text color on hover */
+  color: red; 
 }
 
 body#homepage {  
@@ -244,22 +264,6 @@ main {
     display: flex;
     flex-direction: column;
     gap: 20px;
-}
-
-.article-link {
-    text-decoration: none;
-    color: inherit;
-}
-
-.article-link article {
-    padding: 15px 0;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s ease;
-}
-
-.article-link:hover article {
-    background-color: #f0f0f0;
 }
 
 article h2 {

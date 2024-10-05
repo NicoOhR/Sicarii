@@ -2,6 +2,7 @@ use crate::structs;
 use std::fs;
 use std::io;
 use walkdir::WalkDir;
+
 fn read_toml(s: &str) -> structs::Article {
     let article: structs::Article = toml::from_str(s).unwrap();
     article

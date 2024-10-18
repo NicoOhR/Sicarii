@@ -104,15 +104,54 @@ DAQ a little less error prone. This also benefits the application insofar
 as it decouples from the hardware. If I wanted to switch to an NXP chip
 instead, I would only have to re implement this layer, as the Application
 and Sensor layer uses the interfaces we make here.</p>
+<p>Here is an example of one of the interfaces, the GPIO interface:</p>
+<pre><code class="language-c++">
+class IGpio {
+public:
+	virtual ~IGpio() = default;
+
+	virtual bool Read() = 0;
+
+	virtual void Write(bool signal) = 0;
+
+	virtual bool ToggleDetected() = 0;
+};
+
+</code></pre>
+<p>And we implement the Write method like this</p>
+<pre><code class="language-c++">void GpioStmF4::Write(bool signal) {
+	GPIO_PinState pin_state;
+
+	if (signal) {
+		pin_state = GPIO_PIN_SET;
+	} else {
+		pin_state = GPIO_PIN_RESET;
+	}
+
+	HAL_GPIO_WritePin(port_, pin_, pin_state);
+}
+
+</code></pre>
+<p>With this we cut down on how verbose our code is, and reduce how likely
+a developer on the team is to misuse the (frankly dangerous) HAL.</p>
 <p>The next layer, Sensor, does exactly what it sounds like, this is where we
 create the sensor classes who interact with the interfaces we created in
 the Platform layer. There also exists abstract interfaces for sensors,
 hopefully making it easier to switch out the specific sensor used when we
 need to, however we haven't really had the opportunity to put this to the
 test as we haven't upgraded sensors in a long while.</p>
+<p>For example, here's the interface for the linear potentiometer, which
+reads the displacement of the suspension shocks.</p>
+<pre><code class="language-c++">class ILinearPotentiometer { public: virtual ~ILinearPotentiometer()
+= default;
+
+        virtual void DisplacementInches(float quantized_counts[]) = 0;
+        virtual void DisplacementMillimeters(float quantized_counts[]) = 0;
+};
+</code></pre>
 <p>Lastly is the Application layer, which handles the state of the device,
-our mutexes for multi-threading, and how we talk to the Raspberry Pi (the
-Relay class).</p>
+our mutexes for multi-threading, and how we talk to the Raspberry Pi. This
+is the most &quot;userspace&quot; the program gets.</p>
 <p>The Tests folder has some preliminary unit tests made with gtest that are
 hooked up to our GitHub CI/CD pipeline, but as with other &quot;it'd be nice to
 have&quot; things in this project, I've yet to give it the time that it

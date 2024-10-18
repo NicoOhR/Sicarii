@@ -74,6 +74,43 @@ as it decouples from the hardware. If I wanted to switch to an NXP chip
 instead, I would only have to re implement this layer, as the Application
 and Sensor layer uses the interfaces we make here.
 
+Here is an example of one of the interfaces, the GPIO interface:
+
+```c++
+
+class IGpio {
+public:
+	virtual ~IGpio() = default;
+
+	virtual bool Read() = 0;
+
+	virtual void Write(bool signal) = 0;
+
+	virtual bool ToggleDetected() = 0;
+};
+
+```
+
+And we implement the Write method like this
+
+```c++
+void GpioStmF4::Write(bool signal) {
+	GPIO_PinState pin_state;
+
+	if (signal) {
+		pin_state = GPIO_PIN_SET;
+	} else {
+		pin_state = GPIO_PIN_RESET;
+	}
+
+	HAL_GPIO_WritePin(port_, pin_, pin_state);
+}
+
+```
+
+With this we cut down on how verbose our code is, and reduce how likely
+a developer on the team is to misuse the (frankly dangerous) HAL.
+
 The next layer, Sensor, does exactly what it sounds like, this is where we
 create the sensor classes who interact with the interfaces we created in
 the Platform layer. There also exists abstract interfaces for sensors,
@@ -81,12 +118,26 @@ hopefully making it easier to switch out the specific sensor used when we
 need to, however we haven't really had the opportunity to put this to the
 test as we haven't upgraded sensors in a long while.
 
+For example, here's the interface for the linear potentiometer, which
+reads the displacement of the suspension shocks.
+
+```c++
+class ILinearPotentiometer { public: virtual ~ILinearPotentiometer()
+= default;
+
+        virtual void DisplacementInches(float quantized_counts[]) = 0;
+        virtual void DisplacementMillimeters(float quantized_counts[]) = 0;
+};
+```
+
 Lastly is the Application layer, which handles the state of the device,
-our mutexes for multi-threading, and how we talk to the Raspberry Pi (the
-Relay class). 
+our mutexes for multi-threading, and how we talk to the Raspberry Pi. This
+is the most "userspace" the program gets.
+
 
 The Tests folder has some preliminary unit tests made with gtest that are
 hooked up to our GitHub CI/CD pipeline, but as with other "it'd be nice to
 have" things in this project, I've yet to give it the time that it
 deserves. Similarly the Docs folder has some documentation generation with
 Phoenix, but I've yet to find the patience to annotate the existing code.
+

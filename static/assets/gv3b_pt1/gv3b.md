@@ -64,12 +64,13 @@ position = { x = 0.0, y = 0.0 }
 ```
 
 which defines all the values rapier needs to initialize our rigid bodies.
-Once our bodies our spawned, we create a system called
-``gravity_update()`` which is tad long, but queries our bodies (using
-Bevy's ECS), gets the unique combinations of bodies using the built in
-``iter_combinations_mut::<2>()`` (practically the n choose
-k combinatorial)  and applys the force calculated by the
-``gravitational_force()`` function
+I opted to use an external configuration file so that we can change the
+setup of the bodies in runtime, without recompiling the program. Once our
+bodies our spawned, we create a system called ``gravity_update()`` which
+is tad long, but queries our bodies (using Bevy's ECS), gets the unique
+combinations of bodies using the built in ``iter_combinations_mut::<2>()``
+(practically the n choose k combinatorial)  and applys the force
+calculated by the ``gravitational_force()`` function
 
 ```Rust
 pub fn gravitational_force(
@@ -88,6 +89,33 @@ Which calculates the force vector on body 1 in reference to body 2,
 adapted from Newton's Gravitational Law. The ``gravity_update()`` function
 also updates our ``SimulationState`` struct, contained inside
 ``SimulationService`` struct which gets used with our gRPC server.
+
+Before moving on to the server, I'd like to highlight a small debugging
+system I wrote up so that I could vizualize the direction of the bodies.
+
+```rust 
+pub fn setup_vectors(mut commands: Commands, query_bodies: Query<&Transform>) {
+    for _ in query_bodies.iter() {
+        let line = shapes::Line(Vec2::ZERO, Vec2::new(0.0, 0.0));
+        commands.spawn((
+            ShapeBundle {
+                path: GeometryBuilder::build_as(&line),
+                ..default()
+            },
+            Stroke::new(Color::WHITE, 5.0), // Spawn in lines
+        ));
+    }
+}
+
+pub fn vector_update(query_body: Query<(&Transform, &Velocity)>, mut query_path: Query<&mut Path>) {
+    for ((transform, velocity), mut path) in query_body.iter().zip(query_path.iter_mut()) {
+        let center_of_mass = transform.translation.truncate();
+        let vel = velocity.linvel;
+        let new_line = shapes::Line(center_of_mass, center_of_mass + vel);
+        *path = ShapePath::build_as(&new_line);
+    }
+}
+```
 
 Now, since the model will likely not be much interested in all of the
 values that Rapier needs, we define a seperate ``BodyAttributes`` that our

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Great Value Three Body Problem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Iosevka:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+
+<nav class="navbar">
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/">Contact</a></li>
+  </ul>
+</nav>
+
+
+    <div class="container">
+    <div class="title-wrapper">
+        <h1 class="title">Great Value Three Body Problem</h1>
+      <div class="author-date">
+          <div class="author">Nico OR</div>
+          <div class="date">2024-11-10</div>
+      </div>
+    </div>
+    <div class="underline"></div>    
+      <div class="text"><p>The three body problem is a relatively well known scenario in classical
+mechanics, as well as a pretty good series of novels, with no closed form
+solutions. Some of it's restricted forms have application in describing
+eliptical orbit, and it's most generally described as a system of three
+second order vector differential equations, or a really ugly eighteen part
+Hamiltonian differential scalar equations.</p>
+<p>With all that said, since we're in the business of intellectual exercises,
+and less so in the business of a particularly nasty Diff. Eq. homework
+question, I set out to build a simulation of the three body problem. Well,
+the original goal was, and time permitting, still is, to write a model to
+seek out stable (rather, least chaotic) configurations of the scenario.
+This, then, is part one of the project, setting up the simulation and
+program environment.</p>
+<p>The simulation is set up in Rust, using Bevy + Rapier 2D. I hesitated to
+go forward with Bevy since I thought it would be too much for the program,
+and that was somewhat true, but this <a href="https://www.youtube.com/watch?v=PND2Wpy6U-E">particularly
+interesting</a> podcast
+convinced me to bite the bullet and figure out Bevy's ECS system. Since
+the inception of the project was to write a model to solve our scenario,
+I needed a way for the program to communicate with external program, this
+is because, tragically, <a href="https://www.arewelearningyet.com/">we are not learning
+yet</a>. I chose to use gRPC by way of
+Tonic, mostly because I've been meaning to learn how to use gRPC for
+a while, but also because of my fondness for the Tokio ecosystem, <em>in no
+small part due to their neat-looking desings</em>.</p>
+<p>To be clear, graphQL and some form of REST would have probably done just
+as well, if not better. At the projects current state, GraphQL would have
+been a little more ergonomic on merit of it's JSON representation format.
+If I wanted to, say, pass the simulation to another service, like
+a diagnostics service, or some HPC platform, gRPC would have worked
+wonders.</p>
+<p>Now, onto the code. Let's start with the initial conditions, the program
+looks in a file called <code>config.toml</code> which looks, for example, like
+this:</p>
+<pre><code class="language-Toml">[[body_attributes]]
+id = 1
+radius = 40.0
+restitution = 1.0
+mass = 300.0
+velocity = { x = 0.0, y = 25.0 }
+position = { x = 500.0, y = 0.0 }
+
+[[body_attributes]]
+id = 2
+radius = 40.0
+restitution = 1.0
+mass = 300.0
+velocity = { x = 0.0, y = 25.0 }
+position = { x = -500.0, y = 0.0 }
+
+[[body_attributes]]
+id = 3
+radius = 40.0
+restitution = 1.0
+mass = 600.0
+velocity = { x = 0.0, y = 0.0 }
+position = { x = 0.0, y = 0.0 }
+</code></pre>
+<p>which defines all the values rapier needs to initialize our rigid bodies.
+Once our bodies our spawned, we create a system called
+<code>gravity_update()</code> which is tad long, but queries our bodies (using
+Bevy's ECS), gets the unique combinations of bodies using the built in
+<code>iter_combinations_mut::&lt;2&gt;()</code> (practically the n choose
+k combinatorial)  and applys the force calculated by the
+<code>gravitational_force()</code> function</p>
+<pre><code class="language-Rust">pub fn gravitational_force(
+    mass1: f32,
+    mass2: f32,
+    position1: Vector2&lt;f32&gt;,
+    position2: Vector2&lt;f32&gt;,
+) -&gt; Vector2&lt;f32&gt; {
+    let r = position2 - position1;
+    let direction = r.norm();
+    let f_mag = 1000.0 * ((mass1 * mass2) / direction.powi(2));
+    r.normalize() * f_mag
+}
+</code></pre>
+<p>Which calculates the force vector on body 1 in reference to body 2,
+adapted from Newton's Gravitational Law. The <code>gravity_update()</code> function
+also updates our <code>SimulationState</code> struct, contained inside
+<code>SimulationService</code> struct which gets used with our gRPC server.</p>
+<p>Now, since the model will likely not be much interested in all of the
+values that Rapier needs, we define a seperate <code>BodyAttributes</code> that our
+gRPC service uses. Here is the <code>simulation.proto</code></p>
+<pre><code class="language-c++">syntax = &quot;proto3&quot;;
+
+package simulation;
+
+service Sim {
+  rpc Replies(SimReq) returns (SimResponse) {}
+}
+
+message SimReq{
+  optional string bodyID = 1;
+}
+
+message Vec2D{
+  float x = 1;
+  float y = 2;
+}
+message BodyAttributes{
+  Vec2D velocity = 1;
+  Vec2D position = 2;
+}
+message SimResponse{
+  repeated BodyAttributes bodies = 1;
+}
+</code></pre>
+<p>We create the server as a startup system in the Bevy ECS, and add the
+tokio runtime as a resource to the Bevy up so that our server can handle
+requests as they come in asynchronously.</p>
+<p>We can connect to it on <code>localhost:50051</code> and get the velocity and
+position of our bodies.</p>
+</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -94,12 +94,13 @@ velocity = { x = 0.0, y = 0.0 }
 position = { x = 0.0, y = 0.0 }
 </code></pre>
 <p>which defines all the values rapier needs to initialize our rigid bodies.
-Once our bodies our spawned, we create a system called
-<code>gravity_update()</code> which is tad long, but queries our bodies (using
-Bevy's ECS), gets the unique combinations of bodies using the built in
-<code>iter_combinations_mut::&lt;2&gt;()</code> (practically the n choose
-k combinatorial)  and applys the force calculated by the
-<code>gravitational_force()</code> function</p>
+I opted to use an external configuration file so that we can change the
+setup of the bodies in runtime, without recompiling the program. Once our
+bodies our spawned, we create a system called <code>gravity_update()</code> which
+is tad long, but queries our bodies (using Bevy's ECS), gets the unique
+combinations of bodies using the built in <code>iter_combinations_mut::&lt;2&gt;()</code>
+(practically the n choose k combinatorial)  and applys the force
+calculated by the <code>gravitational_force()</code> function</p>
 <pre><code class="language-Rust">pub fn gravitational_force(
     mass1: f32,
     mass2: f32,
@@ -116,6 +117,30 @@ k combinatorial)  and applys the force calculated by the
 adapted from Newton's Gravitational Law. The <code>gravity_update()</code> function
 also updates our <code>SimulationState</code> struct, contained inside
 <code>SimulationService</code> struct which gets used with our gRPC server.</p>
+<p>Before moving on to the server, I'd like to highlight a small debugging
+system I wrote up so that I could vizualize the direction of the bodies.</p>
+<pre><code class="language-rust">pub fn setup_vectors(mut commands: Commands, query_bodies: Query&lt;&amp;Transform&gt;) {
+    for _ in query_bodies.iter() {
+        let line = shapes::Line(Vec2::ZERO, Vec2::new(0.0, 0.0));
+        commands.spawn((
+            ShapeBundle {
+                path: GeometryBuilder::build_as(&amp;line),
+                ..default()
+            },
+            Stroke::new(Color::WHITE, 5.0), // Spawn in lines
+        ));
+    }
+}
+
+pub fn vector_update(query_body: Query&lt;(&amp;Transform, &amp;Velocity)&gt;, mut query_path: Query&lt;&amp;mut Path&gt;) {
+    for ((transform, velocity), mut path) in query_body.iter().zip(query_path.iter_mut()) {
+        let center_of_mass = transform.translation.truncate();
+        let vel = velocity.linvel;
+        let new_line = shapes::Line(center_of_mass, center_of_mass + vel);
+        *path = ShapePath::build_as(&amp;new_line);
+    }
+}
+</code></pre>
 <p>Now, since the model will likely not be much interested in all of the
 values that Rapier needs, we define a seperate <code>BodyAttributes</code> that our
 gRPC service uses. Here is the <code>simulation.proto</code></p>

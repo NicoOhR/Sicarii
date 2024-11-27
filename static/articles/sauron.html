@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sauron</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Iosevka:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+
+<nav class="navbar">
+  <ul>
+    <li><a href="../">Home</a></li>
+    <li><a href="../about/">About</a></li>
+    <li><a href="../contact/">Contact</a></li>
+  </ul>
+</nav>
+
+
+    <div class="container">
+    <div class="title-wrapper">
+        <h1 class="title">Sauron</h1>
+      <div class="author-date">
+          <div class="author">Nico OR</div>
+          <div class="date">2024-13-9</div>
+      </div>
+    </div>
+    <div class="underline"></div>    
+      <div class="text"><p>This will be a very brief overview of our 2024 HackUTD hackathon project.
+There were a couple of very interesting sponsor prompts, and I'm still
+a little sad we never got the chance to use Pinata, we ultimately went
+with PNC's prompt, to build tooling for observability and data lifetimes.
+Of course, the word &quot;observability&quot; and &quot;lifetimes&quot; immediately caused us
+to think of Kafka. So, for our project, we decided to build a platform to
+model and display our end to end life cycle of our data cleanly and
+efficiently. To that end, with only one all-nighter pulled. We produced
+<code>Sauron</code> (a very clever name I came up with my self, thank you very
+much). <a href="https://www.youtube.com/watch?v=SM_0w7rKo2c">Here is a link of
+a demo</a> that due to time
+constraints we had to make before we could fully hook it up the Confluents
+instance that we were simulating our ETL on. <a href="">And here is the GitHub repo</a></p>
+<p>Briefly, we used Terraform to spin up a Confluents instance, as well as
+several small python cli programs (orchestrated over k8) which acted as
+modular consumer-producers to simulate micro-services in our pipeline. We
+utilized some minimal (and very under documented) OpenTelemetry python
+instrumentation, written directly into the service, which hooked up to
+a Jaeger instance (also deployed on k8). Finally, we somehow (I was
+asleep) relayed the Jaeger data into our front end, which you could see in
+the video.</p>
+<p>Overall it was a very good, although exhausting hackathon, and we produced
+a very interesting project. I learned a lot, and was definitely the most
+hands on experience that I've had with Kafka.</p>
+</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+
+</html>

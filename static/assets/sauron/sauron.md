@@ -10,7 +10,7 @@ efficiently. To that end, with only one all-nighter pulled. We produced
 much). [Here is a link of
 a demo](https://www.youtube.com/watch?v=SM_0w7rKo2c) that due to time
 constraints we had to make before we could fully hook it up the Confluents
-instance that we were simulating our ETL on.
+instance that we were simulating our ETL on. [And here is the GitHub repo](git@github.com:NicoOhR/sauron.git) 
 
 Briefly, we used Terraform to spin up a Confluents instance, as well as
 several small python cli programs (orchestrated over k8) which acted as

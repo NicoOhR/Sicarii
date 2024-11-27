@@ -205,4 +205,18 @@ the algorithm is pretty textbook (DEAP textbook to be specific). But it
 does iterate, slowly. I tried using the SciPy optimize package, but that
 never got up and running, and back propogation never made it back up the
 computation graph when using PyTorch (since, surprisingly, gRPC is not
-auto-differentiable)
+auto-differentiable). The problem that I ran into with this algorithm,
+only couple of hours of iteration into the whole thing, is that the
+individuals which maximized the fitness function were the ones on the very
+edges of one anothers gravitational field. Their offspring, in turn, would
+be just exactly outside of the field, reseting the simulation.
+
+Some rethinking needs to be done on this, and I might just ditch the
+external simulation entierly, and instead write the physics solver myself
+in an entierly differentiable manner. Still, I'm not sure what the
+appropriate cost function would be, I flirted briefly with a Lyapunov
+based cost function, but by the very nature of the problem, there cannot
+be an equilibirium point.
+
+Until I figure out the finer points of dynamical systems, I choose to put
+this one on the back bench.

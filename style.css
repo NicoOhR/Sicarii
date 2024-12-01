@@ -1,7 +1,7 @@
 body,
 html {
   margin: 0;
-  padding: 10vh;
+  padding-top: 10vh;
   background-color: white;
 }
 
@@ -11,7 +11,7 @@ html {
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 20px;
+  padding: 0px;
   box-sizing: border-box;
 }
 
@@ -49,7 +49,7 @@ html {
 
 .text {
   font-size: 18px;
-  width: 60%;
+  width: max(60%, 300px);
   margin-left: auto;
   margin-right: auto;
   font-family: 'Wittgenstein', serif;
@@ -140,6 +140,7 @@ body#about {
   margin: 0;
   padding: 0;
 }
+
 header#about {
   font-size: 48px;
   font-weight: bold;

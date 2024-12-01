@@ -39,7 +39,7 @@
 the last time I posted about this project. I ended up ditching the TOML
 configuration, opting instead for the client to send a configuration, like
 so:</p>
-<pre><code class="language-c++">syntax = &quot;proto3&quot;;
+<pre><code class="language-c++">syntax = "proto3";
 
 package simulation;
 
@@ -79,37 +79,37 @@ I also wanted these two programs to be as decoupled as possible, I ended
 up using PyBuilder to fetch the latest from the repository:</p>
 <pre><code class="language-Python">@task
 def get_protobuf_service_def(project):
-    protobuf_url = &quot;https://raw.githubusercontent.com/NicoOhR/GV3B_simulation/refs/heads/main/proto/simulation.proto&quot;
+    protobuf_url = "https://raw.githubusercontent.com/NicoOhR/GV3B_simulation/refs/heads/main/proto/simulation.proto"
     response = requests.get(protobuf_url)
     if response.status_code == 200:
         proto_dir = os.path.join(
-            project.get_property(&quot;dir_source_main_python&quot;), &quot;proto&quot;
+            project.get_property("dir_source_main_python"), "proto"
         )
-        proto_file = os.path.join(proto_dir, &quot;simulation.proto&quot;)
-        project.set_property(&quot;proto_dir&quot;, proto_dir)
-        project.set_property(&quot;proto_file&quot;, proto_file)
+        proto_file = os.path.join(proto_dir, "simulation.proto")
+        project.set_property("proto_dir", proto_dir)
+        project.set_property("proto_file", proto_file)
         os.makedirs(proto_dir, exist_ok=True)
-        with open(proto_file, &quot;wb&quot;) as file:
+        with open(proto_file, "wb") as file:
             file.write(response.content)
-            print(&quot;[Builder] Successfuly got latest protobuf&quot;)
+            print("[Builder] Successfuly got latest protobuf")
     else:
-        print(&quot;[Builder] Failed to get protobuf&quot;)
+        print("[Builder] Failed to get protobuf")
         print(response.status_code)
 
 
 @task
 def build_proto_buf(project):
-    proto_file = project.get_property(&quot;proto_file&quot;)
-    proto_dir = project.get_property(&quot;proto_dir&quot;)
-    module_file = os.path.join(proto_dir, &quot;__init__.py&quot;)
+    proto_file = project.get_property("proto_file")
+    proto_dir = project.get_property("proto_dir")
+    module_file = os.path.join(proto_dir, "__init__.py")
     command = [
-        &quot;python3&quot;,
-        &quot;-m&quot;,
-        &quot;grpc_tools.protoc&quot;,
-        &quot;-I&quot;,
+        "python3",
+        "-m",
+        "grpc_tools.protoc",
+        "-I",
         proto_dir,
-        f&quot;--python_out={proto_dir}&quot;,
-        f&quot;--grpc_python_out={proto_dir}&quot;,
+        f"--python_out={proto_dir}",
+        f"--grpc_python_out={proto_dir}",
         proto_file,
     ]
     ...
@@ -119,20 +119,20 @@ project might just be me being massively C-brained, but it gets the job
 done and organizes the project pretty well. The actual client, being only
 two methods, is pretty simple:</p>
 <pre><code class="language-python">def set_configuration(bodies, stub):
-    &quot;&quot;&quot;
+    """
     Calls the SetConfiguration RPC to set the simulation configuration.
-    &quot;&quot;&quot;
+    """
     sim_state = simulation_pb2.SimState(
         bodies=[
             simulation_pb2.BodyAttributes(
-                bodyID=body[&quot;bodyID&quot;],
+                bodyID=body["bodyID"],
                 position=simulation_pb2.Vec2D(
-                    x=body[&quot;position&quot;][&quot;x&quot;], y=body[&quot;position&quot;][&quot;y&quot;]
+                    x=body["position"]["x"], y=body["position"]["y"]
                 ),
                 velocity=simulation_pb2.Vec2D(
-                    x=body[&quot;velocity&quot;][&quot;x&quot;], y=body[&quot;velocity&quot;][&quot;y&quot;]
+                    x=body["velocity"]["x"], y=body["velocity"]["y"]
                 ),
-                mass=body[&quot;mass&quot;],
+                mass=body["mass"],
             )
             for body in bodies
         ]
@@ -141,15 +141,15 @@ two methods, is pretty simple:</p>
 
 
 def body_request(stub):
-    &quot;&quot;&quot;
+    """
     Requests the location, velocity, and mass of bodies in the current simulation
-    &quot;&quot;&quot;
+    """
     request = simulation_pb2.SimCurrentStateReq()
     try:
         response = stub.StateReply(request)
         return response
     except grpc.RpcError as e:
-        print(f&quot;gRPC call failed: {e.code()}: {e.details()}&quot;)
+        print(f"gRPC call failed: {e.code()}: {e.details()}")
 </code></pre>
 <p>Using the dictionary that the service gives us, we evaluate if the
 simulation has effectively ended, or when the configuration no longer has
@@ -157,9 +157,9 @@ the chance of being stable. For our purposes that is when a collision has
 occured, or when one of the bodies has escaped the gravitational force of
 the others. That looks something like this:</p>
 <pre><code class="language-Python">def collision(bodies):
-    &quot;&quot;&quot;
+    """
     returns true if body positions are within radii of one another
-    &quot;&quot;&quot;
+    """
     combinations = itertools.combinations(bodies, 2)
     collision_flag = false
     for combination in combinations:
@@ -174,9 +174,9 @@ the others. That looks something like this:</p>
 
 
 def escape(bodies):
-    &quot;&quot;&quot;
+    """
     returns true if a body is no longer effect by the gravitational force of one of the others
-    &quot;&quot;&quot;
+    """
     combinations = itertools.combinations(bodies, 2)
     distance_flag = false
     for combination in combinations:
@@ -227,7 +227,19 @@ fits = [ind.fitness.values[0] for ind in population]
 does iterate, slowly. I tried using the SciPy optimize package, but that
 never got up and running, and back propogation never made it back up the
 computation graph when using PyTorch (since, surprisingly, gRPC is not
-auto-differentiable)</p>
+auto-differentiable). The problem that I ran into with this algorithm,
+only couple of hours of iteration into the whole thing, is that the
+individuals which maximized the fitness function were the ones on the very
+edges of one anothers gravitational field. Their offspring, in turn, would
+be just exactly outside of the field, reseting the simulation.</p>
+<p>Some rethinking needs to be done on this, and I might just ditch the
+external simulation entierly, and instead write the physics solver myself
+in an entierly differentiable manner. Still, I'm not sure what the
+appropriate cost function would be, I flirted briefly with a Lyapunov
+based cost function, but by the very nature of the problem, there cannot
+be an equilibirium point.</p>
+<p>Until I figure out the finer points of dynamical systems, I choose to put
+this one on the back bench.</p>
 </div>
     </div>
 

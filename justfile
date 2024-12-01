@@ -5,7 +5,7 @@ run:
 
 serve:
   python3 -m http.server --directory static > /dev/null 2>&1 &
-  firefox -new-tab "localhost:8000"
+  chromium --new-window http://localhost:8000
 
 gh-deploy:
   git add .

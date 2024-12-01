@@ -7,6 +7,7 @@ use structs::HomeTemplate;
 
 mod article_meta;
 mod structs;
+
 fn render_to_file(content: String, path: &String) -> io::Result<()> {
     let mut content_path = PathBuf::from("./static/");
     content_path.push(path);

@@ -8,7 +8,9 @@ edition = "2021"
 [dependencies]
 askama = "0.12.1"
 chrono = "0.4"
+katex = "0.4.6"
 markdown = "1.0.0-alpha.19"
+pulldown-cmark = "0.12.2"
 serde = {version = "1.0.210", features = ["derive"]}
 toml = "0.8.19"
 walkdir = "2.5.0"

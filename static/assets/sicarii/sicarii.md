@@ -30,7 +30,7 @@ for article in articles.iter() {
 }
 ```
 
-Each article is a struct made of the meta data of the article. Originally I hada function returning a long list of the article structs, and it worked... fine?I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.
+Each article is a struct made of the meta data of the article. Originally I ~~hada~~ had a function returning a long list of the article structs, and it worked... fine?I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.
 
 ```rust
 fn read_toml(s: &str) -> structs::Article {

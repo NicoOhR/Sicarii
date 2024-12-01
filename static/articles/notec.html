@@ -97,7 +97,7 @@ back to this). CMSIS-RTOS v2 is used for the threading.</p>
                 └── PE3
 </code></pre>
 <p>The project is split into five parts which are, in order of their
-proximity to &quot;bare metal&quot;: Platform, Sensor, Application, and as auxiliary
+proximity to "bare metal": Platform, Sensor, Application, and as auxiliary
 systems, Tests and Docs. In the platform layer, we abstract away some of
 the rougher edges of the HAL, making writing the actual application of the
 DAQ a little less error prone. This also benefits the application insofar
@@ -151,10 +151,10 @@ reads the displacement of the suspension shocks.</p>
 </code></pre>
 <p>Lastly is the Application layer, which handles the state of the device,
 our mutexes for multi-threading, and how we talk to the Raspberry Pi. This
-is the most &quot;userspace&quot; the program gets.</p>
+is the most "userspace" the program gets.</p>
 <p>The Tests folder has some preliminary unit tests made with gtest that are
-hooked up to our GitHub CI/CD pipeline, but as with other &quot;it'd be nice to
-have&quot; things in this project, I've yet to give it the time that it
+hooked up to our GitHub CI/CD pipeline, but as with other "it'd be nice to
+have" things in this project, I've yet to give it the time that it
 deserves. Similarly the Docs folder has some documentation generation with
 Phoenix, but I've yet to find the patience to annotate the existing code.</p>
 </div>

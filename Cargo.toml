@@ -12,6 +12,7 @@ katex = "0.4.6"
 markdown = "1.0.0-alpha.19"
 pulldown-cmark = "0.12.2"
 serde = {version = "1.0.210", features = ["derive"]}
+syntect = "5.2.0"
 toml = "0.8.19"
 walkdir = "2.5.0"
 yaml-rust = "0.4.5"

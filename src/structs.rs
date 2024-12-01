@@ -1,5 +1,5 @@
 use askama::Template;
-use pulldown_cmark::{html, Options, Parser};
+use pulldown_cmark;
 use serde::Deserialize;
 use std::fs::File;
 use std::io::{self, Read};
@@ -23,12 +23,13 @@ impl Article {
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
 
-        //parser-per-article seems wasteful
         //github style MD options
-        let mut options = Options::empty();
-        options.insert(Options::ENABLE_STRIKETHROUGH);
-        options.insert(Options::ENABLE_TASKLISTS);
-        options.insert(Options::ENABLE_TABLES);
+        let mut options = pulldown_cmark::Options::empty();
+        options.insert(pulldown_cmark::Options::ENABLE_STRIKETHROUGH);
+        options.insert(pulldown_cmark::Options::ENABLE_TASKLISTS);
+        options.insert(pulldown_cmark::Options::ENABLE_TABLES);
+
+        //parser-per-article seems wasteful, should probably move to it's own struct
         let md_parser = pulldown_cmark::Parser::new_ext(&contents, options);
         let mut html_output = String::new();
         pulldown_cmark::html::push_html(&mut html_output, md_parser);

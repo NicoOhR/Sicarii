@@ -10,61 +10,92 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Iosevka:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Baskervville+SC&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baskervville+SC&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<nav class="navbar">
-  <ul>
-    <li><a href="./">Home</a></li>
-    <li><a href="./about/">About</a></li>
-    <li><a href="./contact/">Contact</a></li>
-  </ul>
-</nav>
-<body id="homepage">
-    <main>
-      <div class="sic-title">
-        <sicarii>Sicarii<sicarii>
-      </div>
-    <section class = "articles">
-      
-        <a href="articles/gv3b_pt1.html" class = "article-link">
-        <article>
-        <h2 style="font-family='Merriweather', serif"> Great Value Three Body Problem</h2>
-        <p style="font-family='Merriweather', serif"> Part 1 </p>
-        </article>
-          </a>
-      
-        <a href="articles/gv3b_pt2.html" class = "article-link">
-        <article>
-        <h2 style="font-family='Merriweather', serif"> Great Value Three Body Problem</h2>
-        <p style="font-family='Merriweather', serif"> Part 2 </p>
-        </article>
-          </a>
-      
-        <a href="articles/notec.html" class = "article-link">
-        <article>
-        <h2 style="font-family='Merriweather', serif"> NoTeC</h2>
-        <p style="font-family='Merriweather', serif"> The Working Man&#x27;s Automotive Data Collection Solution </p>
-        </article>
-          </a>
-      
-        <a href="articles/sauron.html" class = "article-link">
-        <article>
-        <h2 style="font-family='Merriweather', serif"> Sauron</h2>
-        <p style="font-family='Merriweather', serif"> An only slightly hellish hackathon </p>
-        </article>
-          </a>
-      
-        <a href="articles/sicarii.html" class = "article-link">
-        <article>
-        <h2 style="font-family='Merriweather', serif"> Side Quest Sicarii</h2>
-        <p style="font-family='Merriweather', serif"> A write up of doing front end the wrong way </p>
-        </article>
-          </a>
-      
-    </section>
-      </main>
+<body class="min-h-screen pt-[10vh] bg-white">
+  <nav class="fixed top-0 left-0 z-50 w-full bg-[#800020] py-2">
+    <ul class="flex justify-around">
+      <li class="flex-1 text-center">
+        <a href="./" class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Home</a>
+      </li>
+      <li class="flex-1 text-center">
+        <a href="./about/" class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">About</a>
+      </li>
+      <li class="flex-1 text-center">
+        <a href="./contact/" class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Contact</a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="max-w-[800px] mx-auto mt-[10vh] px-4">
+    <div class="text-center mt-[-120px]">
+      <h1 class="font-serif text-[4em] italic">Sicarii</h1>
+    </div>
+      <section class="flex flex-col gap-5">
+
+<a href="articles/gv3b_pt1.html" class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group">
+  <h2 class="text-xl font-semibold group-hover:text-[#800020]">Great Value Three Body Problem</h2>
+  <p class="text-gray-600 group-hover:text-[#800020]">Part 1</p>
+  <!-- Tapered Overlay -->
+  <div class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polygon points="0,0 80,0 0,25" class="fill-current text-[#800020]" />
+    </svg>
+  </div>
+</a>
+
+<a href="articles/gv3b_pt2.html" class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group">
+  <h2 class="text-xl font-semibold group-hover:text-[#800020]">Great Value Three Body Problem</h2>
+  <p class="text-gray-600 group-hover:text-[#800020]">Part 2</p>
+  <!-- Tapered Overlay -->
+  <div class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polygon points="0,0 80,0 0,25" class="fill-current text-[#800020]" />
+    </svg>
+  </div>
+</a>
+
+<a href="articles/notec.html" class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group">
+  <h2 class="text-xl font-semibold group-hover:text-[#800020]">NoTeC</h2>
+  <p class="text-gray-600 group-hover:text-[#800020]">The Working Man&#x27;s Automotive Data Collection Solution</p>
+  <!-- Tapered Overlay -->
+  <div class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polygon points="0,0 80,0 0,25" class="fill-current text-[#800020]" />
+    </svg>
+  </div>
+</a>
+
+<a href="articles/sauron.html" class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group">
+  <h2 class="text-xl font-semibold group-hover:text-[#800020]">Sauron</h2>
+  <p class="text-gray-600 group-hover:text-[#800020]">An only slightly hellish hackathon</p>
+  <!-- Tapered Overlay -->
+  <div class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polygon points="0,0 80,0 0,25" class="fill-current text-[#800020]" />
+    </svg>
+  </div>
+</a>
+
+<a href="articles/sicarii.html" class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group">
+  <h2 class="text-xl font-semibold group-hover:text-[#800020]">Side Quest Sicarii</h2>
+  <p class="text-gray-600 group-hover:text-[#800020]">A write up of doing front end the wrong way</p>
+  <!-- Tapered Overlay -->
+  <div class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0">
+    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polygon points="0,0 80,0 0,25" class="fill-current text-[#800020]" />
+    </svg>
+  </div>
+</a>
+
+
+
+</section>
+
+
+  </main>
 </body>
 
 </html>

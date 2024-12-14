@@ -2,6 +2,7 @@ alias r := run
 
 run:
   cargo run
+  npm run build:css
 
 serve:
   python3 -m http.server --directory static > /dev/null 2>&1 &

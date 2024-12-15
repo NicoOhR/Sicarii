@@ -1,4 +1,6 @@
-*, ::before, ::after {
+@import url('https://fonts.googleapis.com/css2?family=Baskervville+SC&display=swap');
+
+*, ::before, ::after{
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
   --tw-translate-x: 0;
@@ -52,7 +54,7 @@
   --tw-contain-style:  ;
 }
 
-::backdrop {
+::backdrop{
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
   --tw-translate-x: 0;
@@ -554,276 +556,286 @@ video {
   display: none;
 }
 
-.fixed {
+.fixed{
   position: fixed;
 }
 
-.absolute {
+.absolute{
   position: absolute;
 }
 
-.relative {
+.relative{
   position: relative;
 }
 
-.inset-0 {
+.inset-0{
   inset: 0px;
 }
 
-.left-0 {
+.left-0{
   left: 0px;
 }
 
-.top-0 {
+.top-0{
   top: 0px;
 }
 
-.z-50 {
+.z-50{
   z-index: 50;
 }
 
-.mx-auto {
+.mx-auto{
   margin-left: auto;
   margin-right: auto;
 }
 
-.mb-4 {
+.mb-4{
   margin-bottom: 1rem;
 }
 
-.mb-8 {
+.mb-8{
   margin-bottom: 2rem;
 }
 
-.mt-\[-120px\] {
+.mt-\[-120px\]{
   margin-top: -120px;
 }
 
-.mt-\[10vh\] {
+.mt-\[10vh\]{
   margin-top: 10vh;
 }
 
-.block {
+.block{
   display: block;
 }
 
-.flex {
+.flex{
   display: flex;
 }
 
-.h-full {
+.h-full{
   height: 100%;
 }
 
-.min-h-screen {
+.min-h-screen{
   min-height: 100vh;
 }
 
-.w-full {
+.w-full{
   width: 100%;
 }
 
-.max-w-\[600px\] {
+.max-w-\[600px\]{
   max-width: 600px;
 }
 
-.max-w-\[800px\] {
+.max-w-\[800px\]{
   max-width: 800px;
 }
 
-.max-w-none {
+.max-w-none{
   max-width: none;
 }
 
-.flex-1 {
+.flex-1{
   flex: 1 1 0%;
 }
 
-.-translate-y-full {
+.-translate-y-full{
   --tw-translate-y: -100%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.transform {
+.transform{
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.flex-col {
+.flex-col{
   flex-direction: column;
 }
 
-.justify-center {
+.justify-center{
   justify-content: center;
 }
 
-.justify-around {
+.justify-around{
   justify-content: space-around;
 }
 
-.gap-4 {
+.gap-4{
   gap: 1rem;
 }
 
-.gap-5 {
+.gap-5{
   gap: 1.25rem;
 }
 
-.overflow-hidden {
+.overflow-hidden{
   overflow: hidden;
 }
 
-.border-b {
+.border-b{
   border-bottom-width: 1px;
 }
 
-.border-t {
+.border-t{
   border-top-width: 1px;
 }
 
-.border-gray-200 {
+.border-\[\#800020\]{
+  --tw-border-opacity: 1;
+  border-color: rgb(128 0 32 / var(--tw-border-opacity, 1));
+}
+
+.border-gray-200{
   --tw-border-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-border-opacity, 1));
 }
 
-.border-red-500 {
-  --tw-border-opacity: 1;
-  border-color: rgb(239 68 68 / var(--tw-border-opacity, 1));
-}
-
-.bg-\[\#800020\] {
+.bg-\[\#800020\]{
   --tw-bg-opacity: 1;
   background-color: rgb(128 0 32 / var(--tw-bg-opacity, 1));
 }
 
-.bg-white {
+.bg-white{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
 
-.fill-current {
+.fill-current{
   fill: currentColor;
 }
 
-.p-4 {
+.p-4{
   padding: 1rem;
 }
 
-.px-4 {
+.px-4{
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
-.py-2 {
+.py-2{
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
 
-.pt-\[10vh\] {
+.pt-\[10vh\]{
   padding-top: 10vh;
 }
 
-.text-left {
+.text-left{
   text-align: left;
 }
 
-.text-center {
+.text-center{
   text-align: center;
 }
 
-.font-serif {
+.font-baskervville{
+  font-family: "Baskervville SC", serif, italic;
+}
+
+.font-serif{
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
-.text-\[2\.5em\] {
+.text-7xl{
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+.text-\[2\.5em\]{
   font-size: 2.5em;
 }
 
-.text-\[4em\] {
-  font-size: 4em;
-}
-
-.text-lg {
+.text-lg{
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
 
-.text-xl {
+.text-xl{
   font-size: 1.25rem;
   line-height: 1.75rem;
 }
 
-.font-semibold {
+.font-semibold{
   font-weight: 600;
 }
 
-.italic {
+.italic{
   font-style: italic;
 }
 
-.text-\[\#800020\] {
+.text-\[\#800020\]{
   --tw-text-opacity: 1;
   color: rgb(128 0 32 / var(--tw-text-opacity, 1));
 }
 
-.text-gray-600 {
+.text-gray-600{
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity, 1));
 }
 
-.text-gray-800 {
+.text-gray-800{
   --tw-text-opacity: 1;
   color: rgb(31 41 55 / var(--tw-text-opacity, 1));
 }
 
-.text-white {
+.text-white{
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
 }
 
-.transition-colors {
+.transition-colors{
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
 
-.transition-transform {
+.transition-transform{
   transition-property: transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
 
-.duration-300 {
+.duration-300{
   transition-duration: 300ms;
 }
 
-.ease-in-out {
+.ease-in-out{
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.first-letter\:float-left::first-letter {
+.first-letter\:float-left::first-letter{
   float: left;
 }
 
-.first-letter\:pr-4::first-letter {
+.first-letter\:pr-4::first-letter{
   padding-right: 1rem;
 }
 
-.first-letter\:text-7xl::first-letter {
+.first-letter\:text-7xl::first-letter{
   font-size: 4.5rem;
   line-height: 1;
 }
 
-.hover\:text-red-500:hover {
+.first-letter\:text-\[\#800020\]::first-letter{
+  --tw-text-opacity: 1;
+  color: rgb(128 0 32 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-red-500:hover{
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity, 1));
 }
 
-.group:hover .group-hover\:translate-y-0 {
+.group:hover .group-hover\:translate-y-0{
   --tw-translate-y: 0px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.group:hover .group-hover\:text-\[\#800020\] {
+.group:hover .group-hover\:text-\[\#800020\]{
   --tw-text-opacity: 1;
   color: rgb(128 0 32 / var(--tw-text-opacity, 1));
 }

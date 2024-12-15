@@ -10,10 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Iosevka:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Baskervville+SC&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville+SC&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=UnifrakturMaguntia&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="../style.css">
 </head>
 
 <body class="min-h-screen pt-[10vh] bg-white">
@@ -36,16 +39,16 @@
 
   <main class="max-w-[800px] mx-auto mt-[10vh] px-4">
     <div class="text-center mb-8">
-      <h1 class="font-serif text-[2.5em] italic">Side Quest Sicarii</h1>
+      <h1 class="font-garamond text-[2.5em] italic">Side Quest Sicarii</h1>
       <div class="flex justify-center gap-4 text-gray-600">
-        <div class="author text-lg">Nico OR</div>
-        <div class="date text-lg">2024-13-9</div>
+        <div class="author text-lg font-jetbrains">Nico OR</div>
+        <div class="date text-lg font-jetbrains">2024-13-9</div>
       </div>
     </div>
 
     <article class="prose max-w-none">
       <div
-        class="text-gray-800 first-letter:float-left first-letter:text-[#800020] first-letter:text-7xl first-letter:pr-4">
+        class="space-y-4 text-gray-800 first-letter:float-left text-[1.2em] first-letter:text-[#800020] first-letter:text-7xl first-letter:pr-4 font-wittgenstein">
         <p>I (generally) don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks.</p>
 <p>To my delight, in the last couple of years a sort of <em>post-modern</em> web app tech stack has emerged. Using HTMX and some templating program (typically via a library in your language of choice), you can avoid the "web" part of "web app development" almost entierly. This site, which is not yet a web app, is an experiment in building a website "in the wrong way".</p>
 <p>I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>

@@ -5,7 +5,10 @@ module.exports = {
     extend: {
       fontFamily: {
         unifraktur: ['"UnifrakturMaguntia"', 'serif'],
+        wittgenstein: ['"Wittgenstein"', 'serif'],
         baskervville: ['"Baskervville SC"', 'serif', 'italic'],
+        jetbrains: ['"JetBrains Mono"'],
+        garamond: ['"EB Garamond"', 'Georgia', 'serif', 'italic']
       },
     },
   },

@@ -670,6 +670,12 @@ video {
   gap: 1.25rem;
 }
 
+.space-y-4 > :not([hidden]) ~ :not([hidden]){
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
 .overflow-hidden{
   overflow: hidden;
 }
@@ -736,13 +742,29 @@ video {
   font-family: "Baskervville SC", serif, italic;
 }
 
+.font-garamond{
+  font-family: "EB Garamond", Georgia, serif, italic;
+}
+
+.font-jetbrains{
+  font-family: "JetBrains Mono";
+}
+
 .font-serif{
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+.font-wittgenstein{
+  font-family: "Wittgenstein", serif;
 }
 
 .text-7xl{
   font-size: 4.5rem;
   line-height: 1;
+}
+
+.text-\[1\.2em\]{
+  font-size: 1.2em;
 }
 
 .text-\[2\.5em\]{

@@ -1,13 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./templates/*.html', './static/about/index.html',],
+  content: ['./templates/**/*.html', './static/about/index.html'],
   theme: {
     extend: {
       fontFamily: {
-        wittgenstein: ['"Wittgenstein"', 'serif'],
+        unifraktur: ['"UnifrakturMaguntia"', 'serif'],
+        baskervville: ['"Baskervville SC"', 'serif', 'italic'],
       },
-      transform: ['hover'],
-      scale: ['hover'],
     },
   },
   plugins: [],

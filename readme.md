@@ -1,5 +1,5 @@
 
-- [ ] Move to tailwind
+- [x] Move to tailwind
 - [ ] Figure out better markdownd rendering
 - [ ] RSS
 - [ ] HTMX soon(tm)

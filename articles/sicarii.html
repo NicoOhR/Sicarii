@@ -4,38 +4,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Side Quest Sicarii</title>
+  <title>Side Quest Sicarii</title> <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital@1&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Iosevka:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-  <link rel="stylesheet" href="../style.css">
 </head>
 
-<body>
+<body class="min-h-screen pt-[10vh] bg-white">
+  <nav class="fixed top-0 left-0 z-50 w-full bg-[#800020] py-2">
+    <ul class="flex justify-around">
+      <li class="flex-1 text-center">
+        <a href="../" class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Home</a>
+      </li>
+      <li class="flex-1 text-center">
+        <a href="../about/" class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">About</a>
+      </li>
+      <li class="flex-1 text-center">
+        <a href="../contact/" class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Contact</a>
+      </li>
+    </ul>
+  </nav>
 
-
-<nav class="navbar">
-  <ul>
-    <li><a href="../">Home</a></li>
-    <li><a href="../about/">About</a></li>
-    <li><a href="../contact/">Contact</a></li>
-  </ul>
-</nav>
-
-
-    <div class="container">
-    <div class="title-wrapper">
-        <h1 class="title">Side Quest Sicarii</h1>
-      <div class="author-date">
-          <div class="author">Nico OR</div>
-          <div class="date">2024-13-9</div>
+  <main class="max-w-[800px] mx-auto mt-[10vh] px-4">
+    <div class="text-center mb-8">
+      <h1 class="font-serif text-[2.5em] italic">Side Quest Sicarii</h1>
+      <div class="flex justify-center gap-4 text-gray-600">
+        <div class="author text-lg">Nico OR</div>
+        <div class="date text-lg">2024-13-9</div>
       </div>
     </div>
-    <div class="underline"></div>    
-      <div class="text"><p>I (generally) don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks.</p>
+
+    <article class="prose max-w-none">
+      <div class="text-gray-800 first-letter:float-left first-letter:text-7xl first-letter:pr-4"><p>I (generally) don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks.</p>
 <p>To my delight, in the last couple of years a sort of <em>post-modern</em> web app tech stack has emerged. Using HTMX and some templating program (typically via a library in your language of choice), you can avoid the "web" part of "web app development" almost entierly. This site, which is not yet a web app, is an experiment in building a website "in the wrong way".</p>
 <p>I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>
 <p>Rendering to file happpens like so:</p>
@@ -83,16 +86,17 @@ pub fn get_articles() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
 </code></pre>
 <p>So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it.</p>
 </div>
-    </div>
+    </article>
+  </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", (event) => {
-            document.querySelectorAll('pre code').forEach((block) => {
-                hljs.highlightElement(block);
-            });
-        });
-    </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightBlock(block);
+      });
+    });
+  </script>
 </body>
 
 </html>

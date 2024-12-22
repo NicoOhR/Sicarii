@@ -71,7 +71,7 @@ for article in articles.iter() {
     render_to_file(article.create_template()?.render().unwrap(), &amp;article.link)?;
 }
 </code></pre>
-<p>Each article is a struct made of the meta data of the article. Originally I <del>hada</del> had a function returning a long list of the article structs, and it worked... fine?I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.</p>
+<p>Each article is a struct made of the meta data of the article. Originally I had a function returning a long list of the article structs, and it worked... fine? I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.</p>
 <pre><code class="language-rust">fn read_toml(s: &amp;str) -&gt; structs::Article {
     let article: structs::Article = toml::from_str(s).unwrap();
     article
@@ -95,7 +95,7 @@ pub fn get_articles() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
     Ok(articles)
 }
 </code></pre>
-<p>So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it.</p>
+<p>So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it. For the templating I chose to use Askama and, and have recently switched to Tailwind for CSS and styling.</p>
 </div>
     </article>
   </main>

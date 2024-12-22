@@ -39,10 +39,10 @@ message SimState{
 ```
 
 I ended up changing some names too, as well as adding some more detail to
-the ``BodyAttributes`` message. Now talking about the solver client. Since
-the RPC contract between the server and client needs to be sync'd, and
-I also wanted these two programs to be as decoupled as possible, I ended
-up using PyBuilder to fetch the latest from the repository:
+the ``BodyAttributes`` message. Since the RPC contract between the server
+and client needs to be sync'd, and I also wanted these two programs to be
+as decoupled as possible, I ended up using PyBuilder to fetch the latest
+from the repository:
 
 ```Python
 @task
@@ -212,11 +212,13 @@ edges of one anothers gravitational field. Their offspring, in turn, would
 be just exactly outside of the field, reseting the simulation.
 
 Some rethinking needs to be done on this, and I might just ditch the
-external simulation entierly, and instead write the physics solver myself
-in an entierly differentiable manner. Still, I'm not sure what the
-appropriate cost function would be, I flirted briefly with a Lyapunov
-based cost function, but by the very nature of the problem, there cannot
-be an equilibirium point.
+external simulation, and instead write the physics solver myself in an
+entierly differentiable manner. Still, I'm not sure what the appropriate
+cost function would be, I flirted briefly with a Lyapunov based cost
+function, but by the very nature of the problem, there cannot be an
+equilibirium point. My running theory is I could probably modify the above
+genetic algorithm to train the neural network to find somewhat stable
+configurations.
 
 Until I figure out the finer points of dynamical systems, I choose to put
 this one on the back bench.

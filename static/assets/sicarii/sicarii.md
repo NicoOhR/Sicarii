@@ -30,7 +30,7 @@ for article in articles.iter() {
 }
 ```
 
-Each article is a struct made of the meta data of the article. Originally I ~~hada~~ had a function returning a long list of the article structs, and it worked... fine?I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.
+Each article is a struct made of the meta data of the article. Originally I had a function returning a long list of the article structs, and it worked... fine? I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.
 
 ```rust
 fn read_toml(s: &str) -> structs::Article {
@@ -57,4 +57,4 @@ pub fn get_articles() -> io::Result<Vec<structs::Article>> {
 }
 ```
 
-So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it.
+So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it. For the templating I chose to use Askama and, and have recently switched to Tailwind for CSS and styling.

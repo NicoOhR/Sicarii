@@ -52,22 +52,23 @@
         <p>To start, FSAE (Formula: Student Automotive Engineer) is a worldwide
 competition aimed primarily at giving university students a competition to
 exercise and apply the skills which they learn in the classroom. The
-competition is aimed predominantly at Mechanical Engineering, and in
-recent years with the advent of the EV competition, Electrical Engineering
-majors. By way of demand, however, the FSAE chapter at UT Dallas, a school
-overfilled with Computer Science Majors, several large software and
-firmware projects. Here I focus on the project which I have spent the most
-time on, the Data Acquisition Device (colloquially, NoTeC, a joke I will
-explain later) and will hopefully circle back to the other projects later.</p>
+competition is aimed predominantly at mechanical engineering students, and
+in recent years with the advent of the EV competition, electrical
+engineering students. By way of demand, however, the FSAE chapter at UT
+Dallas, a school overfilled with Computer Science Majors, offers several
+large software and firmware projects. Here I focus on the project which
+I have spent the most time on, the Data Acquisition Device (colloquially,
+NoTeC, a joke I will explain later) and will hopefully circle back to the
+other projects later.</p>
 <p>The purpose of NoTeC is to sample different sensors through out the car,
 and in some way get it to the engineers. How we serve the data to the
 engineers has become increasingly more intricate and seamless over time.
 Originally, the DAQ saved to a USB drive in CSV form, then it saved it to
 an adjacent Raspberry Pi device, then the Raspberry Pi began sending and
-syncing the data to a MongoDB database that can be quaried. Live telemetry
-using Grafana is in the works, although theres some practicality issues
-with getting WiFi to the Raspberry Pi without breaking the rules of the
-competition.</p>
+syncing the data to a MongoDB database that can be quarried. Live
+telemetry using Grafana is in the works, although there's some
+practicality issues with getting WiFi to the Raspberry Pi without breaking
+the rules of the competition.</p>
 <p>The DAQ itself is currently implemented on an STM32F4 chip, but I am
 currently migrating it to the STM32H7, on the basis of better performance.
 It's written with the heavy help ST's HAL and C++. The impetus towards

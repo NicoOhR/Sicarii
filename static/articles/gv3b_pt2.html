@@ -87,10 +87,10 @@ message SimState{
 }
 </code></pre>
 <p>I ended up changing some names too, as well as adding some more detail to
-the <code>BodyAttributes</code> message. Now talking about the solver client. Since
-the RPC contract between the server and client needs to be sync'd, and
-I also wanted these two programs to be as decoupled as possible, I ended
-up using PyBuilder to fetch the latest from the repository:</p>
+the <code>BodyAttributes</code> message. Since the RPC contract between the server
+and client needs to be sync'd, and I also wanted these two programs to be
+as decoupled as possible, I ended up using PyBuilder to fetch the latest
+from the repository:</p>
 <pre><code class="language-Python">@task
 def get_protobuf_service_def(project):
     protobuf_url = "https://raw.githubusercontent.com/NicoOhR/GV3B_simulation/refs/heads/main/proto/simulation.proto"
@@ -247,11 +247,13 @@ individuals which maximized the fitness function were the ones on the very
 edges of one anothers gravitational field. Their offspring, in turn, would
 be just exactly outside of the field, reseting the simulation.</p>
 <p>Some rethinking needs to be done on this, and I might just ditch the
-external simulation entierly, and instead write the physics solver myself
-in an entierly differentiable manner. Still, I'm not sure what the
-appropriate cost function would be, I flirted briefly with a Lyapunov
-based cost function, but by the very nature of the problem, there cannot
-be an equilibirium point.</p>
+external simulation, and instead write the physics solver myself in an
+entierly differentiable manner. Still, I'm not sure what the appropriate
+cost function would be, I flirted briefly with a Lyapunov based cost
+function, but by the very nature of the problem, there cannot be an
+equilibirium point. My running theory is I could probably modify the above
+genetic algorithm to train the neural network to find somewhat stable
+configurations.</p>
 <p>Until I figure out the finer points of dynamical systems, I choose to put
 this one on the back bench.</p>
 </div>

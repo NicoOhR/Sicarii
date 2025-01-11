@@ -17,7 +17,8 @@
     "url": "https://github.com/NicoOhR/Sicarii/issues"
   },
   "scripts": {
-  "build:css": "tailwindcss -i ./src/styles/input.css -o ./static/style.css"
+    "build:css": "tailwindcss -i ./src/styles/input.css -o ./static/style.css",
+    "watch:css": "tailwindcss -i ./src/styles/input.css -o ./static/style.css --watch"
   },
   "homepage": "https://github.com/NicoOhR/Sicarii#readme",
   "devDependencies": {

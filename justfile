@@ -6,7 +6,8 @@ run:
 
 serve:
   python3 -m http.server --directory static > /dev/null 2>&1 &
-  chromium --new-window http://localhost:8000
+  chromium --new-window http://localhost:8000 > /dev/null 2>&1 &
+  npm run watch:css
 
 gh-deploy:
   git add .

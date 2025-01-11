@@ -17,12 +17,11 @@
 
 <body class="min-h-screen pt-[10vh] bg-[#303030]">
   <main class="text-white max-w-[800px] mx-auto mt-[10vh]">
-    <div class="flex justify-between items-left mt-[-100px] pb-10">
-      <h1 class="font-baskervville text-7xl italic ">
+    <div class="flex items-left mt-[-100px] ">
+      <h1 class="font-baskervville text-7xl italic pb-10">
         Sicarii
       </h1>
-      <a href="./about/"
-        class="text-white transition-colors duration-150 hover:text-red-500 font-serif text-lg self-end">
+      <a href="./about/" class="text-white transition-colors duration-300 hover:text-red-500 font-serif text-lg">
         About
       </a>
 

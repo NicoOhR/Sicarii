@@ -658,6 +658,10 @@ video {
   justify-content: center;
 }
 
+.justify-between{
+  justify-content: space-between;
+}
+
 .justify-around{
   justify-content: space-around;
 }
@@ -674,6 +678,10 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+}
+
+.self-end{
+  align-self: flex-end;
 }
 
 .overflow-hidden{
@@ -738,10 +746,6 @@ video {
 
 .pb-10{
   padding-bottom: 2.5rem;
-}
-
-.pb-2{
-  padding-bottom: 0.5rem;
 }
 
 .pt-\[10vh\]{

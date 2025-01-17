@@ -806,11 +806,6 @@ video {
   color: rgb(128 0 32 / var(--tw-text-opacity, 1));
 }
 
-.text-gray-800{
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity, 1));
-}
-
 .text-white{
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
@@ -856,6 +851,11 @@ video {
 .first-letter\:text-\[\#800020\]::first-letter{
   --tw-text-opacity: 1;
   color: rgb(128 0 32 / var(--tw-text-opacity, 1));
+}
+
+.hover\:border-\[\#800020\]:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(128 0 32 / var(--tw-border-opacity, 1));
 }
 
 .hover\:text-red-500:hover{

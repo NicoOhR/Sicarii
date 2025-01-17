@@ -29,10 +29,10 @@
     </div>
     <section class="flex flex-col gap-5">
       {% for article in articles %}
-      <a href="{{ article.link }}" class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group">
+      <a href="{{ article.link }}"
+        class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group hover:border-[#800020]">
         <h2 class="text-xl font-semibold duration-150 ease-in-out group-hover:text-[#800020]">{{ article.title }}</h2>
         <p class="text-white group-hover:text-[#800020]">{{ article.subtitle }}</p>
-        <!-- Tapered Overlay -->
         <div
           class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform duration-150 ease-in-out group-hover:translate-y-0">
           <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">

@@ -721,6 +721,11 @@ video {
   background-color: rgb(113 113 113 / var(--tw-bg-opacity, 1));
 }
 
+.bg-\[\#bdbdbd\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(189 189 189 / var(--tw-bg-opacity, 1));
+}
+
 .fill-current{
   fill: currentColor;
 }
@@ -861,6 +866,11 @@ video {
 .first-letter\:text-7xl::first-letter{
   font-size: 4.5rem;
   line-height: 1;
+}
+
+.first-letter\:text-\[\#800000\]::first-letter{
+  --tw-text-opacity: 1;
+  color: rgb(128 0 0 / var(--tw-text-opacity, 1));
 }
 
 .first-letter\:text-\[\#800020\]::first-letter{

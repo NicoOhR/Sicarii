@@ -7,18 +7,17 @@
   <title>Sicarii</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Baskervville+SC&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Baskervville+SC&family=UnifrakturMaguntia&display=swap"
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville+SC&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=UnifrakturMaguntia&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="min-h-screen pt-[10vh] bg-[#303030]">
+<body class="min-h-screen pt-[10vh] bg-[#111111]">
   <main class="text-white max-w-[800px] mx-auto mt-[10vh]">
     <div class="flex justify-between items-left mt-[-100px] pb-10">
-      <h1 class="font-baskervville text-7xl italic ">
+      <h1 class="font-baskervville text-7xl text-[#800000] italic ">
         Sicarii
       </h1>
       <a href="./about/"
@@ -30,13 +29,15 @@
     <section class="flex flex-col gap-5">
       {% for article in articles %}
       <a href="{{ article.link }}"
-        class="relative block p-4 border-t border-b border-gray-200 overflow-hidden group hover:border-[#800020]">
-        <h2 class="text-xl font-semibold duration-150 ease-in-out group-hover:text-[#800020]">{{ article.title }}</h2>
-        <p class="text-white group-hover:text-[#800020]">{{ article.subtitle }}</p>
+        class="font-wittgenstein relative block p-4 border-t duration-500 border-b border-gray-200 overflow-hidden group hover:border-[#800000]">
+        <h2 class="text-xl font-wittgenstein font-semibold duration-500 ease-in-out group-hover:text-[#800000]">{{
+          article.title }}</h2>
+        <p class="text-white font-jetbrains group-hover:text-[#800000]">{{ article.subtitle }}</p>
+        <p class="text-white font-jetbrains group-hover:text-[#800000]">{{ article.date }}</p>
         <div
-          class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform duration-150 ease-in-out group-hover:translate-y-0">
+          class="absolute inset-0 w-full h-full transform -translate-y-full transition-transform transition-all duration-500 ease-in-out group-hover:translate-y-0">
           <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <polygon points="0,0 80,0 0,25" class="fill-current text-[#800020]" />
+            <polygon points="0,0 80,0 0,25" class="fill-current text-[#800000]" />
           </svg>
         </div>
       </a>

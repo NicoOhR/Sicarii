@@ -11,19 +11,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
   <link
     href="https://fonts.googleapis.com/css2?family=Baskervville+SC&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=UnifrakturMaguntia&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-
+  <link rel="stylesheet" href="../dracula.css">
   <link rel="stylesheet" href="../style.css">
   <style>
     code {
-      background-color: #dbdbdb;
-      color: #800020;
+      background-color: #282a36;
+      color: #50fa7b;
       padding: 0.1rem 0.2rem;
       border-radius: 0.25rem;
-      font-family: 'Fira Code', monospace;
+      font-family: 'Jetbrain Mono', monospace;
     }
   </style>
 
@@ -63,7 +62,7 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightBlock(block);
+        hljs.highlightAll();
       });
     });
   </script>

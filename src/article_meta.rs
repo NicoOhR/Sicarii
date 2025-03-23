@@ -17,11 +17,11 @@ pub fn get_articles() -> io::Result<Vec<structs::Article>> {
         if path.is_file() {
             if let Some(extension) = path.extension() {
                 if extension == "toml" {
-                    articles.push(read_toml(&fs::read_to_string(path)?))
+                    articles.push(read_toml(&fs::read_to_string(path)?));
                 }
             }
         }
     }
-
+    articles.sort();
     Ok(articles)
 }

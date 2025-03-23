@@ -1,4 +1,6 @@
 use askama::Template;
+use chrono::format::ParseError;
+use chrono::NaiveDate;
 use pulldown_cmark;
 use serde::Deserialize;
 use std::fs::File;
@@ -13,6 +15,38 @@ pub struct Article {
     pub content_path: String,
     pub link: String,
     pub date: String,
+}
+impl Ord for Article {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.partial_cmp(other).expect("Bad Parse Somewhere lmao")
+    }
+}
+
+impl PartialOrd for Article {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        let self_date = NaiveDate::parse_from_str(&self.date.trim(), "%Y-%m-%d").unwrap();
+        let other_date = NaiveDate::parse_from_str(&other.date.trim(), "%Y-%m-%d").unwrap();
+        if self.eq(other) {
+            Some(std::cmp::Ordering::Equal)
+        } else {
+            if self_date < other_date {
+                Some(std::cmp::Ordering::Less)
+            } else {
+                Some(std::cmp::Ordering::Greater)
+            }
+        }
+    }
+}
+
+impl Eq for Article {}
+
+impl PartialEq for Article {
+    fn eq(&self, other: &Self) -> bool {
+        //fix unsafe unwrap
+        let mut self_date = NaiveDate::parse_from_str(&self.date, "%Y-%m-%d").unwrap();
+        let mut other_date = NaiveDate::parse_from_str(&other.date, "%Y-%m-%d").unwrap();
+        self_date == other_date
+    }
 }
 
 impl Article {

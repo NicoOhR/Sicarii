@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoTeC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../dracula.css">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    code {
+      background-color: #282a36;
+      color: #50fa7b;
+      padding: 0.1rem 0.2rem;
+      border-radius: 0.25rem;
+      font-family: 'Jetbrain Mono', monospace;
+    }
+  </style>
+
+</head>
+
+<body class="min-h-screen pt-[10vh] bg-[#111111]">
+  <nav class="fixed top-0 left-0 z-50 w-full bg-[#303030] py-2">
+    <ul class="flex justify-around">
+      <li class="flex-1 text-center">
+        <a href="../"
+          class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Home</a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="max-w-[800px] mx-auto mt-[10vh] px-4">
+    <div class="text-center text-white mb-8">
+      <h1 class="font-garamond text-[2.5em] italic">NoTeC</h1>
+      <div class="flex justify-center gap-4 text-white">
+        <div class="author text-lg font-jetbrains">Nico OR</div>
+        <div class="date text-lg font-jetbrains">2024-09-29</div>
+      </div>
+    </div>
+
+    <article class="prose max-w-none">
+      <div
+        class="space-y-4 text-white first-letter:float-left text-[1.2em] first-letter:text-[#800000] first-letter:text-7xl first-letter:pr-4 font-wittgenstein">
+        <p>To start, FSAE (Formula: Student Automotive Engineer) is a worldwide
+competition aimed primarily at giving university students a competition to
+exercise and apply the skills which they learn in the classroom. The
+competition is aimed predominantly at mechanical engineering students, and
+in recent years with the advent of the EV competition, electrical
+engineering students. By way of demand, however, the FSAE chapter at UT
+Dallas, a school overfilled with Computer Science Majors, offers several
+large software and firmware projects. Here I focus on the project which
+I have spent the most time on, the Data Acquisition Device (colloquially,
+NoTeC, a joke I will explain later) and will hopefully circle back to the
+other projects later.</p>
+<p>The purpose of NoTeC is to sample different sensors through out the car,
+and in some way get it to the engineers. How we serve the data to the
+engineers has become increasingly more intricate and seamless over time.
+Originally, the DAQ saved to a USB drive in CSV form, then it saved it to
+an adjacent Raspberry Pi device, then the Raspberry Pi began sending and
+syncing the data to a MongoDB database that can be quarried. Live
+telemetry using Grafana is in the works, although there's some
+practicality issues with getting WiFi to the Raspberry Pi without breaking
+the rules of the competition.</p>
+<p>The DAQ itself is currently implemented on an STM32F4 chip, but I am
+currently migrating it to the STM32H7, on the basis of better performance.
+It's written with the heavy help ST's HAL and C++. The impetus towards
+using C++ is predominantly the ease of smart pointers, which allow me to
+more easily make the system modular and hardware independent (we'll get
+back to this). CMSIS-RTOS v2 is used for the threading.</p>
+<p>The project structure:</p>
+<pre><code>.
+├── Application
+│   ├── DataLogger
+│   ├── FileSystem
+│   ├── Mutex
+│   └── Relay
+├── Docs
+│   ├── data_logging
+│   ├── engine_control_unit
+│   ├── file_system
+│   ├── linear_potentiometer
+│   ├── peripheral_interfaces
+│   ├── _static
+│   └── stmicroelectronics
+├── Platform
+│   ├── Interfaces
+│   └── STM
+│       └── F4
+│           ├── CAN
+│           ├── GPIO
+│           └── I2C
+├── Sensor
+│   ├── Accelerometer
+│   ├── ECU
+│   │   └── PE3
+│   │       └── Frames
+│   ├── GyroScope
+│   └── LinearPotentiometer
+└── Tests
+    └── Src
+        ├── Application
+        └── Sensor
+            └── ECU
+                └── PE3
+</code></pre>
+<p>The project is split into five parts which are, in order of their
+proximity to "bare metal": Platform, Sensor, Application, and as auxiliary
+systems, Tests and Docs. In the platform layer, we abstract away some of
+the rougher edges of the HAL, making writing the actual application of the
+DAQ a little less error prone. This also benefits the application insofar
+as it decouples from the hardware. If I wanted to switch to an NXP chip
+instead, I would only have to re implement this layer, as the Application
+and Sensor layer uses the interfaces we make here.</p>
+<p>Here is an example of one of the interfaces, the GPIO interface:</p>
+<pre><code class="language-c++">
+class IGpio {
+public:
+	virtual ~IGpio() = default;
+
+	virtual bool Read() = 0;
+
+	virtual void Write(bool signal) = 0;
+
+	virtual bool ToggleDetected() = 0;
+};
+
+</code></pre>
+<p>And we implement the Write method like this</p>
+<pre><code class="language-c++">void GpioStmF4::Write(bool signal) {
+	GPIO_PinState pin_state;
+
+	if (signal) {
+		pin_state = GPIO_PIN_SET;
+	} else {
+		pin_state = GPIO_PIN_RESET;
+	}
+
+	HAL_GPIO_WritePin(port_, pin_, pin_state);
+}
+
+</code></pre>
+<p>With this we cut down on how verbose our code is, and reduce how likely
+a developer on the team is to misuse the (frankly dangerous) HAL.</p>
+<p>The next layer, Sensor, does exactly what it sounds like, this is where we
+create the sensor classes who interact with the interfaces we created in
+the Platform layer. There also exists abstract interfaces for sensors,
+hopefully making it easier to switch out the specific sensor used when we
+need to, however we haven't really had the opportunity to put this to the
+test as we haven't upgraded sensors in a long while.</p>
+<p>For example, here's the interface for the linear potentiometer, which
+reads the displacement of the suspension shocks.</p>
+<pre><code class="language-c++">class ILinearPotentiometer { public: virtual ~ILinearPotentiometer()
+= default;
+
+        virtual void DisplacementInches(float quantized_counts[]) = 0;
+        virtual void DisplacementMillimeters(float quantized_counts[]) = 0;
+};
+</code></pre>
+<p>Lastly is the Application layer, which handles the state of the device,
+our mutexes for multi-threading, and how we talk to the Raspberry Pi. This
+is the most "userspace" the program gets.</p>
+<p>The Tests folder has some preliminary unit tests made with gtest that are
+hooked up to our GitHub CI/CD pipeline, but as with other "it'd be nice to
+have" things in this project, I've yet to give it the time that it
+deserves. Similarly the Docs folder has some documentation generation with
+Phoenix, but I've yet to find the patience to annotate the existing code.</p>
+</div>
+    </article>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightAll();
+      });
+    });
+  </script>
+</body>
+
+</html>

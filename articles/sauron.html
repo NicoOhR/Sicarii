@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sauron</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../dracula.css">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    code {
+      background-color: #282a36;
+      color: #50fa7b;
+      padding: 0.1rem 0.2rem;
+      border-radius: 0.25rem;
+      font-family: 'Jetbrain Mono', monospace;
+    }
+  </style>
+
+</head>
+
+<body class="min-h-screen pt-[10vh] bg-[#111111]">
+  <nav class="fixed top-0 left-0 z-50 w-full bg-[#303030] py-2">
+    <ul class="flex justify-around">
+      <li class="flex-1 text-center">
+        <a href="../"
+          class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Home</a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="max-w-[800px] mx-auto mt-[10vh] px-4">
+    <div class="text-center text-white mb-8">
+      <h1 class="font-garamond text-[2.5em] italic">Sauron</h1>
+      <div class="flex justify-center gap-4 text-white">
+        <div class="author text-lg font-jetbrains">Nico OR</div>
+        <div class="date text-lg font-jetbrains">2024-09-13</div>
+      </div>
+    </div>
+
+    <article class="prose max-w-none">
+      <div
+        class="space-y-4 text-white first-letter:float-left text-[1.2em] first-letter:text-[#800000] first-letter:text-7xl first-letter:pr-4 font-wittgenstein">
+        <p>This will be a very brief overview of our 2024 HackUTD hackathon project.
+There were a couple of very interesting sponsor prompts, and I'm still
+a little sad we never got the chance to use Pinata, we ultimately went
+with PNC's prompt, to build tooling for observability and data lifetimes.
+Of course, the word "observability" and "lifetimes" immediately caused us
+to think of Kafka. So, for our project, we decided to build a platform to
+model and display our end to end life cycle of our data cleanly and
+efficiently. To that end, with only one all-nighter pulled. We produced
+<code>Sauron</code> (a very clever name I came up with my self, thank you very
+much). <a href="https://www.youtube.com/watch?v=SM_0w7rKo2c">Here is a link of
+a demo</a> that due to time
+constraints we had to make before we could fully hook it up the Confluents
+instance that we were simulating our ETL on. <a href="git@github.com:NicoOhR/sauron.git">And here is the GitHub repo</a></p>
+<p>Briefly, we used Terraform to spin up a Confluents instance, as well as
+several small python cli programs (orchestrated over k8) which acted as
+modular consumer-producers to simulate micro-services in our pipeline. We
+utilized some minimal (and very under documented) OpenTelemetry python
+instrumentation, written directly into the service, which hooked up to
+a Jaeger instance (also deployed on k8). Finally, we somehow (I was
+asleep) relayed the Jaeger data into our front end, which you could see in
+the video.</p>
+<p>Overall it was a very good, although exhausting hackathon, and we produced
+a very interesting project. I learned a lot, and was definitely the most
+hands on experience that I've had with Kafka.</p>
+</div>
+    </article>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightAll();
+      });
+    });
+  </script>
+</body>
+
+</html>

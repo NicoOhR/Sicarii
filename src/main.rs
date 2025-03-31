@@ -8,12 +8,15 @@ use structs::HomeTemplate;
 mod article_meta;
 mod structs;
 
-fn render_to_file(content: String, path: &String) -> io::Result<()> {
-    let mut content_path = PathBuf::from("./static/");
+fn render_to_file(content: String, path: &str) -> io::Result<()> {
+    println!("Created Content Path");
+    let mut content_path = PathBuf::from("./site/");
     content_path.push(path);
-
     println!("{content_path:?}");
 
+    if let Some(parent) = content_path.parent() {
+        create_dir_all(parent)?;
+    }
     let mut file = File::create(content_path)?;
     file.write_all(content.as_bytes())?;
 
@@ -31,6 +34,7 @@ fn main() -> io::Result<()> {
     println!("rendered main");
     for article in articles.iter() {
         println!("trying to render articles");
+        println!("{}", &article.link);
         render_to_file(article.create_template()?.render().unwrap(), &article.link)?;
     }
     Ok(())

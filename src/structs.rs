@@ -47,7 +47,7 @@ impl PartialEq for Article {
 
 impl Article {
     pub fn create_template(&self) -> io::Result<EditorialTemplate> {
-        let mut static_path = PathBuf::from("static/");
+        let mut static_path = PathBuf::from("./");
         static_path.push(&self.content_path);
         let mut file = File::open(static_path)?;
         let mut contents = String::new();

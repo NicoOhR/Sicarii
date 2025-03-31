@@ -9,7 +9,7 @@ fn read_toml(s: &str) -> structs::Article {
 }
 
 pub fn get_articles() -> io::Result<Vec<structs::Article>> {
-    let dir_path = "static/";
+    let dir_path = "./assets/";
     let mut articles: Vec<structs::Article> = Vec::new();
 
     for entry in WalkDir::new(dir_path).into_iter().filter_map(|e| e.ok()) {

@@ -1,2 +1,13 @@
-/target
-/node_modules
+target/
+
+node_modules/
+
+# Tailwind CSS build output
+dist/
+static/app.css
+
+# Miscellaneous
+coverage/
+.DS_Store
+.env
+

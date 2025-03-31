@@ -13,9 +13,9 @@ gh-deploy:
   git add .
   git commit -m "content update"
   git push
-  git subtree push --prefix static origin gh-pages
+  git subtree push --prefix site origin gh-pages
 
 #sometimes subtree decides local is behind remote
 #this force pushes local to remote with subtree
 gh-force-push:
-  git push origin `git subtree split --prefix static main`:gh-pages --force
+  git push origin `git subtree split --prefix site main`:gh-pages --force

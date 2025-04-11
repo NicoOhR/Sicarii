@@ -1,50 +1,55 @@
+<!-- post.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Side Quest Sicarii</title>
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+
+  <!-- Syntax highlighting theme -->
   <link rel="stylesheet" href="../dracula.css">
+  <!-- Your custom styles -->
   <link rel="stylesheet" href="../style.css">
+
   <style>
+    /* inline code styling (from your <style> block) */
     code {
       background-color: #282a36;
       color: #50fa7b;
       padding: 0.1rem 0.2rem;
       border-radius: 0.25rem;
-      font-family: 'Jetbrain Mono', monospace;
+      font-family: 'JetBrains Mono', monospace;
     }
   </style>
-
 </head>
+<body>
 
-<body class="min-h-screen pt-[5vh] bg-[#111111]">
-  <nav class="flex justify-around">
-    <ul class="flex justify-around">
-      <li class="flex-1 text-center">
-        <a href="../"
-          class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Home</a>
+  <nav class="nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="../" class="nav-title divider-link">Sicarii</a>
       </li>
     </ul>
   </nav>
 
-  <main class="max-w-[800px] mx-auto mt-[10vh] px-4">
-    <div class="text-center text-white mb-8">
-      <h1 class="font-garamond text-[2.5em] italic">Side Quest Sicarii</h1>
-      <div class="flex justify-center gap-4 text-white">
-        <div class="author text-lg font-jetbrains">Nico OR</div>
-        <div class="date text-lg font-jetbrains">2024-09-13</div>
+  <main class="post-container">
+    <div class="post-header">
+      <h1 class="post-title">Side Quest Sicarii</h1>
+      <div class="post-meta">
+        <div class="author">Nico OR</div>
+        <div class="date">2024-09-13</div>
       </div>
     </div>
 
-    <article class="prose max-w-none">
-      <div
-        class="space-y-4 text-white first-letter:float-left text-[1.2em] first-letter:text-[#800000] first-letter:text-7xl first-letter:pr-4 font-wittgenstein">
-        <p>I (generally) don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks.</p>
+    <article class="post-content">
+      <p>I (generally) don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks.</p>
 <p>To my delight, in the last couple of years a sort of <em>post-modern</em> web app tech stack has emerged. Using HTMX and some templating program (typically via a library in your language of choice), you can avoid the "web" part of "web app development" almost entierly. This site, which is not yet a web app, is an experiment in building a website "in the wrong way".</p>
 <p>I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>
 <p>Rendering to file happpens like so:</p>
@@ -91,18 +96,15 @@ pub fn get_articles() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
 }
 </code></pre>
 <p>So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it. For the templating I chose to use Askama and, and have recently switched to Tailwind for CSS and styling.</p>
-</div>
+
     </article>
   </main>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
   <script>
+    // once the DOM is ready, highlight all <pre><code> blocks
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightAll();
-      });
+      hljs.highlightAll();
     });
   </script>
 </body>
-
 </html>

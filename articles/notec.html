@@ -1,50 +1,55 @@
+<!-- post.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NoTeC</title>
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+
+  <!-- Syntax highlighting theme -->
   <link rel="stylesheet" href="../dracula.css">
+  <!-- Your custom styles -->
   <link rel="stylesheet" href="../style.css">
+
   <style>
+    /* inline code styling (from your <style> block) */
     code {
       background-color: #282a36;
       color: #50fa7b;
       padding: 0.1rem 0.2rem;
       border-radius: 0.25rem;
-      font-family: 'Jetbrain Mono', monospace;
+      font-family: 'JetBrains Mono', monospace;
     }
   </style>
-
 </head>
+<body>
 
-<body class="min-h-screen pt-[5vh] bg-[#111111]">
-  <nav class="flex justify-around">
-    <ul class="flex justify-around">
-      <li class="flex-1 text-center">
-        <a href="../"
-          class="text-white block px-4 py-2 transition-colors duration-300 hover:text-red-500 font-serif text-lg">Home</a>
+  <nav class="nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="../" class="nav-title divider-link">Sicarii</a>
       </li>
     </ul>
   </nav>
 
-  <main class="max-w-[800px] mx-auto mt-[10vh] px-4">
-    <div class="text-center text-white mb-8">
-      <h1 class="font-garamond text-[2.5em] italic">NoTeC</h1>
-      <div class="flex justify-center gap-4 text-white">
-        <div class="author text-lg font-jetbrains">Nico OR</div>
-        <div class="date text-lg font-jetbrains">2024-09-29</div>
+  <main class="post-container">
+    <div class="post-header">
+      <h1 class="post-title">NoTeC</h1>
+      <div class="post-meta">
+        <div class="author">Nico OR</div>
+        <div class="date">2024-09-29</div>
       </div>
     </div>
 
-    <article class="prose max-w-none">
-      <div
-        class="space-y-4 text-white first-letter:float-left text-[1.2em] first-letter:text-[#800000] first-letter:text-7xl first-letter:pr-4 font-wittgenstein">
-        <p>To start, FSAE (Formula: Student Automotive Engineer) is a worldwide
+    <article class="post-content">
+      <p>To start, FSAE (Formula: Student Automotive Engineer) is a worldwide
 competition aimed primarily at giving university students a competition to
 exercise and apply the skills which they learn in the classroom. The
 competition is aimed predominantly at mechanical engineering students, and
@@ -167,18 +172,15 @@ hooked up to our GitHub CI/CD pipeline, but as with other "it'd be nice to
 have" things in this project, I've yet to give it the time that it
 deserves. Similarly the Docs folder has some documentation generation with
 Phoenix, but I've yet to find the patience to annotate the existing code.</p>
-</div>
+
     </article>
   </main>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
   <script>
+    // once the DOM is ready, highlight all <pre><code> blocks
     document.addEventListener("DOMContentLoaded", () => {
-      document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightAll();
-      });
+      hljs.highlightAll();
     });
   </script>
 </body>
-
 </html>

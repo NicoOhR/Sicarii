@@ -1,6 +1,21 @@
 /* style.css */
 
 /* —— Reset & base —— */
+a {
+  text-decoration: underline;               /* always underlined */
+  color: inherit;                           /* no color change on visited */
+  transition: color 100ms;      /* animate color over 0.3s on hover :contentReference[oaicite:0]{index=0} */
+}
+
+/* —— Keep the same color after visited —— */
+a:visited {
+  color: inherit;             /* keeps visited links from turning purple :contentReference[oaicite:1]{index=1} */
+}
+
+a:hover,
+a:visited:hover {                    /* ensures visited links also turn maroon */
+  color: #800000;                     /* your maroon hover color */
+}
 * {
   box-sizing: border-box;
   margin: 0;

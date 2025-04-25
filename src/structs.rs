@@ -1,12 +1,12 @@
 use askama::Template;
 use chrono::format::ParseError;
 use chrono::NaiveDate;
-use pulldown_cmark;
+use pandoc::{InputFormat, OutputKind, Pandoc, PandocOption, PandocOutput};
 use serde::Deserialize;
+use std::fs;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::PathBuf;
-
 #[derive(Deserialize)]
 pub struct Article {
     pub title: String,
@@ -49,26 +49,25 @@ impl Article {
     pub fn create_template(&self) -> io::Result<EditorialTemplate> {
         let mut static_path = PathBuf::from("./");
         static_path.push(&self.content_path);
-        let mut file = File::open(static_path)?;
-        let mut contents = String::new();
-        file.read_to_string(&mut contents)?;
 
-        //github style MD options
-        let mut options = pulldown_cmark::Options::empty();
-        options.insert(pulldown_cmark::Options::ENABLE_STRIKETHROUGH);
-        options.insert(pulldown_cmark::Options::ENABLE_TASKLISTS);
-        options.insert(pulldown_cmark::Options::ENABLE_TABLES);
+        let pandoc = pandoc::new();
+            .add_input(&static_path)
+            .add_option(PandocOption::MathJax(None))
+            .set_output(OutputKind::Pipe);
 
-        //parser-per-article seems wasteful, should probably move to it's own struct
-        let md_parser = pulldown_cmark::Parser::new_ext(&contents, options);
-        let mut html_output = String::new();
-        pulldown_cmark::html::push_html(&mut html_output, md_parser);
+        let output = pandoc.execute().unwrap();
+
+        let html: String = match output {
+            PandocOutput::ToBuffer(s) => s,
+            PandocOutput::ToBufferRaw(bytes) => String::from_utf8(bytes).unwrap(),
+            PandocOutput::ToFile(path) => fs::read_to_string(path)?,
+        };
 
         let template = EditorialTemplate {
             title: self.title.clone(),
             author: self.author.clone(),
             date: self.date.to_string(),
-            content: html_output,
+            content: html,
         };
 
         Ok(template)

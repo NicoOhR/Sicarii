@@ -1,13 +1,9 @@
-alias r := run
-
 run:
   cargo run
-  npm run build:css
 
 serve:
-  python3 -m http.server --directory static > /dev/null 2>&1 &
-  chromium --new-window http://localhost:8000 > /dev/null 2>&1 &
-  npm run watch:css
+  python3 -m http.server --directory site > /dev/null 2>&1 &
+  firefox --new-tab --url http://localhost:8000 > /dev/null 2>&1 &
 
 gh-deploy:
   git add .

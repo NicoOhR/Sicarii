@@ -1,10 +1,9 @@
 
 - [x] Move to tailwind
 - [x] Figure out better markdownd rendering
-- [ ] RSS
-- [ ] HTMX soon(tm)
-- [ ] Project/Article Tags
+- [x] LaTeX
 - [ ] Sort by feature
-- [ ] One pager
-
-tech debt up the ass
+    - [x] Date citation
+- [ ] sidebar citations
+- [ ] RSS
+- [ ] Project/Article Tags

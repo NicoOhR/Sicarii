@@ -44,53 +44,75 @@
     </div>
 
     <article class="post-content">
-      <p>I (generally) don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks.</p>
-<p>To my delight, in the last couple of years a sort of <em>post-modern</em> web app tech stack has emerged. Using HTMX and some templating program (typically via a library in your language of choice), you can avoid the "web" part of "web app development" almost entierly. This site, which is not yet a web app, is an experiment in building a website "in the wrong way".</p>
-<p>I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>
+      <p>I (generally) don’t like web development. Tragically, the most
+effective way to show anything in tech will almost always be, web
+development. It’s mostly the convinience factor, but there’s something
+very appealing about easily distributing your project in an interactive
+and responsive manner, which happens to be the thesis (in my mind) of
+web apps. Web development framework’s have always been unwieldly to me,
+and I just struggle to get interested in the semantics of
+frameworks.</p>
+<p>To my delight, in the last couple of years a sort of
+<em>post-modern</em> web app tech stack has emerged. Using HTMX and some
+templating program (typically via a library in your language of choice),
+you can avoid the “web” part of “web app development” almost entierly.
+This site, which is not yet a web app, is an experiment in building a
+website “in the wrong way”.</p>
+<p>I decided to use Rust (because I use Rust for everything at this
+point), with the Askama templating library.</p>
 <p>Rendering to file happpens like so:</p>
-<pre><code class="language-rust">fn render_to_file(content: String, path: &amp;String) -&gt; io::Result&lt;()&gt; {
-    let mut content_path = PathBuf::from("./static/");
-    content_path.push(path);
-
-    let mut file = File::create(content_path)?;
-    file.write_all(content.as_bytes())?;
-
-    Ok(())
-}
-
-</code></pre>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> render_to_file(content<span class="op">:</span> <span class="dt">String</span><span class="op">,</span> path<span class="op">:</span> <span class="op">&amp;</span><span class="dt">String</span>) <span class="op">-&gt;</span> <span class="pp">io::</span><span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> content_path <span class="op">=</span> <span class="dt">PathBuf</span><span class="pp">::</span>from(<span class="st">&quot;./static/&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    content_path<span class="op">.</span>push(path)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> file <span class="op">=</span> <span class="pp">File::</span>create(content_path)<span class="op">?;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    file<span class="op">.</span>write_all(content<span class="op">.</span>as_bytes())<span class="op">?;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(())</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>This function is used in main</p>
-<pre><code class="language-rust">render_to_file(homepage.render().unwrap(), &amp;String::from("index.html"))?;
-
-for article in articles.iter() {
-    render_to_file(article.create_template()?.render().unwrap(), &amp;article.link)?;
-}
-</code></pre>
-<p>Each article is a struct made of the meta data of the article. Originally I had a function returning a long list of the article structs, and it worked... fine? I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.</p>
-<pre><code class="language-rust">fn read_toml(s: &amp;str) -&gt; structs::Article {
-    let article: structs::Article = toml::from_str(s).unwrap();
-    article
-}
-
-pub fn get_articles() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
-    let dir_path = "static/";
-    let mut articles: Vec&lt;structs::Article&gt; = Vec::new();
-
-    for entry in WalkDir::new(dir_path).into_iter().filter_map(|e| e.ok()) {
-        let path = entry.path();
-        if path.is_file() {
-            if let Some(extension) = path.extension() {
-                if extension == "toml" {
-                    articles.push(read_toml(&amp;fs::read_to_string(path)?))
-                }
-            }
-        }
-    }
-
-    Ok(articles)
-}
-</code></pre>
-<p>So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it. For the templating I chose to use Askama and, and have recently switched to Tailwind for CSS and styling.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>render_to_file(homepage<span class="op">.</span>render()<span class="op">.</span>unwrap()<span class="op">,</span> <span class="op">&amp;</span><span class="dt">String</span><span class="pp">::</span>from(<span class="st">&quot;index.html&quot;</span>))<span class="op">?;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> article <span class="kw">in</span> articles<span class="op">.</span>iter() <span class="op">{</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    render_to_file(article<span class="op">.</span>create_template()<span class="op">?.</span>render()<span class="op">.</span>unwrap()<span class="op">,</span> <span class="op">&amp;</span>article<span class="op">.</span>link)<span class="op">?;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Each article is a struct made of the meta data of the article.
+Originally I had a function returning a long list of the article
+structs, and it worked… fine? I wanted to move the information on an
+article a little closer to the article itself so I switched to a TOML
+file in the same directory as the markdown file.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> read_toml(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">-&gt;</span> <span class="pp">structs::</span>Article <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> article<span class="op">:</span> <span class="pp">structs::</span>Article <span class="op">=</span> <span class="pp">toml::</span>from_str(s)<span class="op">.</span>unwrap()<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    article</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> get_articles() <span class="op">-&gt;</span> <span class="pp">io::</span><span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="pp">structs::</span>Article<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> dir_path <span class="op">=</span> <span class="st">&quot;static/&quot;</span><span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> articles<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="pp">structs::</span>Article<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Vec</span><span class="pp">::</span>new()<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> entry <span class="kw">in</span> <span class="pp">WalkDir::</span>new(dir_path)<span class="op">.</span>into_iter()<span class="op">.</span>filter_map(<span class="op">|</span>e<span class="op">|</span> e<span class="op">.</span>ok()) <span class="op">{</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> path <span class="op">=</span> entry<span class="op">.</span>path()<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> path<span class="op">.</span>is_file() <span class="op">{</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(extension) <span class="op">=</span> path<span class="op">.</span>extension() <span class="op">{</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> extension <span class="op">==</span> <span class="st">&quot;toml&quot;</span> <span class="op">{</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                    articles<span class="op">.</span>push(read_toml(<span class="op">&amp;</span><span class="pp">fs::</span>read_to_string(path)<span class="op">?</span>))</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(articles)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>So far so simple, not too bad for about a weekend of hacking worths
+of work. The motivation for all of this is that this lends itself very
+easily to extending it self to becoming anything it needs be. Very
+quickly Sicarii can be made into a webserver, orchestrated with other
+contained programs to display and serve whatever is needed of it. For
+the templating I chose to use Askama and, and have recently switched to
+Tailwind for CSS and styling.</p>
 
     </article>
   </main>
@@ -101,6 +123,15 @@ pub fn get_articles() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
       hljs.highlightAll();
     });
   </script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      }
+    });
+  </script>
+
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </body>

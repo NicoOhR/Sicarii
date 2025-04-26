@@ -50,7 +50,9 @@ impl Article {
         let mut static_path = PathBuf::from("./");
         static_path.push(&self.content_path);
 
-        let pandoc = pandoc::new();
+        let mut pandoc = pandoc::new();
+
+        pandoc
             .add_input(&static_path)
             .add_option(PandocOption::MathJax(None))
             .set_output(OutputKind::Pipe);

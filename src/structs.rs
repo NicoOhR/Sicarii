@@ -7,6 +7,7 @@ use std::fs;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::PathBuf;
+
 #[derive(Deserialize)]
 pub struct Article {
     pub title: String,

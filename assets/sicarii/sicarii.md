@@ -1,45 +1,12 @@
+I always struggled with web development which for a software-guy (tm) is a bit of a personal tragedy. I have a hard time getting interested in the semantics and philosophies of different web framework, why are there so many ways to interact with the DOM? Why is the website thirsty? Still, without a personal website, what am I supposed to link to on linkedin?
 
-I (generally) don't like web development. Tragically, the most effective way to show anything in tech will almost always be, web development. It's mostly the convinience factor, but there's something very appealing about easily distributing your project in an interactive and responsive manner, which happens to be the thesis (in my mind) of web apps. Web development framework's have always been unwieldly to me, and I just struggle to get interested in the semantics of frameworks. 
+In a fit of "not made here" syndrome I figured that, all an SSG does is translate one markup language to another and push it into plain text templates, I might as well do it myself. I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library. 
 
-To my delight, in the last couple of years a sort of *post-modern* web app tech stack has emerged. Using HTMX and some templating program (typically via a library in your language of choice), you can avoid the "web" part of "web app development" almost entierly. This site, which is not yet a web app, is an experiment in building a website "in the wrong way".
-
-I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library. 
-
-Rendering to file happpens like so:
-
-```rust 
-fn render_to_file(content: String, path: &String) -> io::Result<()> {
-    let mut content_path = PathBuf::from("./static/");
-    content_path.push(path);
-
-    let mut file = File::create(content_path)?;
-    file.write_all(content.as_bytes())?;
-
-    Ok(())
-}
-
-```
-
-This function is used in main
+Each article is kept in its own directory with a markdown file with the contents of the article and a toml file with the metadata of the article, as well as and any other assets which it need to include.
 
 ```rust
-render_to_file(homepage.render().unwrap(), &String::from("index.html"))?;
-
-for article in articles.iter() {
-    render_to_file(article.create_template()?.render().unwrap(), &article.link)?;
-}
-```
-
-Each article is a struct made of the meta data of the article. Originally I had a function returning a long list of the article structs, and it worked... fine? I wanted to move the information on an article a little closer to the article itself so I switched to a TOML file in the same directory as the markdown file.
-
-```rust
-fn read_toml(s: &str) -> structs::Article {
-    let article: structs::Article = toml::from_str(s).unwrap();
-    article
-}
-
 pub fn get_articles() -> io::Result<Vec<structs::Article>> {
-    let dir_path = "static/";
+    let dir_path = "./assets/";
     let mut articles: Vec<structs::Article> = Vec::new();
 
     for entry in WalkDir::new(dir_path).into_iter().filter_map(|e| e.ok()) {
@@ -47,14 +14,34 @@ pub fn get_articles() -> io::Result<Vec<structs::Article>> {
         if path.is_file() {
             if let Some(extension) = path.extension() {
                 if extension == "toml" {
-                    articles.push(read_toml(&fs::read_to_string(path)?))
+                    articles.push(read_toml(&fs::read_to_string(path)?));
                 }
             }
         }
     }
-
+    articles.sort();
     Ok(articles)
 }
 ```
+Unsurpisingly, the ```Article``` struct is mostly strings with a ```NaiveDate``` field, from which the ```Ord``` trait is implemented so the articles are rendered to the final site in chronological order. After all the metadata is in a neat and organized array, the articles can be written into a file directly:
 
-So far so simple, not too bad for about a weekend of hacking worths of work. The motivation for all of this is that this lends itself very easily to extending it self to becoming anything it needs be. Very quickly Sicarii can be made into a webserver, orchestrated with other contained programs to display and serve whatever is needed of it. For the templating I chose to use Askama and, and have recently switched to Tailwind for CSS and styling.
+```rust 
+fn render_to_file(content: String, path: &str) -> io::Result<()> {
+    println!("Created Content Path");
+    let mut content_path = PathBuf::from("./site/");
+    content_path.push(path);
+    println!("{content_path:?}");
+
+    if let Some(parent) = content_path.parent() {
+        create_dir_all(parent)?;
+    }
+    let mut file = File::create(content_path)?;
+    file.write_all(content.as_bytes())?;
+
+    Ok(())
+}
+```
+
+The markdown-to-html work is done by Pandoc, both because I already have all of the haskell dependencies on my machine, and it also handles $\rm\LaTeX$ best out of any rust markdown parsers I've seen. Inevitably I think I will need to make my own parser, since I keep thinking of new ways to make the site even more pretentious looking, and github-style markdown is becoming too limiting.
+
+

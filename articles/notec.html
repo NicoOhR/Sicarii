@@ -10,19 +10,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../dracula.css">
   <link rel="stylesheet" href="../style.css">
 
-  <style>
-    /* inline code styling (from your <style> block) */
-    code {
-      background-color: #282a36;
-      color: #50fa7b;
-      padding: 0.1rem 0.2rem;
-      border-radius: 0.25rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-  </style>
 </head>
 <body>
 
@@ -116,31 +105,31 @@ switch to an NXP chip instead, I would only have to re implement this
 layer, as the Application and Sensor layer uses the interfaces we make
 here.</p>
 <p>Here is an example of one of the interfaces, the GPIO interface:</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> IGpio <span class="op">{</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span><span class="op">:</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">virtual</span> <span class="op">~</span>IGpio<span class="op">()</span> <span class="op">=</span> <span class="cf">default</span><span class="op">;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">virtual</span> <span class="dt">bool</span> Read<span class="op">()</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">virtual</span> <span class="dt">void</span> Write<span class="op">(</span><span class="dt">bool</span> signal<span class="op">)</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">virtual</span> <span class="dt">bool</span> ToggleDetected<span class="op">()</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<pre class="cpp"><code>
+class IGpio {
+public:
+    virtual ~IGpio() = default;
+
+    virtual bool Read() = 0;
+
+    virtual void Write(bool signal) = 0;
+
+    virtual bool ToggleDetected() = 0;
+};
+</code></pre>
 <p>And we implement the Write method like this</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> GpioStmF4<span class="op">::</span>Write<span class="op">(</span><span class="dt">bool</span> signal<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    GPIO_PinState pin_state<span class="op">;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>signal<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        pin_state <span class="op">=</span> GPIO_PIN_SET<span class="op">;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        pin_state <span class="op">=</span> GPIO_PIN_RESET<span class="op">;</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    HAL_GPIO_WritePin<span class="op">(</span><span class="va">port_</span><span class="op">,</span> <span class="va">pin_</span><span class="op">,</span> pin_state<span class="op">);</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<pre class="cpp"><code>void GpioStmF4::Write(bool signal) {
+    GPIO_PinState pin_state;
+
+    if (signal) {
+        pin_state = GPIO_PIN_SET;
+    } else {
+        pin_state = GPIO_PIN_RESET;
+    }
+
+    HAL_GPIO_WritePin(port_, pin_, pin_state);
+}
+</code></pre>
 <p>With this we cut down on how verbose our code is, and reduce how
 likely a developer on the team is to misuse the (frankly dangerous)
 HAL.</p>
@@ -152,13 +141,12 @@ used when we need to, however we haven’t really had the opportunity to
 put this to the test as we haven’t upgraded sensors in a long while.</p>
 <p>For example, here’s the interface for the linear potentiometer, which
 reads the displacement of the suspension shocks.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ILinearPotentiometer <span class="op">{</span> <span class="kw">public</span><span class="op">:</span> <span class="kw">virtual</span> <span class="op">~</span>ILinearPotentiometer<span class="op">()</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">=</span> <span class="cf">default</span><span class="op">;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="kw">virtual</span> <span class="dt">void</span> DisplacementInches<span class="op">(</span><span class="dt">float</span> quantized_counts<span class="op">[])</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">virtual</span> <span class="dt">void</span> DisplacementMillimeters<span class="op">(</span><span class="dt">float</span> quantized_counts<span class="op">[])</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<pre class="cpp"><code>class ILinearPotentiometer { public: virtual ~ILinearPotentiometer()
+= default;
+
+        virtual void DisplacementInches(float quantized_counts[]) = 0;
+        virtual void DisplacementMillimeters(float quantized_counts[]) = 0;
+};</code></pre>
 <p>Lastly is the Application layer, which handles the state of the
 device, our mutexes for multi-threading, and how we talk to the
 Raspberry Pi. This is the most “userspace” the program gets.</p>
@@ -171,13 +159,6 @@ code.</p>
 
     </article>
   </main>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-  <script>
-    // once the DOM is ready, highlight all <pre><code> blocks
-    document.addEventListener("DOMContentLoaded", () => {
-      hljs.highlightAll();
-    });
-  </script>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {

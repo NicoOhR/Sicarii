@@ -49,7 +49,7 @@ pub fn gravitational_force(
 Briefly, I added vectors to show more obviously the velocities of the
 bodies during the simulation.
 
-```rust 
+```Rust 
 pub fn setup_vectors(mut commands: Commands, query_bodies: Query<&Transform>) {
     for _ in query_bodies.iter() {
         let line = shapes::Line(Vec2::ZERO, Vec2::new(0.0, 0.0));
@@ -79,7 +79,7 @@ current state of the simulation. The ```SimState``` message is simply an
 array of ```BodyAttributes```, values necessary to make the calculations
 for the simulation.
 
-```c++
+```C++
 syntax = "proto3";
 
 package simulation;
@@ -122,7 +122,7 @@ and get the velocity and position of our bodies.
 The client on the reciving end of the gRPC contract is implemented in
 a seperate python script.
 
-```python
+```Python
 def set_configuration(bodies, stub):
     """
     Calls the SetConfiguration RPC to set the simulation configuration.

@@ -1,5 +1,5 @@
-title = "Side Quest Sicarii"
-subtitle = "A write up of doing front end the wrong way" 
+title = "Sicarii"
+subtitle = "Custom SSG, done probably the wrong way" 
 author = "Nico OR"
 content_path = "assets/sicarii/sicarii.md"
 link = "articles/sicarii.html"

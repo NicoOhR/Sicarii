@@ -4,25 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Side Quest Sicarii</title>
+  <title>Sicarii</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../dracula.css">
   <link rel="stylesheet" href="../style.css">
 
-  <style>
-    /* inline code styling (from your <style> block) */
-    code {
-      background-color: #282a36;
-      color: #50fa7b;
-      padding: 0.1rem 0.2rem;
-      border-radius: 0.25rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-  </style>
 </head>
 <body>
 
@@ -36,7 +25,7 @@
 
   <main class="post-container">
     <div class="post-header">
-      <h1 class="post-title">Side Quest Sicarii</h1>
+      <h1 class="post-title">Sicarii</h1>
       <div class="post-meta">
         <div class="author">Nico OR</div>
         <div class="date">2024-09-13</div>
@@ -58,44 +47,42 @@ library.</p>
 <p>Each article is kept in its own directory with a markdown file with
 the contents of the article and a toml file with the metadata of the
 article, as well as and any other assets which it need to include.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> get_articles() <span class="op">-&gt;</span> <span class="pp">io::</span><span class="dt">Result</span><span class="op">&lt;</span><span class="dt">Vec</span><span class="op">&lt;</span><span class="pp">structs::</span>Article<span class="op">&gt;&gt;</span> <span class="op">{</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> dir_path <span class="op">=</span> <span class="st">&quot;./assets/&quot;</span><span class="op">;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> articles<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="pp">structs::</span>Article<span class="op">&gt;</span> <span class="op">=</span> <span class="dt">Vec</span><span class="pp">::</span>new()<span class="op">;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> entry <span class="kw">in</span> <span class="pp">WalkDir::</span>new(dir_path)<span class="op">.</span>into_iter()<span class="op">.</span>filter_map(<span class="op">|</span>e<span class="op">|</span> e<span class="op">.</span>ok()) <span class="op">{</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> path <span class="op">=</span> entry<span class="op">.</span>path()<span class="op">;</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> path<span class="op">.</span>is_file() <span class="op">{</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(extension) <span class="op">=</span> path<span class="op">.</span>extension() <span class="op">{</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> extension <span class="op">==</span> <span class="st">&quot;toml&quot;</span> <span class="op">{</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                    articles<span class="op">.</span>push(read_toml(<span class="op">&amp;</span><span class="pp">fs::</span>read_to_string(path)<span class="op">?</span>))<span class="op">;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    articles<span class="op">.</span>sort()<span class="op">;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(articles)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<pre class="rust"><code>pub fn get_articles() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
+    let dir_path = &quot;./assets/&quot;;
+    let mut articles: Vec&lt;structs::Article&gt; = Vec::new();
+
+    for entry in WalkDir::new(dir_path).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        if path.is_file() {
+            if let Some(extension) = path.extension() {
+                if extension == &quot;toml&quot; {
+                    articles.push(read_toml(&amp;fs::read_to_string(path)?));
+                }
+            }
+        }
+    }
+    articles.sort();
+    Ok(articles)
+}</code></pre>
 <p>Unsurpisingly, the <code>Article</code> struct is mostly strings with
 a <code>NaiveDate</code> field, from which the <code>Ord</code> trait is
 implemented so the articles are rendered to the final site in
 chronological order. After all the metadata is in a neat and organized
 array, the articles can be written into a file directly:</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> render_to_file(content<span class="op">:</span> <span class="dt">String</span><span class="op">,</span> path<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">-&gt;</span> <span class="pp">io::</span><span class="dt">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> <span class="op">{</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="pp">println!</span>(<span class="st">&quot;Created Content Path&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> content_path <span class="op">=</span> <span class="dt">PathBuf</span><span class="pp">::</span>from(<span class="st">&quot;./site/&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    content_path<span class="op">.</span>push(path)<span class="op">;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">println!</span>(<span class="st">&quot;{content_path:?}&quot;</span>)<span class="op">;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">let</span> <span class="cn">Some</span>(parent) <span class="op">=</span> content_path<span class="op">.</span>parent() <span class="op">{</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        create_dir_all(parent)<span class="op">?;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> <span class="kw">mut</span> file <span class="op">=</span> <span class="pp">File::</span>create(content_path)<span class="op">?;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    file<span class="op">.</span>write_all(content<span class="op">.</span>as_bytes())<span class="op">?;</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="cn">Ok</span>(())</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<pre class="rust"><code>fn render_to_file(content: String, path: &amp;str) -&gt; io::Result&lt;()&gt; {
+    println!(&quot;Created Content Path&quot;);
+    let mut content_path = PathBuf::from(&quot;./site/&quot;);
+    content_path.push(path);
+    println!(&quot;{content_path:?}&quot;);
+
+    if let Some(parent) = content_path.parent() {
+        create_dir_all(parent)?;
+    }
+    let mut file = File::create(content_path)?;
+    file.write_all(content.as_bytes())?;
+
+    Ok(())
+}</code></pre>
 <p>The markdown-to-html work is done by Pandoc, both because I already
 have all of the haskell dependencies on my machine, and it also handles
 <span class="math inline">\(\rm\LaTeX\)</span> best out of any rust
@@ -106,13 +93,6 @@ limiting.</p>
 
     </article>
   </main>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-  <script>
-    // once the DOM is ready, highlight all <pre><code> blocks
-    document.addEventListener("DOMContentLoaded", () => {
-      hljs.highlightAll();
-    });
-  </script>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {

@@ -10,19 +10,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../dracula.css">
   <link rel="stylesheet" href="../style.css">
 
-  <style>
-    /* inline code styling (from your <style> block) */
-    code {
-      background-color: #282a36;
-      color: #50fa7b;
-      padding: 0.1rem 0.2rem;
-      border-radius: 0.25rem;
-      font-family: 'JetBrains Mono', monospace;
-    }
-  </style>
 </head>
 <body>
 
@@ -76,80 +65,77 @@ location of the bodies, then calculates and applies the gravitational
 force and its opposite that the bodies apply on each other. The
 <code>gravitational_force()</code>, calculation is adapted from Newton’s
 Gravitational Law. (No, that’s not the real gravitational constant)</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> gravitational_force(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    mass1<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    mass2<span class="op">:</span> <span class="dt">f32</span><span class="op">,</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    position1<span class="op">:</span> Vector2<span class="op">&lt;</span><span class="dt">f32</span><span class="op">&gt;,</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    position2<span class="op">:</span> Vector2<span class="op">&lt;</span><span class="dt">f32</span><span class="op">&gt;,</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> Vector2<span class="op">&lt;</span><span class="dt">f32</span><span class="op">&gt;</span> <span class="op">{</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> r <span class="op">=</span> position2 <span class="op">-</span> position1<span class="op">;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> direction <span class="op">=</span> r<span class="op">.</span>norm()<span class="op">;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> f_mag <span class="op">=</span> <span class="dv">1000.0</span> <span class="op">*</span> ((mass1 <span class="op">*</span> mass2) <span class="op">/</span> direction<span class="op">.</span>powi(<span class="dv">2</span>))<span class="op">;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    r<span class="op">.</span>normalize() <span class="op">*</span> f_mag</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<pre class="rust"><code>pub fn gravitational_force(
+    mass1: f32,
+    mass2: f32,
+    position1: Vector2&lt;f32&gt;,
+    position2: Vector2&lt;f32&gt;,
+) -&gt; Vector2&lt;f32&gt; {
+    let r = position2 - position1;
+    let direction = r.norm();
+    let f_mag = 1000.0 * ((mass1 * mass2) / direction.powi(2));
+    r.normalize() * f_mag
+}</code></pre>
 <p>Briefly, I added vectors to show more obviously the velocities of the
 bodies during the simulation.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> setup_vectors(<span class="kw">mut</span> commands<span class="op">:</span> Commands<span class="op">,</span> query_bodies<span class="op">:</span> Query<span class="op">&lt;&amp;</span>Transform<span class="op">&gt;</span>) <span class="op">{</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> query_bodies<span class="op">.</span>iter() <span class="op">{</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> line <span class="op">=</span> <span class="pp">shapes::</span>Line(<span class="pp">Vec2::</span>ZERO<span class="op">,</span> <span class="pp">Vec2::</span>new(<span class="dv">0.0</span><span class="op">,</span> <span class="dv">0.0</span>))<span class="op">;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        commands<span class="op">.</span>spawn((</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            ShapeBundle <span class="op">{</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                path<span class="op">:</span> <span class="pp">GeometryBuilder::</span>build_as(<span class="op">&amp;</span>line)<span class="op">,</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                <span class="op">..</span><span class="kw">default</span>()</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            <span class="op">},</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            <span class="pp">Stroke::</span>new(<span class="pp">Color::</span>WHITE<span class="op">,</span> <span class="dv">5.0</span>)<span class="op">,</span> <span class="co">// Spawn in lines</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        ))<span class="op">;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> vector_update(query_body<span class="op">:</span> Query<span class="op">&lt;</span>(<span class="op">&amp;</span>Transform<span class="op">,</span> <span class="op">&amp;</span>Velocity)<span class="op">&gt;,</span> <span class="kw">mut</span> query_path<span class="op">:</span> Query<span class="op">&lt;&amp;</span><span class="kw">mut</span> <span class="dt">Path</span><span class="op">&gt;</span>) <span class="op">{</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ((transform<span class="op">,</span> velocity)<span class="op">,</span> <span class="kw">mut</span> path) <span class="kw">in</span> query_body<span class="op">.</span>iter()<span class="op">.</span>zip(query_path<span class="op">.</span>iter_mut()) <span class="op">{</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> center_of_mass <span class="op">=</span> transform<span class="op">.</span>translation<span class="op">.</span>truncate()<span class="op">;</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> vel <span class="op">=</span> velocity<span class="op">.</span>linvel<span class="op">;</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> new_line <span class="op">=</span> <span class="pp">shapes::</span>Line(center_of_mass<span class="op">,</span> center_of_mass <span class="op">+</span> vel)<span class="op">;</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">*</span>path <span class="op">=</span> <span class="pp">ShapePath::</span>build_as(<span class="op">&amp;</span>new_line)<span class="op">;</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<pre class="rust"><code>pub fn setup_vectors(mut commands: Commands, query_bodies: Query&lt;&amp;Transform&gt;) {
+    for _ in query_bodies.iter() {
+        let line = shapes::Line(Vec2::ZERO, Vec2::new(0.0, 0.0));
+        commands.spawn((
+            ShapeBundle {
+                path: GeometryBuilder::build_as(&amp;line),
+                ..default()
+            },
+            Stroke::new(Color::WHITE, 5.0), // Spawn in lines
+        ));
+    }
+}
+
+pub fn vector_update(query_body: Query&lt;(&amp;Transform, &amp;Velocity)&gt;, mut query_path: Query&lt;&amp;mut Path&gt;) {
+    for ((transform, velocity), mut path) in query_body.iter().zip(query_path.iter_mut()) {
+        let center_of_mass = transform.translation.truncate();
+        let vel = velocity.linvel;
+        let new_line = shapes::Line(center_of_mass, center_of_mass + vel);
+        *path = ShapePath::build_as(&amp;new_line);
+    }
+}</code></pre>
 <p>The gRPC server handles the setting of initial conditions (the
 solution, as it were), as well as resetting the simulation and handing
 out the current state of the simulation. The <code>SimState</code>
 message is simply an array of <code>BodyAttributes</code>, values
 necessary to make the calculations for the simulation.</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>syntax <span class="op">=</span> <span class="st">&quot;proto3&quot;</span><span class="op">;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>package simulation<span class="op">;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>service Sim <span class="op">{</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  rpc StateReply<span class="op">(</span>SimCurrentStateReq<span class="op">)</span> returns <span class="op">(</span>SimState<span class="op">)</span> <span class="op">{}</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  rpc SetConfiguration<span class="op">(</span>SimState<span class="op">)</span> returns <span class="op">(</span>ConfigValid<span class="op">)</span> <span class="op">{}</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>message SimCurrentStateReq<span class="op">{</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  optional string bodyID <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>message Vec2D<span class="op">{</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">float</span> x <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">float</span> y <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>message ConfigValid<span class="op">{</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bool</span> succeeded <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>message BodyAttributes<span class="op">{</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  Vec2D velocity <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  Vec2D position <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">float</span> mass <span class="op">=</span> <span class="dv">3</span><span class="op">;</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  uint32 bodyID <span class="op">=</span> <span class="dv">4</span><span class="op">;</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>message SimState<span class="op">{</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  repeated BodyAttributes bodies <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<pre class="c++"><code>syntax = &quot;proto3&quot;;
+
+package simulation;
+
+service Sim {
+  rpc StateReply(SimCurrentStateReq) returns (SimState) {}
+  rpc SetConfiguration(SimState) returns (ConfigValid) {}
+}
+
+message SimCurrentStateReq{
+  optional string bodyID = 1;
+}
+
+message Vec2D{
+  float x = 1;
+  float y = 2;
+}
+
+message ConfigValid{
+  bool succeeded = 1;
+}
+
+message BodyAttributes{
+  Vec2D velocity = 1;
+  Vec2D position = 2;
+  float mass = 3;
+  uint32 bodyID = 4;
+}
+
+message SimState{
+  repeated BodyAttributes bodies = 1;
+}</code></pre>
 <p>The Tonic Server is attached as a startup system in the Bevy ECS, and
 the tokio runtime is added as a resource so the server can handle
 requests as they come in asynchronously. We can connect to it on
@@ -157,77 +143,75 @@ requests as they come in asynchronously. We can connect to it on
 bodies.</p>
 <p>The client on the reciving end of the gRPC contract is implemented in
 a seperate python script.</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> set_configuration(bodies, stub):</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Calls the SetConfiguration RPC to set the simulation configuration.</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    sim_state <span class="op">=</span> simulation_pb2.SimState(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        bodies<span class="op">=</span>[</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            simulation_pb2.BodyAttributes(</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                bodyID<span class="op">=</span>body[<span class="st">&quot;bodyID&quot;</span>],</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                position<span class="op">=</span>simulation_pb2.Vec2D(</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                    x<span class="op">=</span>body[<span class="st">&quot;position&quot;</span>][<span class="st">&quot;x&quot;</span>], y<span class="op">=</span>body[<span class="st">&quot;position&quot;</span>][<span class="st">&quot;y&quot;</span>]</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                ),</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                velocity<span class="op">=</span>simulation_pb2.Vec2D(</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                    x<span class="op">=</span>body[<span class="st">&quot;velocity&quot;</span>][<span class="st">&quot;x&quot;</span>], y<span class="op">=</span>body[<span class="st">&quot;velocity&quot;</span>][<span class="st">&quot;y&quot;</span>]</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                ),</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                mass<span class="op">=</span>body[<span class="st">&quot;mass&quot;</span>],</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>            )</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> body <span class="kw">in</span> bodies</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        ]</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> stub.SetConfiguration(sim_state)</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> body_request(stub):</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">    Requests the location, velocity, and mass of bodies in the current simulation</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    request <span class="op">=</span> simulation_pb2.SimCurrentStateReq()</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>        response <span class="op">=</span> stub.StateReply(request)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> response</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> grpc.RpcError <span class="im">as</span> e:</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;gRPC call failed: </span><span class="sc">{</span>e<span class="sc">.</span>code()<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>e<span class="sc">.</span>details()<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<pre class="python"><code>def set_configuration(bodies, stub):
+    &quot;&quot;&quot;
+    Calls the SetConfiguration RPC to set the simulation configuration.
+    &quot;&quot;&quot;
+    sim_state = simulation_pb2.SimState(
+        bodies=[
+            simulation_pb2.BodyAttributes(
+                bodyID=body[&quot;bodyID&quot;],
+                position=simulation_pb2.Vec2D(
+                    x=body[&quot;position&quot;][&quot;x&quot;], y=body[&quot;position&quot;][&quot;y&quot;]
+                ),
+                velocity=simulation_pb2.Vec2D(
+                    x=body[&quot;velocity&quot;][&quot;x&quot;], y=body[&quot;velocity&quot;][&quot;y&quot;]
+                ),
+                mass=body[&quot;mass&quot;],
+            )
+            for body in bodies
+        ]
+    )
+    response = stub.SetConfiguration(sim_state)
+
+
+def body_request(stub):
+    &quot;&quot;&quot;
+    Requests the location, velocity, and mass of bodies in the current simulation
+    &quot;&quot;&quot;
+    request = simulation_pb2.SimCurrentStateReq()
+    try:
+        response = stub.StateReply(request)
+        return response
+    except grpc.RpcError as e:
+        print(f&quot;gRPC call failed: {e.code()}: {e.details()}&quot;)</code></pre>
 <p>Using the dictionary that the service provides, the client evaluates
 if the simulation has effectively ended, or if the initial configuration
 no longer has the chance of being stable. The “fail states” of the
 simulation occur when either there was a collision or if one of the
 bodies escapes from the orbit of the other two.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> collision(bodies):</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">    returns true if body positions are within radii of one another</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    combinations <span class="op">=</span> itertools.combinations(bodies, <span class="dv">2</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    collision_flag <span class="op">=</span> false</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> combination <span class="kw">in</span> combinations:</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        b1, b2 <span class="op">=</span> combination</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        vec1 <span class="op">=</span> np.array([b1.position.x, b1.position.y])</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        vec2 <span class="op">=</span> np.array([b2.position.x, b2.position.y])</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        distance <span class="op">=</span> np.linalg.norm(vec1 <span class="op">-</span> vec2)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">round</span>(distance, <span class="dv">2</span>) <span class="op">&lt;=</span> <span class="fl">80.0</span>:</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            collision_flag <span class="op">=</span> true</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> collision_flag</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> escape(bodies):</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">    returns true if a body is no longer effect by the gravitational force of one of the others</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    combinations <span class="op">=</span> itertools.combinations(bodies, <span class="dv">2</span>)</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    distance_flag <span class="op">=</span> false</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> combination <span class="kw">in</span> combinations:</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        b1, b2 <span class="op">=</span> combination</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        vec1 <span class="op">=</span> np.array([b1.position.x, b1.position.y])</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        vec2 <span class="op">=</span> np.array([b2.position.x, b2.position.y])</span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        distance <span class="op">=</span> np.linalg.norm(vec1 <span class="op">-</span> vec2)</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        g_f <span class="op">=</span> (b1.mass <span class="op">*</span> b2.mass) <span class="op">/</span> (distance<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">round</span>(g_f, <span class="dv">3</span>) <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>            distance_flag <span class="op">=</span> true</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> distance_flag</span></code></pre></div>
+<pre class="python"><code>def collision(bodies):
+    &quot;&quot;&quot;
+    returns true if body positions are within radii of one another
+    &quot;&quot;&quot;
+    combinations = itertools.combinations(bodies, 2)
+    collision_flag = false
+    for combination in combinations:
+        b1, b2 = combination
+        vec1 = np.array([b1.position.x, b1.position.y])
+        vec2 = np.array([b2.position.x, b2.position.y])
+        distance = np.linalg.norm(vec1 - vec2)
+        if round(distance, 2) &lt;= 80.0:
+            collision_flag = true
+
+    return collision_flag
+
+
+def escape(bodies):
+    &quot;&quot;&quot;
+    returns true if a body is no longer effect by the gravitational force of one of the others
+    &quot;&quot;&quot;
+    combinations = itertools.combinations(bodies, 2)
+    distance_flag = false
+    for combination in combinations:
+        b1, b2 = combination
+        vec1 = np.array([b1.position.x, b1.position.y])
+        vec2 = np.array([b2.position.x, b2.position.y])
+        distance = np.linalg.norm(vec1 - vec2)
+        g_f = (b1.mass * b2.mass) / (distance**2)
+        if round(g_f, 3) == 0:
+            distance_flag = true
+    return distance_flag</code></pre>
 <p>I already implemented a simple genetic algorithm hoping to find some
 stable configurations, it iterated with mild success, confirming that
 the simulation-solver set up was working, although the method itself
@@ -240,13 +224,6 @@ If you are reading this, I have not done so yet, au revouir.</p>
 
     </article>
   </main>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-  <script>
-    // once the DOM is ready, highlight all <pre><code> blocks
-    document.addEventListener("DOMContentLoaded", () => {
-      hljs.highlightAll();
-    });
-  </script>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {

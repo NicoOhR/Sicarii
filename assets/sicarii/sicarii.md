@@ -4,7 +4,7 @@ In a fit of "not made here" syndrome I figured that, all an SSG does is translat
 
 Each article is kept in its own directory with a markdown file with the contents of the article and a toml file with the metadata of the article, as well as and any other assets which it need to include.
 
-```rust
+```Rust
 pub fn get_articles() -> io::Result<Vec<structs::Article>> {
     let dir_path = "./assets/";
     let mut articles: Vec<structs::Article> = Vec::new();
@@ -25,7 +25,7 @@ pub fn get_articles() -> io::Result<Vec<structs::Article>> {
 ```
 Unsurpisingly, the ```Article``` struct is mostly strings with a ```NaiveDate``` field, from which the ```Ord``` trait is implemented so the articles are rendered to the final site in chronological order. After all the metadata is in a neat and organized array, the articles can be written into a file directly:
 
-```rust 
+```Rust 
 fn render_to_file(content: String, path: &str) -> io::Result<()> {
     println!("Created Content Path");
     let mut content_path = PathBuf::from("./site/");

@@ -1,12 +1,13 @@
 use askama::Template;
 use chrono::format::ParseError;
 use chrono::NaiveDate;
-use lol_html::{element, html_content::ContentType, text, HtmlRewriter, Settings};
+use kuchikiki::traits::*;
 use pandoc::{InputFormat, OutputKind, Pandoc, PandocOption, PandocOutput};
 use serde::Deserialize;
 use std::fs;
 use std::fs::File;
 use std::io::{self, Read};
+use std::path::Path;
 use std::path::PathBuf;
 use syntect::highlighting::{Color, ThemeSet};
 use syntect::html::{highlighted_html_for_string, ClassStyle, ClassedHTMLGenerator};
@@ -72,61 +73,40 @@ impl Article {
             PandocOutput::ToFile(path) => fs::read_to_string(path)?,
         };
 
-        let mut html_output = Vec::new();
+        let doc = kuchikiki::parse_html().one(html);
+        let mut matches: Vec<_> = doc.select("pre").unwrap().collect();
+        for css_match in matches {
+            let node = css_match.as_node();
+            if let Some(element) = node.as_element() {
+                let attributes = &element.attributes.borrow();
+                if let Some(lang) = attributes.get("class") {
+                    let mut code = String::new();
+                    for child in node.inclusive_descendants().text_nodes() {
+                        code.push_str(&child.borrow());
+                    }
+                    let ss = SyntaxSet::load_defaults_newlines();
+                    let ts = ThemeSet::load_defaults();
 
-        let mut rewriter = HtmlRewriter::new(
-            Settings {
-                element_content_handlers: vec![
-                    element!("pre[class]", |el| {
-                        if let Some(pre_class) = el.get_attribute("class") {
-                            //exctracted lang from the html block, need to find an easy way to get
-                            //access to the internals of the block as text so that we can run it
-                            //through syntact
-                            let lang = pre_class
-                                .strip_prefix("language-")
-                                .or_else(|| Some(&pre_class))
-                                .unwrap_or("plain");
-                            println!("Found code block with language: {}", lang);
-                        }
-                        Ok(())
-                    }),
-                    text!("pre[class] *", |t| {
-                        if inside_pre {
-                            buffer.push_str(t.text());
-                        }
-                        Ok(())
-                    }),
-                ],
-                ..Settings::default()
-            },
-            |chunk: &[u8]| {
-                html_output.extend_from_slice(chunk);
-            },
-        );
-        rewriter.write(html.as_bytes()).unwrap();
-        rewriter.end().unwrap();
-        let final_html = String::from_utf8(html_output).unwrap();
-        //
-        //let lang = element.value().attr("class").unwrap_or_default();
-        //
-        //let code = element.text().collect::<String>();
-        //let ss = SyntaxSet::load_defaults_newlines();
-        //let ts = ThemeSet::load_defaults();
-        //
-        //let syntax = ss
-        //    .find_syntax_by_name(lang)
-        //    .or_else(|| ss.find_syntax_by_name(&lang))
-        //    .unwrap_or_else(|| ss.find_syntax_plain_text());
-        //let theme = &ts.themes["base16-ocean.dark"];
-        //let output_html = highlighted_html_for_string(&code, &ss, syntax, theme).unwrap();
-        //
-        //println!("{output_html}");
-        //
+                    let syntax = ss
+                        .find_syntax_by_token(lang)
+                        .or_else(|| ss.find_syntax_by_name(&lang))
+                        .unwrap_or_else(|| ss.find_syntax_plain_text());
+                    let theme = ThemeSet::get_theme(Path::new("./src/Gruvbox-N.tmTheme")).unwrap();
+                    let output_html =
+                        highlighted_html_for_string(&code, &ss, syntax, &theme).unwrap();
+                    let new_pre_html = format!(r#"<pre class="{}">{}</pre>"#, lang, output_html);
+                    let fragment = kuchikiki::parse_html().one(new_pre_html);
+                    node.insert_after(fragment);
+                    node.detach();
+                }
+            }
+        }
+        let output = doc.to_string();
         let template = EditorialTemplate {
             title: self.title.clone(),
             author: self.author.clone(),
             date: self.date.to_string(),
-            content: html,
+            content: output,
         };
 
         Ok(template)

@@ -215,15 +215,6 @@ main {
   line-height: 1;
 }
 
-/* —— Inline code styling (moved from <style> block) —— */
-code {
-  background-color: #282a36;
-  color: #50fa7b;
-  padding: 0.1rem 0.2rem;
-  border-radius: 0.25rem;
-  font-family: 'JetBrains Mono', monospace;
-}
-
 .divider-link {
   position: relative;        /* for ::after positioning */
   display: inline-block;     /* shrink‑to‑fit its contents */ 

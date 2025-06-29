@@ -14,7 +14,13 @@
 
 </head>
 <body>
-
+  <style>
+    :not(pre) > code{
+        background: #2b303b;
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+    }
+  </style>
   <nav class="nav">
     <ul class="nav-list">
       <li class="nav-item">
@@ -33,7 +39,7 @@
     </div>
 
     <article class="post-content">
-      <p>To start, FSAE (Formula: Student Automotive Engineer) is a worldwide
+      <html><head></head><body><p>To start, FSAE (Formula: Student Automotive Engineer) is a worldwide
 competition aimed primarily at giving university students a competition
 to exercise and apply the skills which they learn in the classroom. The
 competition is aimed predominantly at mechanical engineering students,
@@ -63,32 +69,32 @@ threading.</p>
 <p>The project structure:</p>
 <pre><code>.
 ├── Application
-│   ├── DataLogger
-│   ├── FileSystem
-│   ├── Mutex
-│   └── Relay
+│&nbsp;&nbsp; ├── DataLogger
+│&nbsp;&nbsp; ├── FileSystem
+│&nbsp;&nbsp; ├── Mutex
+│&nbsp;&nbsp; └── Relay
 ├── Docs
-│   ├── data_logging
-│   ├── engine_control_unit
-│   ├── file_system
-│   ├── linear_potentiometer
-│   ├── peripheral_interfaces
-│   ├── _static
-│   └── stmicroelectronics
+│&nbsp;&nbsp; ├── data_logging
+│&nbsp;&nbsp; ├── engine_control_unit
+│&nbsp;&nbsp; ├── file_system
+│&nbsp;&nbsp; ├── linear_potentiometer
+│&nbsp;&nbsp; ├── peripheral_interfaces
+│&nbsp;&nbsp; ├── _static
+│&nbsp;&nbsp; └── stmicroelectronics
 ├── Platform
-│   ├── Interfaces
-│   └── STM
-│       └── F4
-│           ├── CAN
-│           ├── GPIO
-│           └── I2C
+│&nbsp;&nbsp; ├── Interfaces
+│&nbsp;&nbsp; └── STM
+│&nbsp;&nbsp;     └── F4
+│&nbsp;&nbsp;         ├── CAN
+│&nbsp;&nbsp;         ├── GPIO
+│&nbsp;&nbsp;         └── I2C
 ├── Sensor
-│   ├── Accelerometer
-│   ├── ECU
-│   │   └── PE3
-│   │       └── Frames
-│   ├── GyroScope
-│   └── LinearPotentiometer
+│&nbsp;&nbsp; ├── Accelerometer
+│&nbsp;&nbsp; ├── ECU
+│&nbsp;&nbsp; │&nbsp;&nbsp; └── PE3
+│&nbsp;&nbsp; │&nbsp;&nbsp;     └── Frames
+│&nbsp;&nbsp; ├── GyroScope
+│&nbsp;&nbsp; └── LinearPotentiometer
 └── Tests
     └── Src
         ├── Application
@@ -105,31 +111,33 @@ switch to an NXP chip instead, I would only have to re implement this
 layer, as the Application and Sensor layer uses the interfaces we make
 here.</p>
 <p>Here is an example of one of the interfaces, the GPIO interface:</p>
-<pre class="cpp"><code>
-class IGpio {
-public:
-    virtual ~IGpio() = default;
-
-    virtual bool Read() = 0;
-
-    virtual void Write(bool signal) = 0;
-
-    virtual bool ToggleDetected() = 0;
-};
-</code></pre>
+<html><head></head><body><pre class="cpp"><pre style="background-color:#282828;"><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">class </span><span style="color:#babc52;">IGpio </span><span style="color:#ead4af;">{
+</span><span style="color:#fb4938;">public</span><span style="color:#ead4af;">:
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">virtual </span><span style="color:#8ab572;">~IGpio</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">= </span><span style="color:#fb4938;">default</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">virtual bool </span><span style="color:#8ab572;">Read</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">virtual void </span><span style="color:#8ab572;">Write</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">bool </span><span style="color:#fd971f;">signal</span><span style="color:#ead4af;">) </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">virtual bool </span><span style="color:#8ab572;">ToggleDetected</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">};
+</span></pre>
+</pre></body></html>
 <p>And we implement the Write method like this</p>
-<pre class="cpp"><code>void GpioStmF4::Write(bool signal) {
-    GPIO_PinState pin_state;
-
-    if (signal) {
-        pin_state = GPIO_PIN_SET;
-    } else {
-        pin_state = GPIO_PIN_RESET;
-    }
-
-    HAL_GPIO_WritePin(port_, pin_, pin_state);
-}
-</code></pre>
+<html><head></head><body><pre class="cpp"><pre style="background-color:#282828;"><span style="color:#fb4938;">void </span><span style="color:#8ab572;">GpioStmF4::Write</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bool signal</span><span style="color:#ead4af;">) {
+</span><span style="color:#ead4af;">    GPIO_PinState pin_state;
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">if </span><span style="color:#ead4af;">(signal) {
+</span><span style="color:#ead4af;">        pin_state </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> GPIO_PIN_SET;
+</span><span style="color:#ead4af;">    } </span><span style="color:#fb4938;">else </span><span style="color:#ead4af;">{
+</span><span style="color:#ead4af;">        pin_state </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> GPIO_PIN_RESET;
+</span><span style="color:#ead4af;">    }
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    HAL_GPIO_WritePin(port_, pin_, pin_state);
+</span><span style="color:#ead4af;">}
+</span></pre>
+</pre></body></html>
 <p>With this we cut down on how verbose our code is, and reduce how
 likely a developer on the team is to misuse the (frankly dangerous)
 HAL.</p>
@@ -141,12 +149,13 @@ used when we need to, however we haven’t really had the opportunity to
 put this to the test as we haven’t upgraded sensors in a long while.</p>
 <p>For example, here’s the interface for the linear potentiometer, which
 reads the displacement of the suspension shocks.</p>
-<pre class="cpp"><code>class ILinearPotentiometer { public: virtual ~ILinearPotentiometer()
-= default;
-
-        virtual void DisplacementInches(float quantized_counts[]) = 0;
-        virtual void DisplacementMillimeters(float quantized_counts[]) = 0;
-};</code></pre>
+<html><head></head><body><pre class="cpp"><pre style="background-color:#282828;"><span style="color:#fb4938;">class </span><span style="color:#babc52;">ILinearPotentiometer </span><span style="color:#ead4af;">{ </span><span style="color:#fb4938;">public</span><span style="color:#ead4af;">: </span><span style="color:#fb4938;">virtual </span><span style="color:#cab990;">~</span><span style="color:#ead4af;">ILinearPotentiometer()
+</span><span style="color:#cab990;">= </span><span style="color:#fb4938;">default</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">virtual void </span><span style="color:#8ab572;">DisplacementInches</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">float </span><span style="color:#fd971f;">quantized_counts</span><span style="color:#ead4af;">[]) </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">virtual void </span><span style="color:#8ab572;">DisplacementMillimeters</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">float </span><span style="color:#fd971f;">quantized_counts</span><span style="color:#ead4af;">[]) </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">};</span></pre>
+</pre></body></html>
 <p>Lastly is the Application layer, which handles the state of the
 device, our mutexes for multi-threading, and how we talk to the
 Raspberry Pi. This is the most “userspace” the program gets.</p>
@@ -156,7 +165,7 @@ nice to have” things in this project, I’ve yet to give it the time that
 it deserves. Similarly the Docs folder has some documentation generation
 with Phoenix, but I’ve yet to find the patience to annotate the existing
 code.</p>
-
+</body></html>
     </article>
   </main>
   <script type="text/x-mathjax-config">

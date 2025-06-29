@@ -85,7 +85,6 @@ impl Article {
                         code.push_str(&child.borrow());
                     }
                     let ss = SyntaxSet::load_defaults_newlines();
-                    let ts = ThemeSet::load_defaults();
 
                     let syntax = ss
                         .find_syntax_by_token(lang)

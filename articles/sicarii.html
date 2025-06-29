@@ -14,7 +14,13 @@
 
 </head>
 <body>
-
+  <style>
+    :not(pre) > code{
+        background: #2b303b;
+        padding: 0.2em 0.4em;
+        border-radius: 3px;
+    }
+  </style>
   <nav class="nav">
     <ul class="nav-list">
       <li class="nav-item">
@@ -33,7 +39,7 @@
     </div>
 
     <article class="post-content">
-      <p>I always struggled with web development which for a software-guy (tm)
+      <html><head></head><body><p>I always struggled with web development which for a software-guy (tm)
 is a bit of a personal tragedy. I have a hard time getting interested in
 the semantics and philosophies of different web framework, why are there
 so many ways to interact with the DOM? Why is the website thirsty?
@@ -47,42 +53,44 @@ library.</p>
 <p>Each article is kept in its own directory with a markdown file with
 the contents of the article and a toml file with the metadata of the
 article, as well as and any other assets which it need to include.</p>
-<pre class="rust"><code>pub fn get_articles() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
-    let dir_path = &quot;./assets/&quot;;
-    let mut articles: Vec&lt;structs::Article&gt; = Vec::new();
-
-    for entry in WalkDir::new(dir_path).into_iter().filter_map(|e| e.ok()) {
-        let path = entry.path();
-        if path.is_file() {
-            if let Some(extension) = path.extension() {
-                if extension == &quot;toml&quot; {
-                    articles.push(read_toml(&amp;fs::read_to_string(path)?));
-                }
-            }
-        }
-    }
-    articles.sort();
-    Ok(articles)
-}</code></pre>
+<html><head></head><body><pre class="rust"><pre style="background-color:#282828;"><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">get_articles</span><span style="color:#ead4af;">() -&gt; io::Result&lt;Vec&lt;structs::Article&gt;&gt; {
+</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> dir_path </span><span style="color:#cab990;">= </span><span style="color:#aab11e;">"./assets/"</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let </span><span style="color:#fb4938;">mut</span><span style="color:#ead4af;"> articles: Vec&lt;structs::Article&gt; </span><span style="color:#cab990;">= </span><span style="color:#f1c050;">Vec</span><span style="color:#ead4af;">::new();
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">for</span><span style="color:#ead4af;"> entry </span><span style="color:#cab990;">in </span><span style="color:#ead4af;">WalkDir::new(dir_path).</span><span style="color:#f1c050;">into_iter</span><span style="color:#ead4af;">().</span><span style="color:#f1c050;">filter_map</span><span style="color:#ead4af;">(|</span><span style="color:#fd971f;">e</span><span style="color:#ead4af;">| e.</span><span style="color:#f1c050;">ok</span><span style="color:#ead4af;">()) {
+</span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> path </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> entry.</span><span style="color:#f1c050;">path</span><span style="color:#ead4af;">();
+</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">if</span><span style="color:#ead4af;"> path.</span><span style="color:#f1c050;">is_file</span><span style="color:#ead4af;">() {
+</span><span style="color:#ead4af;">            </span><span style="color:#fb4938;">if </span><span style="color:#fd971f;">let </span><span style="color:#f1c050;">Some</span><span style="color:#ead4af;">(extension) </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> path.</span><span style="color:#f1c050;">extension</span><span style="color:#ead4af;">() {
+</span><span style="color:#ead4af;">                </span><span style="color:#fb4938;">if</span><span style="color:#ead4af;"> extension </span><span style="color:#cab990;">== </span><span style="color:#aab11e;">"toml" </span><span style="color:#ead4af;">{
+</span><span style="color:#ead4af;">                    articles.</span><span style="color:#f1c050;">push</span><span style="color:#ead4af;">(</span><span style="color:#f1c050;">read_toml</span><span style="color:#ead4af;">(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">fs::read_to_string(path)</span><span style="color:#cab990;">?</span><span style="color:#ead4af;">));
+</span><span style="color:#ead4af;">                }
+</span><span style="color:#ead4af;">            }
+</span><span style="color:#ead4af;">        }
+</span><span style="color:#ead4af;">    }
+</span><span style="color:#ead4af;">    articles.</span><span style="color:#f1c050;">sort</span><span style="color:#ead4af;">();
+</span><span style="color:#ead4af;">    </span><span style="color:#f1c050;">Ok</span><span style="color:#ead4af;">(articles)
+</span><span style="color:#ead4af;">}</span></pre>
+</pre></body></html>
 <p>Unsurpisingly, the <code>Article</code> struct is mostly strings with
 a <code>NaiveDate</code> field, from which the <code>Ord</code> trait is
 implemented so the articles are rendered to the final site in
 chronological order. After all the metadata is in a neat and organized
 array, the articles can be written into a file directly:</p>
-<pre class="rust"><code>fn render_to_file(content: String, path: &amp;str) -&gt; io::Result&lt;()&gt; {
-    println!(&quot;Created Content Path&quot;);
-    let mut content_path = PathBuf::from(&quot;./site/&quot;);
-    content_path.push(path);
-    println!(&quot;{content_path:?}&quot;);
-
-    if let Some(parent) = content_path.parent() {
-        create_dir_all(parent)?;
-    }
-    let mut file = File::create(content_path)?;
-    file.write_all(content.as_bytes())?;
-
-    Ok(())
-}</code></pre>
+<html><head></head><body><pre class="rust"><pre style="background-color:#282828;"><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">render_to_file</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">content</span><span style="color:#ead4af;">: String, </span><span style="color:#fd971f;">path</span><span style="color:#ead4af;">: </span><span style="color:#cab990;">&amp;</span><span style="color:#fd971f;">str</span><span style="color:#ead4af;">) -&gt; io::Result&lt;()&gt; {
+</span><span style="color:#ead4af;">    println!(</span><span style="color:#aab11e;">"Created Content Path"</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let </span><span style="color:#fb4938;">mut</span><span style="color:#ead4af;"> content_path </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">PathBuf::from(</span><span style="color:#aab11e;">"./site/"</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">    content_path.</span><span style="color:#f1c050;">push</span><span style="color:#ead4af;">(path);
+</span><span style="color:#ead4af;">    println!(</span><span style="color:#aab11e;">"</span><span style="color:#cc869b;">{content_path:?}</span><span style="color:#aab11e;">"</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">if </span><span style="color:#fd971f;">let </span><span style="color:#f1c050;">Some</span><span style="color:#ead4af;">(parent) </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> content_path.</span><span style="color:#f1c050;">parent</span><span style="color:#ead4af;">() {
+</span><span style="color:#ead4af;">        </span><span style="color:#f1c050;">create_dir_all</span><span style="color:#ead4af;">(parent)</span><span style="color:#cab990;">?</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">    }
+</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let </span><span style="color:#fb4938;">mut</span><span style="color:#ead4af;"> file </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">File::create(content_path)</span><span style="color:#cab990;">?</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">    file.</span><span style="color:#f1c050;">write_all</span><span style="color:#ead4af;">(content.</span><span style="color:#f1c050;">as_bytes</span><span style="color:#ead4af;">())</span><span style="color:#cab990;">?</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">    </span><span style="color:#f1c050;">Ok</span><span style="color:#ead4af;">(())
+</span><span style="color:#ead4af;">}</span></pre>
+</pre></body></html>
 <p>The markdown-to-html work is done by Pandoc, both because I already
 have all of the haskell dependencies on my machine, and it also handles
 <span class="math inline">\(\rm\LaTeX\)</span> best out of any rust
@@ -90,7 +98,7 @@ markdown parsers I’ve seen. Inevitably I think I will need to make my
 own parser, since I keep thinking of new ways to make the site even more
 pretentious looking, and github-style markdown is becoming too
 limiting.</p>
-
+</body></html>
     </article>
   </main>
   <script type="text/x-mathjax-config">

@@ -100,6 +100,7 @@ impl Article {
                 }
             }
         }
+
         let output = doc.to_string();
         let template = EditorialTemplate {
             title: self.title.clone(),

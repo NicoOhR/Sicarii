@@ -22,6 +22,8 @@ pub fn get_articles() -> io::Result<Vec<structs::Article>> {
             }
         }
     }
-    articles.sort();
+
+    articles.sort_by(|a, b| b.cmp(a));
+
     Ok(articles)
 }

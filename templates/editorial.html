@@ -15,11 +15,24 @@
 </head>
 <body>
   <style>
-    :not(pre) > code{
-        background: #2b303b;
-        padding: 0.2em 0.4em;
-        border-radius: 3px;
-    }
+  :not(pre) > code{
+      background: #2b303b;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      overflow-x: auto;
+  }
+  pre.syntect,
+  pre[class*="syntax"],
+  pre.highlight,
+  pre codeblock,          
+  pre {
+    max-width: 100%;
+    overflow-x: auto;      
+    overflow-y: hidden;     
+    white-space: pre;        
+    background: #111111
+    -webkit-overflow-scrolling: touch;
+  }
   </style>
   <nav class="nav">
     <ul class="nav-list">

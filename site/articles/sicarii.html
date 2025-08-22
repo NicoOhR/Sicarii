@@ -24,12 +24,12 @@
   pre.syntect,
   pre[class*="syntax"],
   pre.highlight,
-  pre codeblock,            /* fallback aliases if you use others */
+  pre codeblock,          
   pre {
     max-width: 100%;
-    overflow-x: auto;        /* ← horizontal scrollbar when needed */
-    overflow-y: hidden;      /* no vertical bar */
-    white-space: pre;        /* keep long lines on one line */
+    overflow-x: auto;      
+    overflow-y: hidden;     
+    white-space: pre;        
     background: #111111
     -webkit-overflow-scrolling: touch;
   }
@@ -116,7 +116,10 @@ pipeline was not as smooth as I would have liked, and required a good
 bit of elbow grease to get to a well behaving state. In a nutshell after
 pandoc generated the initial HTML, I used <a href="https://github.com/brave/kuchikiki">kuchikiki</a> to find and the
 <code>&lt;code&gt;</code> and feed them to syntect, then replacing the
-original element with what syntect produces.</p>
+original element with what syntect produces. Inevitably I think I’d like
+to make my own parser, since kuchikiki pulls in html5ever, which, while
+being a great library, adds a significant amount of additional
+dependencies to this project; which I feel already has too many.</p>
 <html><head></head><body><pre class="rust"><pre style="background-color:#282828;"><span style="color:#ead4af;">        </span><span style="color:#fb4938;">let</span><span style="color:#ead4af;"> doc </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">kuchikiki::parse_html().</span><span style="color:#f1c050;">one</span><span style="color:#ead4af;">(html);
 </span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">let mut</span><span style="color:#ead4af;"> matches: Vec&lt;</span><span style="color:#cab990;">_</span><span style="color:#ead4af;">&gt; </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> doc.</span><span style="color:#f1c050;">select</span><span style="color:#ead4af;">(</span><span style="color:#aab11e;">"pre"</span><span style="color:#ead4af;">).</span><span style="color:#f1c050;">unwrap</span><span style="color:#ead4af;">().</span><span style="color:#f1c050;">collect</span><span style="color:#ead4af;">();
 </span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">for</span><span style="color:#ead4af;"> css_match </span><span style="color:#cab990;">in</span><span style="color:#ead4af;"> matches {
@@ -141,10 +144,11 @@ original element with what syntect produces.</p>
 </span><span style="color:#ead4af;">            }
 </span><span style="color:#ead4af;">        }</span></pre>
 </pre></body></html>
-<p>Inevitably I think I’d like to make my own parser, since kuchikiki
-pulls in html5ever, which, while being a great library, adds a
-significant amount of additional dependencies to this project; which I
-feel already has too many.</p>
+<p>This project gave me some appreciation for the static site generators
+which have taken over the tech-blogging space. It’s easy to chalk up
+much of what they do to “translating one markup language to another” but
+a great deal of thought goes into making the end user experience as easy
+anand flexible as possible.</p>
 </body></html>
     </article>
   </main>

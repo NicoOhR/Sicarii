@@ -171,6 +171,7 @@ main {
 .post-container {
   max-width: 800px;              /* max-w-[800px] */
   margin: 10vh auto 0;           /* mt-[10vh] */
+  margin-bottom: 10em;
   padding: 0 1rem;               /* px-4 */
 }
 

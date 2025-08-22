@@ -44,7 +44,8 @@ fn render_to_file(content: String, path: &str) -> io::Result<()> {
 
 The markdown-to-html work is done by Pandoc, both because I already have all of the haskell dependencies on my machine, and it also handles $\rm\LaTeX$ best out of any rust markdown parsers I tried out. Code highlighting is done through [syntect](https://github.com/trishume/syntect), a charming library which lets you use sublime syntax definitions to highlight code. I was originaly using highlightjs, but ultimately couldn't help but further oxidize this project. 
 
-The ```markdown -> pandoc -> syntect-> html``` pipeline was not as smooth as I would have liked, and required a good bit of elbow grease to get to a well behaving state. In a nutshell after pandoc generated the initial HTML, I used [kuchikiki](https://github.com/brave/kuchikiki) to find and the ```<code>``` and feed them to syntect, then replacing the original element with what syntect produces.
+The ```markdown -> pandoc -> syntect-> html``` pipeline was not as smooth as I would have liked, and required a good bit of elbow grease to get to a well behaving state. In a nutshell after pandoc generated the initial HTML, I used [kuchikiki](https://github.com/brave/kuchikiki) to find and the ```<code>``` and feed them to syntect, then replacing the original element with what syntect produces. Inevitably I think I'd like to make my own parser, since kuchikiki pulls in html5ever, which, while being a great library, adds a significant amount of additional dependencies to this project; which I feel already has too many.
+
 ```Rust
         let doc = kuchikiki::parse_html().one(html);
         let mut matches: Vec<_> = doc.select("pre").unwrap().collect();
@@ -70,5 +71,9 @@ The ```markdown -> pandoc -> syntect-> html``` pipeline was not as smooth as I w
             }
         }
 ```
-Inevitably I think I'd like to make my own parser, since kuchikiki pulls in html5ever, which, while being a great library, adds a significant amount of additional dependencies to this project; which I feel already has too many.
 
+This project gave me some appreciation for the static site generators
+which have taken over the tech-blogging space. It's easy to chalk up much
+of what they do to "translating one markup language to another" but
+a great deal of thought goes into making the end user experience as easy
+anand flexible as possible. 

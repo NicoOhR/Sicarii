@@ -1,0 +1,96 @@
+<!-- post.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>the t-distribution and its consequences</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+
+</head>
+<body>
+  <style>
+  :not(pre) > code{
+      background: #2b303b;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      overflow-x: auto;
+  }
+  pre.syntect,
+  pre[class*="syntax"],
+  pre.highlight,
+  pre codeblock,          
+  pre {
+    max-width: 100%;
+    overflow-x: auto;      
+    overflow-y: hidden;     
+    white-space: pre;        
+    background: #111111
+    -webkit-overflow-scrolling: touch;
+  }
+  </style>
+  <nav class="nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="../" class="nav-title divider-link">Sicarii</a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="post-container">
+    <div class="post-header">
+      <h1 class="post-title">the t-distribution and its consequences</h1>
+      <div class="post-meta">
+        <div class="author">Nico OR</div>
+        <div class="date">2025-09-21</div>
+      </div>
+    </div>
+
+    <article class="post-content">
+      <html><head></head><body><p>Statisticians and probability theorists have historically salvaged
+and glued together haphazardly from various mathematical disciplines to
+form their study. Measure spaces and <span class="math inline">\(\sigma\)</span>-algebras borrowed from topology,
+characteristic functions were appropriated from Fourier analysis,
+entropy got nicked from thermodynamics; first by information theory then
+from there by statistics. The list goes on, and we haven’t even
+mentioned geometry, linear algebra, or number theory, the latter two
+comprise a decent chunk of introductory statistics. There’s maybe an
+interesting thesis-sized article tracking the genealogy of this,
+frankly, pieced together field.</p>
+<p>While the ability for the various studies of mathematics to
+accommodate one another so well is one of it’s more beautiful features,
+and the statistician’s eagerness to knead together several often
+unrelated ingredients to make the <span class="math inline">\(\pi\)</span> is often their virtue, it does make
+the subject incredibly hard to teach. There’s a lot that is simply taken
+for granted, and the rigorous construction of the daily tools is skipped
+because of the amount of content that there is to cover. As a result, I
+find that at least at the undergrad level, most statistics students
+struggle to intuitively explain a tool like the <span class="math inline">\(t\)</span>-distribution. And that’s statistics
+students; biologists, economists, and psychologist who need the tools
+but often lack the prerequisite mathematics knowledge will often treat
+statistics with a learned helplessness. This is of course anecdotal,
+don’t worry, I don’t go around interrogating people about their
+statistical intuition.</p>
+<p>The hope of this article is to provide some mathematical meaning to
+the procedure that is often stated and briefly glossed over.</p>
+</body></html>
+    </article>
+  </main>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      }
+    });
+  </script>
+
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</body>
+</html>

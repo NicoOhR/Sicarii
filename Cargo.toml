@@ -17,3 +17,7 @@ syntect = "5.2.0"
 toml = "0.8.19"
 walkdir = "2.5.0"
 yaml-rust = "0.4.5"
+
+[profile.release-with-debug]
+inherits = "release"
+debug = 2

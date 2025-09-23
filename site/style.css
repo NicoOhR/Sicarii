@@ -231,3 +231,7 @@ main {
   height: 1px;               /* thickness of the line */
   background-color: #ffffff; /* white */
 }
+
+p {
+  text-indent: 50px;
+}

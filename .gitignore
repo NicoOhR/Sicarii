@@ -10,4 +10,4 @@ static/app.css
 coverage/
 .DS_Store
 .env
-
+*.data

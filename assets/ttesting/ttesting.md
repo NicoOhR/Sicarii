@@ -88,8 +88,8 @@ data, where each new event is influenced by the last, but even the example
 of heights can be dubious, think of heights in a family, which is surely
 not indpendent.
 
-
-Anyway, since each $X_i$ is independent, it must be the case that their variances are the same, so we get:
+Anyway, since each $X_i$ is independent, it must be the case that their
+variances are the same, so we get:
 
 $$ 
 \begin{align*} 
@@ -103,7 +103,9 @@ You probably know that we call $\operatorname{Var}(X) = \sigma^2$. So finally
 
 $$ \operatorname{Var}(\bar X - \mu_0) = \frac{\sigma^2}{n} $$
 
-We want our transformed distribution to be easy to work with, and dividing it by it's variance is a good way to do that, we'll go over what that gives us soon. 
+We want our transformed distribution to be easy to work with, and dividing
+it by it's variance is a good way to do that, we'll go over what that
+gives us soon. 
 
 $$ \begin{align*} \frac{n}{\sigma^2}\operatorname{Var}(\bar X - \mu_0) &=
 1 \\ \operatorname{Var}\left(\left (\sqrt{\frac{n}{\sigma^2}} \right)\bar

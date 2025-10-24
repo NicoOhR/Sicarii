@@ -156,14 +156,79 @@ finally</p>
 \]</span></p>
 <p>We want our transformed distribution to be easy to work with, and
 dividing it by it’s variance is a good way to do that, we’ll go over
-what that gices us soon.</p>
+what that gives us soon.</p>
 <p><span class="math display">\[
 \begin{align*}
 \frac{n}{\sigma^2}\operatorname{Var}(\bar X - \mu) &amp;= 1 \\
-\operatorname{Var}(\left (\sqrt{\frac{n}{\sigma^2}} \right)\bar X -
-\mu)  &amp;= 1
-\end{align*}
+\operatorname{Var}\left(\left (\sqrt{\frac{n}{\sigma^2}} \right)\bar
+X - \mu\right) &amp;= 1 \end{align*} \]</span></p>
+<p>So we get our final distribution, which we’ll call <span class="math inline">\(T\)</span>:</p>
+<p><span class="math display">\[ T = \frac{\bar X -
+\mu}{\sqrt{\sigma^2/n}}\]</span></p>
+<p>Effectively, we have divided our distribution by the <em>standard
+error</em> of <span class="math inline">\(\bar X\)</span>. This does a
+couple of things: firstly, it standardizes the distribution to have a
+variance of <span class="math inline">\(1\)</span>, it also makes the
+distribution <em>dimensionless</em>. When we say a distribution (or any
+value) is dimensionless, we mean that it does not have any units
+attached to it; they most commonly appear as a result of a division by a
+measurement of the same units, leading to cancellation of the
+“dimensions” of the measurements. These are confusing but critical to a
+lot of modern science, especially physics, where they allow us to say
+things in a very general sense, regardless of the particular
+characteristics of the system. Removing the dimensions of our system
+does a similar thing, we can now speak of our transformed distribution
+in absolute terms, if two data sets , whose population is sampled from
+the same type of distribution, fulfill the hypothesis that <span class="math inline">\(\bar x = \mu\)</span>, then they have the exact
+same transformed distribution! Historically, back when computers were
+not common place and calculating the CDF of a particular distribution
+was time consuming, having a common distriubtion that we can reference
+precomputed values of was very important.</p>
+<p>However, this is not yet a t-distribution. If we assume that our data
+<span class="math inline">\(X_i\)</span> is normal, than the above
+transformed distribution is <em>exactly</em> a standard normal
+distribution, which we often denote with a <span class="math inline">\(Z\)</span>. The t-distribution arises when we
+<em>estimate</em> the variance of the population. It is much more common
+that we do not know the variance of our population, <em>a priori</em>.
+So, how should we estimate the variance of our population? A natural
+answer would be the variation of the sample.</p>
+<p><span class="math display">\[ s^2 = \frac{1}{n-1}\sum (X_i - \bar
+X)^2\]</span></p>
+<p>Again, we should recognize that <span class="math inline">\(s^2\)</span> is a random variable, which somewhat
+complicates our transformed distribution. But have no fear, <span class="math inline">\(s^2\)</span> luckily has a predictable
+distribution (after a little bit of fanengaling), we get the <span class="math inline">\(\chi^2\)</span> distribution (pronounced
+cai-squared). The <span class="math inline">\(\chi^2\)</span>
+distribution arises as a sum of squared <span class="math inline">\(N(0,1)\)</span> distributions. The mean of <span class="math inline">\((X_i - \bar X)^2\)</span> is <span class="math inline">\(0\)</span> under our assumption that <span class="math inline">\(\bar x = \mu\)</span>, then we scale it again by
+dividing by <span class="math inline">\(\sigma^2\)</span>, finally we
+move the <span class="math inline">\(n
+-1\)</span> to the other side so:</p>
+<p><span class="math display">\[ \frac{(n-1)s^2}{\sigma^2} =
+\frac{1}{\sigma^2}\sum (X_i - \bar X)^2
+\sim \chi^2_{n-1}\]</span></p>
+<p>So lets swap out <span class="math inline">\(\sigma^2\)</span> for
+<span class="math inline">\(s^2\)</span> in our transformed variable</p>
+<p><span class="math display">\[ \frac{\bar X - \bar x}{s/\sqrt{n}}
 \]</span></p>
+<p>To get the denominator to look like the <span class="math inline">\(\chi^2\)</span> distribution we described, we need
+to do some pretty meaningless algebra, which I have added for
+completness sake</p>
+<p><span class="math display">\[
+\begin{align*}
+T
+  &amp;= \frac{\bar X - \mu}{\,s/\sqrt{n}\,} \\[4pt] &amp;= \frac{(\bar
+  X - \mu)\,(\sqrt{n}/\sigma)}{(s/\sqrt{n})\,(\sqrt{n}/\sigma)} \\
+&amp;=
+  \frac{\displaystyle \frac{\bar X -
+\mu}{\sigma/\sqrt{n}}}{\displaystyle
+  s/\sigma} \\[10pt] &amp;= \frac{Z}{\,s/\sigma\,} \\[8pt] &amp;=
+  \frac{Z}{\sqrt{s^2/\sigma^2}} \\[6pt] &amp;=
+  \frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{\,n-1\,}}}  \\ &amp;=
+  \frac{Z}{\sqrt{V/n-1}}. \end{align*} \]</span></p>
+<p>So we get that <span class="math inline">\(T\)</span> is the ratio of
+the standard normal distribution the square root of a scaled <span class="math inline">\(\chi^2\)</span> distribution, which, finally, is
+the t-distribution. A complete proof of this fact can be found on one of
+my <a href="https://statproofbook.github.io/P/t-pdf.html">favorite
+sites</a>.</p>
 </body></html>
     </article>
   </main>

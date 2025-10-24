@@ -38,37 +38,36 @@ know about our population.
 
 Let's pick out a characteristic of our population that we're interested in
 and figure out what our sample tells us about it. For example, what can we
-say about the mean of our population, denoted as $\mu$. A natural place to
-start if we want to figure out what $\mu$ is would be to calculate the
-*sample* mean, let's denote it as $\bar x$ (another result of the variety
-of statistics is that we still haven't really come up with good notation).
-Naively, we can say $$ \mu \approx \bar x$$ And the closer our sample gets
-to our population, the more likely this is to be. But collecting data is
-difficult and expensive, and we'd like something a bit more rigorous than
-$\approx$, exactly *how likely* is it for $\mu = \bar x$?. 
+say about the mean of our population, denoted as $\mu$. What we want to do
+is take the information we got from the sample mean, denoted as $\bar x$,
+and use it to test a guess (read, hypothesis) for $\mu$, which we denote
+as $\mu_0$. Basically we want to ask, *how likely is it that
+a distribution that produced $\bar x$ would have the actual mean $\mu_0$
 
 Since $x_i$ is a realization of a random variable $X_i$, and a random
 variable scaled by a constant as well as the summation of random variables
 is also a random variable, $\bar x$ is the realization of a random
 variable as well, $$\bar X = \frac1n\sum X_i$$. To make life a bit easier,
 lets assume that we know the distribution of $X_i$ and by extension of
-$\bar X$. If in fact $\bar x = \mu$ then we would expect $\bar x-\mu
-= 0 \implies E(\bar X)- \mu = 0$, in turn $$E(\bar X - \mu) = 0$$ 
+$\bar X$. If in fact $\mu = \mu_0$ then we would expect that over the long
+run, as the number of data points in our sample increases, then the
+difference between $\bar X$ and $\mu_0$ decrease. Notionally, this
+sentiment is expressed as the expected value: $$E(\bar X - \mu_0) = 0$$ 
 
 We should pause here a little before continuing. What we said in the above
-is that *if* $\bar x = \mu$ then the *distribution* of $\bar X - \mu$ will
-have a mean of $0$. So, if we know what distribution $\bar X - \mu$
-follows, than we can test if our *hypothesis* $\bar x = \mu$ is correct.
-In fact, if we know the distribution of $\bar X - \mu$ we can evaluate
-exactly how probable it is that $\bar x = \mu$. So... what is the
-distribution of $\bar X - \mu$?
+is that *if* $\mu = \mu_0$ then the *distribution* of $\bar X - \mu$ will
+have a mean of $0$. So, if we know what distribution $\bar X - \mu_0$
+follows, than we can test if our *hypothesis* $\mu = \mu_0$ is correct. In
+fact, if we know the distribution of $\bar X - \mu_0$ we can evaluate
+exactly how probable it is that $\mu = \mu_0$. So... what is the
+distribution of $\bar X - \mu_0$?
 
 Well, if we dictate that our hypothesis is true, then we already know the
 mean, what about the variance? Because variance is shift-invariant, that
 is, adding or subtracting by a constrant does not effect the variance of
 the random variable:
 
-$$ \operatorname{Var}(\bar X - \mu) = \operatorname{Var}(\bar X)  $$ 
+$$ \operatorname{Var}(\bar X - \mu_0) = \operatorname{Var}(\bar X)  $$ 
 
 We can expand the averaging and do some algebra
 
@@ -102,18 +101,17 @@ $$
 
 You probably know that we call $\operatorname{Var}(X) = \sigma^2$. So finally
 
-$$
-\operatorname{Var}(\bar X - \mu) = \frac{\sigma^2}{n}
-$$
+$$ \operatorname{Var}(\bar X - \mu_0) = \frac{\sigma^2}{n} $$
 
 We want our transformed distribution to be easy to work with, and dividing it by it's variance is a good way to do that, we'll go over what that gives us soon. 
 
-$$
-\begin{align*}
-\frac{n}{\sigma^2}\operatorname{Var}(\bar X - \mu) &= 1 \\
-\operatorname{Var}(\left (\sqrt{\frac{n}{\sigma^2}} \right)\bar X - \mu)  &= 1
-\end{align*}
-$$
+$$ \begin{align*} \frac{n}{\sigma^2}\operatorname{Var}(\bar X - \mu_0) &=
+1 \\ \operatorname{Var}\left(\left (\sqrt{\frac{n}{\sigma^2}} \right)\bar
+X - \mu_0\right) &= 1 \end{align*} $$ 
+
+So we get our final distribution, which we'll call $T$: 
+
+$$ T = \frac{\bar X - \mu_0}{\sqrt{\sigma^2/n}}$$
 
 Effectively, we have divided our distribution by the *standard error* of
 $\bar X$. This does a couple of things: firstly, it standardizes the
@@ -128,9 +126,65 @@ sense, regardless of the particular characteristics of the system.
 Removing the dimensions of our system does a similar thing, we can now
 speak of our transformed distribution in absolute terms, if two data sets
 , whose population is sampled from the same type of distribution, fulfill
-the hypothesis that $\bar x = \mu$, then they have the exact same
-transformed distribution!
+the hypothesis that $\mu = \mu_0$, then they have the exact same
+transformed distribution! Historically, back when computers were not
+common place and calculating the CDF of a particular distribution was time
+consuming, having a common distriubtion that we can reference precomputed
+values of was very important.
 
 However, this is not yet a t-distribution. If we assume that our data
 $X_i$ is normal, than the above transformed distribution is *exactly*
-a standard normal distribution. 
+a standard normal distribution, which we often denote with a $Z$. The
+t-distribution arises when we *estimate* the variance of the population.
+It is much more common that we do not know the variance of our population,
+*a priori*. So, how should we estimate the variance of our population?
+A natural answer would be the variation of the sample.
+
+$$ s^2 = \frac{1}{n-1}\sum (X_i - \bar X)^2$$
+
+Again, we should recognize that $s^2$ is a random variable, which somewhat
+complicates our transformed distribution. But have no fear, $s^2$ luckily
+has a predictable distribution (after a little bit of fanengaling), we get
+the $\chi^2$ distribution (pronounced cai-squared). The $\chi^2$
+distribution arises as a sum of squared $N(0,1)$ distributions. The mean
+of $(X_i - \bar X)^2$ is $0$ under our assumption that $\mu = \mu_0$, then
+we scale it again by dividing by $\sigma^2$, finally we move the $n -1$ to
+the other side so: 
+
+$$ \frac{(n-1)s^2}{\sigma^2} = \frac{1}{\sigma^2}\sum (X_i - \bar X)^2
+\sim \chi^2_{n-1}$$
+
+So lets swap out $\sigma^2$ for $s^2$ in our transformed variable
+
+$$ \frac{\bar X - \bar x}{s/\sqrt{n}} $$
+
+To get the denominator to look like the $\chi^2$ distribution we
+described, we need to do some pretty meaningless algebra, which I have
+added for completness sake 
+
+$$
+\begin{align*}
+T
+  &= \frac{\bar X - \mu}{\,s/\sqrt{n}\,} \\[4pt] &= \frac{(\bar
+  X - \mu)\,(\sqrt{n}/\sigma)}{(s/\sqrt{n})\,(\sqrt{n}/\sigma)} \\ &=
+  \frac{\displaystyle \frac{\bar X - \mu}{\sigma/\sqrt{n}}}{\displaystyle
+  s/\sigma} \\[10pt] &= \frac{Z}{\,s/\sigma\,} \\[8pt] &=
+  \frac{Z}{\sqrt{s^2/\sigma^2}} \\[6pt] &=
+  \frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{\,n-1\,}}}  \\ &=
+  \frac{Z}{\sqrt{V/n-1}}. \end{align*} $$
+
+So we get that $T$ is the ratio of the standard normal distribution the
+square root of a scaled $\chi^2$ distribution, which, finally, is the
+t-distribution, denoted by $t$. A complete proof of this fact can be found on one of my
+[favorite sites](https://statproofbook.github.io/P/t-pdf.html).
+
+Phew. That was a lot of work. So... why's any of this useful? This whole
+derviation hinges on the fact that $\mu = \mu_0$ that is
+
+$$ T = \frac{\bar X - \mu_0}{s/\sqrt{n}} \sim t $$
+
+*Only under the null hypothesis* $H_0: \mu = \mu_0$. So, if we plug in the
+actually observed values $\bar x$ for $\bar X$, we can see how extreme
+(how unlikely) it is that, in fact $\mu = \mu_0$ is to be. The more
+extreme of a value our realization of $T$ is, the less likely it is that
+our hypothesis is correct.

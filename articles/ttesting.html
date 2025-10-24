@@ -53,31 +53,117 @@
 
     <article class="post-content">
       <html><head></head><body><p>Statisticians and probability theorists have historically salvaged
-and glued together haphazardly from various mathematical disciplines to
-form their study. Measure spaces and <span class="math inline">\(\sigma\)</span>-algebras borrowed from topology,
+and glued together from various mathematical disciplines to form their
+study. Measure spaces and <span class="math inline">\(\sigma\)</span>-algebras borrowed from topology,
 characteristic functions were appropriated from Fourier analysis,
 entropy got nicked from thermodynamics; first by information theory then
 from there by statistics. The list goes on, and we haven’t even
 mentioned geometry, linear algebra, or number theory, the latter two
 comprise a decent chunk of introductory statistics. There’s maybe an
-interesting thesis-sized article tracking the genealogy of this,
-frankly, pieced together field.</p>
-<p>While the ability for the various studies of mathematics to
-accommodate one another so well is one of it’s more beautiful features,
+interesting thesis-sized article tracking the genealogy of this frankly
+pieced together field.</p>
+<p>While the ability for the various disciplines of mathematics to
+accommodate one another so well is one of maths more beautiful features,
 and the statistician’s eagerness to knead together several often
 unrelated ingredients to make the <span class="math inline">\(\pi\)</span> is often their virtue, it does make
 the subject incredibly hard to teach. There’s a lot that is simply taken
 for granted, and the rigorous construction of the daily tools is skipped
 because of the amount of content that there is to cover. As a result, I
-find that at least at the undergrad level, most statistics students
+find that, at least at the undergrad level, most statistics students
 struggle to intuitively explain a tool like the <span class="math inline">\(t\)</span>-distribution. And that’s statistics
 students; biologists, economists, and psychologist who need the tools
 but often lack the prerequisite mathematics knowledge will often treat
-statistics with a learned helplessness. This is of course anecdotal,
-don’t worry, I don’t go around interrogating people about their
-statistical intuition.</p>
-<p>The hope of this article is to provide some mathematical meaning to
-the procedure that is often stated and briefly glossed over.</p>
+statistics with learned helplessness. Of course anecdotal, don’t worry,
+I don’t go around interrogating people about their statistical
+intuition. The hope of this article is to provide some mathematical
+meaning to the procedure that is often stated and briefly glossed
+over.</p>
+<p>Let’s start with the problem statement, given a collection of data
+points (referred to as the sample), drawn from some unknown population,
+can we make any claims about the <em>characteristics</em> of the
+population, from the <em>statistics</em> of the sample? As it turns out,
+yeah (kinda). It’s important to recognize here that each sample <span class="math inline">\(x_i\)</span> is a realization of a random variable
+<span class="math inline">\(X\)</span>; our population is <em>not</em>
+random, however, it is exactly fixed. This is an important distinction
+to keep in mind. We use the framing of probability to give us the
+language to quantify what we don’t know about our population.</p>
+<p>Let’s pick out a characteristic of our population that we’re
+interested in and figure out what our sample tells us about it. For
+example, what can we say about the mean of our population, denoted as
+<span class="math inline">\(\mu\)</span>. A natural place to start if we
+want to figure out what <span class="math inline">\(\mu\)</span> is
+would be to calculate the <em>sample</em> mean, let’s denote it as <span class="math inline">\(\bar x\)</span> (another result of the variety of
+statistics is that we still haven’t really come up with good notation).
+Naively, we can say <span class="math display">\[ \mu \approx \bar
+x\]</span> And the closer our sample gets to our population, the more
+likely this is to be. But collecting data is difficult and expensive,
+and we’d like something a bit more rigorous than <span class="math inline">\(\approx\)</span>, exactly <em>how likely</em> is
+it for <span class="math inline">\(\mu = \bar x\)</span>?.</p>
+<p>Since <span class="math inline">\(x_i\)</span> is a realization of a
+random variable <span class="math inline">\(X_i\)</span>, and a random
+variable scaled by a constant as well as the summation of random
+variables is also a random variable, <span class="math inline">\(\bar
+x\)</span> is the realization of a random variable as well, <span class="math display">\[\bar X = \frac1n\sum X_i\]</span>. To make life a
+bit easier, lets assume that we know the distribution of <span class="math inline">\(X_i\)</span> and by extension of <span class="math inline">\(\bar X\)</span>. If in fact <span class="math inline">\(\bar x = \mu\)</span> then we would expect <span class="math inline">\(\bar x-\mu
+= 0 \implies E(\bar X)- \mu = 0\)</span>, in turn <span class="math display">\[E(\bar X - \mu) = 0\]</span></p>
+<p>We should pause here a little before continuing. What we said in the
+above is that <em>if</em> <span class="math inline">\(\bar x =
+\mu\)</span> then the <em>distribution</em> of <span class="math inline">\(\bar X - \mu\)</span> will have a mean of <span class="math inline">\(0\)</span>. So, if we know what distribution <span class="math inline">\(\bar X - \mu\)</span> follows, than we can test if
+our <em>hypothesis</em> <span class="math inline">\(\bar x =
+\mu\)</span> is correct. In fact, if we know the distribution of <span class="math inline">\(\bar X - \mu\)</span> we can evaluate exactly how
+probable it is that <span class="math inline">\(\bar x = \mu\)</span>.
+So… what is the distribution of <span class="math inline">\(\bar X -
+\mu\)</span>?</p>
+<p>Well, if we dictate that our hypothesis is true, then we already know
+the mean, what about the variance? Because variance is shift-invariant,
+that is, adding or subtracting by a constrant does not effect the
+variance of the random variable:</p>
+<p><span class="math display">\[ \operatorname{Var}(\bar X - \mu) =
+\operatorname{Var}(\bar X)  \]</span></p>
+<p>We can expand the averaging and do some algebra</p>
+<p><span class="math display">\[
+\begin{align*}
+\operatorname{Var}(\frac1n\sum X_i) &amp;=
+\frac1{n^2}\operatorname{Var}(\sum X_i) \\
+&amp;= \frac1{n^2}[\operatorname{Var}(X_1) + \operatorname{Var}(X_2) +
+... \operatorname{Var}(X_n) + \operatorname{Cov}(X_1, X_2) ...]
+\end{align*}`
+\]</span></p>
+<p>In most cases where we apply the t-test, we like to assume that <span class="math inline">\(X_i\)</span>’s are indepdnent of each other, which
+means that <span class="math inline">\(\operatorname{Cov}(X_i,
+X_j) = 0, \forall i \ne j\)</span>. This is often a very reasonable
+assumption, e.g.&nbsp;in a population of humans of the same age, heights can
+be safely assumed to be indpendent. But we shouldn’t get too complacent,
+indpendence of samples is not always the case, the obvious example is
+time series data, where each new event is influenced by the last, but
+even the example of heights can be dubious, think of heights in a
+family, which is surely not indpendent.</p>
+<p>Anyway, since each <span class="math inline">\(X_i\)</span> is
+independent, it must be the case that their variances are the same, so
+we get:</p>
+<p><span class="math display">\[
+\begin{align*}
+\operatorname{Var}(\frac1n\sum X_i) &amp;=
+\frac1{n^2}\sum{\operatorname{Var}(X_i)} \\
+&amp;= \frac1{n^2}\cdot n \operatorname{Var}(X) \\
+&amp;= \frac{\operatorname{Var}(X)}{n}
+\end{align*}`
+\]</span></p>
+<p>You probably know that we call <span class="math inline">\(\operatorname{Var}(X) = \sigma^2\)</span>. So
+finally</p>
+<p><span class="math display">\[
+\operatorname{Var}(\bar X - \mu) = \frac{\sigma^2}{n}
+\]</span></p>
+<p>We want our transformed distribution to be easy to work with, and
+dividing it by it’s variance is a good way to do that, we’ll go over
+what that gices us soon.</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{n}{\sigma^2}\operatorname{Var}(\bar X - \mu) &amp;= 1 \\
+\operatorname{Var}(\left (\sqrt{\frac{n}{\sigma^2}} \right)\bar X -
+\mu)  &amp;= 1
+\end{align*}
+\]</span></p>
 </body></html>
     </article>
   </main>

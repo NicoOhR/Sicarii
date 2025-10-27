@@ -26,6 +26,8 @@ statistical intuition. The hope of this article is to provide some
 mathematical meaning to the procedure that is often stated and briefly
 glossed over.
 
+## Setting up
+
 Let's start with the problem statement, given a collection of data points
 (referred to as the sample), drawn from some unknown population, can we
 make any claims about the *characteristics* of the population, from the
@@ -131,6 +133,8 @@ transformed distribution! Historically, back when computers were not
 common place and calculating the CDF of a particular distribution was time
 consuming, having a common distriubtion that we can reference precomputed
 values of was very important.
+
+## the t-distribution
 
 However, this is not yet a t-distribution. If we assume that our data
 $X_i$ is normal, than the above transformed distribution is *exactly*

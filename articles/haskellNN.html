@@ -1,0 +1,133 @@
+<!-- post.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neural Network, Haskell, and You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+
+</head>
+<body>
+  <style>
+  :not(pre) > code{
+      background: #2b303b;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      overflow-x: auto;
+  }
+  pre.syntect,
+  pre[class*="syntax"],
+  pre.highlight,
+  pre codeblock,          
+  pre {
+    max-width: 100%;
+    overflow-x: auto;      
+    overflow-y: hidden;     
+    white-space: pre;        
+    background: #111111
+    -webkit-overflow-scrolling: touch;
+  }
+  </style>
+  <nav class="nav">
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="../" class="nav-title divider-link">Sicarii</a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="post-container">
+    <div class="post-header">
+      <h1 class="post-title">Neural Network, Haskell, and You</h1>
+      <div class="post-meta">
+        <div class="author">Nico OR</div>
+        <div class="date">2025-11-22</div>
+      </div>
+    </div>
+
+    <article class="post-content">
+      <html><head></head><body><p>Every year, from December 1st to the 25th, a new programming puzzle
+is published to adventofcode.com. Each puzzle contains in it two parts,
+and are almost always some of the best designed puzzles I play during
+the year. I typically solve Advant of Code in Haskell, since I find that
+the strictly functional nature of the language encourages more
+interesting solutions than the bruteforce calculations that are often
+possible. The Haskell itch came a little early this year; coupled with
+the fact that it didn’t exactly sit right with me that I have never
+implemented a neural network from scratch by myself, and the fact that
+Haskell is pretty awesome for linear algebra stuff, as we will see, I
+figured it would be fun to go through the implemntation of an NN in
+Haskell. This article assumes no knowledge of haskell or machine
+learning, but does require some knoweldge in calculus and linear
+algebra. I hope to achieve two things in this article, firstly I want to
+demonstrate that the basic primitive of the machine learning field, the
+neural network, is really not that complicated or hard to get your head
+around, and secondly I would like to answer the decently common question
+“why use haskell?”.</p>
+<h2 id="setting-up">Setting Up</h2>
+<p>First, let’s try to appreciate what it is exactly that we are
+building. Put into a sentence, a neural network is just <em>“the
+composition of linear transformations and non-linear functions”</em> and
+we typically tack on <em>“which approximates a continuous function in
+<span class="math inline">\(\mathbb{R}^n\)</span>”</em> implictily.
+Let’s try to tackle each part of this definition, I’ll keep it brief,
+and will try to add resources for anyone who wants to read more</p>
+<ul>
+<li>A <em>linear transformation</em> is any transformation which
+transforms objects in a globaly consistent manner. For our purposes,
+that means that how much input <span class="math inline">\(x\)</span> is
+transformed by linear transformation <span class="math inline">\(W\)</span> does not depend on <span class="math inline">\(x\)</span> at all. In addition, we can add another
+vector after the transformation while maintaining linearity, for a
+reason that we’ll get to in a minute, this is very useful.</li>
+<li>A <em>non-linear function</em> is all other transformation, that is,
+non-linear function <span class="math inline">\(f\)</span> transforms
+<span class="math inline">\(x\)</span> differently depending on the
+specific value of <span class="math inline">\(x\)</span></li>
+<li>A <em>continuous function in</em> <span class="math inline">\(\mathbb{R}^n\)</span> is a vector valued function
+where a small variation of the input will lead to a similarily small
+variation in the output. The exact details of continuity are not
+strictly necessary to understand, and while I encourage everyone to
+suffer through analysis as I have, we’ll just move on for now.</li>
+</ul>
+<p>Taken together, the neural network <span class="math inline">\(g\)</span> which takes as input <span class="math inline">\(x\)</span> which is a vector in <span class="math inline">\(\mathbb{R}^m\)</span> and produces <span class="math inline">\(y\)</span> which is a vector in <span class="math inline">\(\mathbb{R}^n\)</span>, with non-linear function
+<span class="math inline">\(f\)</span>, and linear transformations <span class="math inline">\(W^1, W^2,...W^L\)</span> and vectors <span class="math inline">\(b^1, b^2,... b^L\)</span> is expressed as</p>
+<p><span class="math display">\[ g(x) = f(W^L(f(W^{L-1}f(...f(W^1x +
+b^1)))+b^{L-1})+b^L) \]</span></p>
+<p>With the correct values of <span class="math inline">\(W^i\)</span>
+and <span class="math inline">\(b^i\)</span>, together referred to as
+the parameters of the neural network, and denoted as <span class="math inline">\(theta\)</span> (I pinky promise this will probably
+be the only greek letter we use) we can approximate any function <span class="math inline">\(f\)</span>, kinda. Quick mathematical aside: there
+is a theorem, the quite badly named universal approximation theorem,
+which states that for any continuous function <span class="math inline">\(f\)</span>, there exists an arbitrarily large
+linear transformation <span class="math inline">\(A\)</span> and some
+<span class="math inline">\(b\)</span> such that for all <span class="math inline">\(x\)</span>, <span class="math display">\[||f(x) -
+g(x)||
+&lt; \varepsilon\]</span> We’re in the real world, so we might not be
+able to compute the “arbitrarily large” <span class="math inline">\(A\)</span>, but this is rarely if ever a
+problem.</p>
+<p>We’ll introduce some more mathematical players later, when we need to
+actually <em>find</em> our parameters. But for now lets do some
+programming.</p>
+<h2 id="haskell-my-sweet-prince-³">Haskell my sweet prince ( ˘ ³˘)♥</h2>
+</body></html>
+    </article>
+  </main>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      }
+    });
+  </script>
+
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</body>
+</html>

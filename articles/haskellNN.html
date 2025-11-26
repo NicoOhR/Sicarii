@@ -65,7 +65,8 @@ Haskell is pretty awesome for linear algebra stuff, as we will see, I
 figured it would be fun to go through the implemntation of an NN in
 Haskell. This article assumes no knowledge of haskell or machine
 learning, but does require some knoweldge in calculus and linear
-algebra. I hope to achieve two things in this article, firstly I want to
+algebra, and that you are familiar with <em>a</em> programmign language.
+I hope to achieve two things in this article, firstly I want to
 demonstrate that the basic primitive of the machine learning field, the
 neural network, is really not that complicated or hard to get your head
 around, and secondly I would like to answer the decently common question
@@ -103,18 +104,49 @@ b^1)))+b^{L-1})+b^L) \]</span></p>
 and <span class="math inline">\(b^i\)</span>, together referred to as
 the parameters of the neural network, and denoted as <span class="math inline">\(theta\)</span> (I pinky promise this will probably
 be the only greek letter we use) we can approximate any function <span class="math inline">\(f\)</span>, kinda. Quick mathematical aside: there
-is a theorem, the quite badly named universal approximation theorem,
-which states that for any continuous function <span class="math inline">\(f\)</span>, there exists an arbitrarily large
-linear transformation <span class="math inline">\(A\)</span> and some
-<span class="math inline">\(b\)</span> such that for all <span class="math inline">\(x\)</span>, <span class="math display">\[||f(x) -
-g(x)||
-&lt; \varepsilon\]</span> We’re in the real world, so we might not be
-able to compute the “arbitrarily large” <span class="math inline">\(A\)</span>, but this is rarely if ever a
-problem.</p>
+is a theorem named, quite badly, universal approximation theorem, which
+states that for any continuous function <span class="math inline">\(f\)</span> and an arbitrary <span class="math inline">\(\varepsilon &gt; 0\)</span>, there exists an
+arbitrarily large linear transformation <span class="math inline">\(A\)</span> and some <span class="math inline">\(b\)</span> such that for all <span class="math inline">\(x\)</span>,</p>
+<p><span class="math display">\[||f(x) - g(x)|| &lt;
+\varepsilon\]</span></p>
+<p>We’re in the real world, so we might not be able to compute the
+“arbitrarily large” <span class="math inline">\(A\)</span>, but this is
+rarely if ever a problem.</p>
 <p>We’ll introduce some more mathematical players later, when we need to
 actually <em>find</em> our parameters. But for now lets do some
 programming.</p>
 <h2 id="haskell-my-sweet-prince-³">Haskell my sweet prince ( ˘ ³˘)♥</h2>
+<p>If you’ve never seen functional programming before some of this might
+be an adjustment, but give me more time than its probably worth and I
+promise you’ll be more confused than when we started. Snark aside, one
+of my favorite aspects of functional programming is that once you have a
+good representation of your data, you’ve made some pretty decent
+progress towards solving your problem.</p>
+<p>So far, we have a non-linear function, which we call an
+<em>activation function</em> and we have our parameters.</p>
+<html><head></head><body><pre class="haskell"><pre style="background-color:#282828;"><span style="color:#fb4938;">data </span><span style="color:#cc869b;">Theta </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">Theta</span><span style="color:#ead4af;"> [(</span><span style="color:#cc869b;">Matrix Double</span><span style="color:#ead4af;">, </span><span style="color:#cc869b;">Vector Double</span><span style="color:#ead4af;">)] </span><span style="color:#fb4938;">deriving</span><span style="color:#ead4af;"> (</span><span style="color:#7ba093;">Show</span><span style="color:#ead4af;">)
+</span><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">type </span><span style="color:#cc869b;">Activation </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">Double </span><span style="color:#cab990;">-&gt; </span><span style="color:#cc869b;">Double</span></pre>
+</pre></body></html>
+<p><code>data Theta</code> is how we define a new type in Haskell, the
+<code>Theta</code> on the other side of the definition is the data
+constructor of this type. While not strictly necessary, I like using
+data constructors as a sort of built in label for parameters which is
+helpful if you’re, like me, bad about naming your variables.
+<code>[(Matrix Double, Vector Double)]</code> means that this is a list
+of the tuple of a matrix of doubles, and a vector of doubles, our <span class="math inline">\(W^i\)</span> and <span class="math inline">\(b^i\)</span> respectively.
+<code>deriving (Show)</code> tells the compiler that we want this type
+to be showable, which in this case just means that it can be coereced
+into a string so we can print it. When we can or cannot derive a
+<em>typeclass</em> (what we call characterisitics) is dependent on a
+couple of things, but <code>Show</code> is relatively simple I thing. If
+you’ve programmed in Rust before, this is largely where
+<code>#[derive(Debug)]</code> comes from. The <code>type</code> keyword
+defines a synonyms for a type, as opposed to <code>data</code> which
+defines a <em>new</em> type. In this case, it’s just nicer to give it a
+name.</p>
+<p>Eventually, we’ll need to subtract thetas and scale them by a double
+value.</p>
 </body></html>
     </article>
   </main>

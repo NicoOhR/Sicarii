@@ -55,33 +55,33 @@
       <html><head></head><body><p>Every year, from December 1st to the 25th, a new programming puzzle
 is published to adventofcode.com. Each puzzle contains in it two parts,
 and are almost always some of the best designed puzzles I play during
-the year. I typically solve Advant of Code in Haskell, since I find that
+the year. I typically solve Advent of Code in Haskell, since I find that
 the strictly functional nature of the language encourages more
-interesting solutions than the bruteforce calculations that are often
+interesting solutions than the brute force calculations that are often
 possible. The Haskell itch came a little early this year; coupled with
 the fact that it didn’t exactly sit right with me that I have never
 implemented a neural network from scratch by myself, and the fact that
 Haskell is pretty awesome for linear algebra stuff, as we will see, I
-figured it would be fun to go through the implemntation of an NN in
-Haskell. This article assumes no knowledge of haskell or machine
-learning, but does require some knoweldge in calculus and linear
-algebra, and that you are familiar with <em>a</em> programmign language.
+figured it would be fun to go through the implementation of an NN in
+Haskell. This article assumes no knowledge of Haskell or machine
+learning, but does require some knowledge in calculus and linear
+algebra, and that you are familiar with <em>a</em> programming language.
 I hope to achieve two things in this article, firstly I want to
 demonstrate that the basic primitive of the machine learning field, the
 neural network, is really not that complicated or hard to get your head
 around, and secondly I would like to answer the decently common question
-“why use haskell?”.</p>
+“why use Haskell?”.</p>
 <h2 id="setting-up">Setting Up</h2>
 <p>First, let’s try to appreciate what it is exactly that we are
 building. Put into a sentence, a neural network is just <em>“the
 composition of linear transformations and non-linear functions”</em> and
 we typically tack on <em>“which approximates a continuous function in
-<span class="math inline">\(\mathbb{R}^n\)</span>”</em> implictily.
+<span class="math inline">\(\mathbb{R}^n\)</span>”</em> implicitly.
 Let’s try to tackle each part of this definition, I’ll keep it brief,
 and will try to add resources for anyone who wants to read more</p>
 <ul>
 <li>A <em>linear transformation</em> is any transformation which
-transforms objects in a globaly consistent manner. For our purposes,
+transforms objects in a globally consistent manner. For our purposes,
 that means that how much input <span class="math inline">\(x\)</span> is
 transformed by linear transformation <span class="math inline">\(W\)</span> does not depend on <span class="math inline">\(x\)</span> at all. In addition, we can add another
 vector after the transformation while maintaining linearity, for a
@@ -91,7 +91,7 @@ non-linear function <span class="math inline">\(f\)</span> transforms
 <span class="math inline">\(x\)</span> differently depending on the
 specific value of <span class="math inline">\(x\)</span></li>
 <li>A <em>continuous function in</em> <span class="math inline">\(\mathbb{R}^n\)</span> is a vector valued function
-where a small variation of the input will lead to a similarily small
+where a small variation of the input will lead to a similarly small
 variation in the output. The exact details of continuity are not
 strictly necessary to understand, and while I encourage everyone to
 suffer through analysis as I have, we’ll just move on for now.</li>
@@ -103,7 +103,7 @@ b^1)))+b^{L-1})+b^L) \]</span></p>
 <p>With the correct values of <span class="math inline">\(W^i\)</span>
 and <span class="math inline">\(b^i\)</span>, together referred to as
 the parameters of the neural network, and denoted as <span class="math inline">\(theta\)</span> (I pinky promise this will probably
-be the only greek letter we use) we can approximate any function <span class="math inline">\(f\)</span>, kinda. Quick mathematical aside: there
+be the only Greek letter we use) we can approximate any function <span class="math inline">\(f\)</span>, kinda. Quick mathematical aside: there
 is a theorem named, quite badly, universal approximation theorem, which
 states that for any continuous function <span class="math inline">\(f\)</span> and an arbitrary <span class="math inline">\(\varepsilon &gt; 0\)</span>, there exists an
 arbitrarily large linear transformation <span class="math inline">\(A\)</span> and some <span class="math inline">\(b\)</span> such that for all <span class="math inline">\(x\)</span>,</p>
@@ -112,9 +112,53 @@ arbitrarily large linear transformation <span class="math inline">\(A\)</span> a
 <p>We’re in the real world, so we might not be able to compute the
 “arbitrarily large” <span class="math inline">\(A\)</span>, but this is
 rarely if ever a problem.</p>
-<p>We’ll introduce some more mathematical players later, when we need to
-actually <em>find</em> our parameters. But for now lets do some
-programming.</p>
+<h2 id="actually-finding-the-parameters.">Actually Finding the
+Parameters.</h2>
+<p>In optimization, we generally like thinking about minimization
+problems rather than maximization problems, more by convention than by
+any other reason. In this case we’re trying to find the parameters which
+are <em>least wrong</em> which is the same as the parameters that are
+<em>most right</em>. This is expressed notationaly as <span class="math display">\[
+\operatorname*{arg\,min}_\theta~||f(x) - g_\theta(x)||
+\]</span></p>
+<p>And is read as “find <span class="math inline">\(theta\)</span> such
+that the difference between the function <span class="math inline">\(f\)</span> and the the function paramterized by
+<span class="math inline">\(\theta\)</span>, <span class="math inline">\(g\)</span>, is minimized”. In this case, we can
+use the standard euclidean norm <span class="math display">\[
+||v|| = \sqrt{v_1^2 + v_2^2 + ... v_n^2}
+\]</span> To compute the difference between our functions, but
+sometimes, depending on your problem and what the output of your network
+is, other <em>metrics</em> should be used (for example, for probability
+distributions, we use the KL-divergence metric to quantify how far our
+network is from our function). Because we’ll do the chosen metric
+operation a lot, we’d like it to be computationally cheap, and the
+square root function is anything but. We can avoid doing the square root
+by recognizing that, because the square function is strictly increasing
+for positive values, minimizing the square of the norm is exactly the
+same as minimizing the norm itself, so, our goals becomes:</p>
+<p><span class="math display">\[
+\operatorname*{arg\,min}_\theta~||f(x) - g_\theta(x)||^2
+\]</span> Or more explicitly <span class="math display">\[
+\operatorname*{arg\,min}_\theta~ (f(x)_1 -
+g(x)_1)^2+(f(x)_2-g(x)_2)_2^2+...(f(x)_n - g(x)_n)^2
+\]</span></p>
+<p>We call the measure of how “wrong” our network is the cost function
+(also loss, depending on whose writing the paper). Cost is parameterized
+by both <span class="math inline">\(\theta\)</span> and <span class="math inline">\(x\)</span>, which is important to keep in mind as
+we do the derivations for backpropagation, the algorithm of choice to
+find the best parameters.</p>
+<p>Now that we’ve stated the goal, how do we find it? Here we introduce
+the gradient, which is, for a vector valued function <span class="math inline">\(f: \mathbb{R}^n \to \mathbb{R}\)</span> defined
+as</p>
+<p><span class="math display">\[
+\nabla f(\mathbf{x}) =
+\begin{pmatrix}
+\frac{\partial f}{\partial x_1}(\mathbf{x}) \\
+\frac{\partial f}{\partial x_2}(\mathbf{x}) \\
+\vdots \\
+\frac{\partial f}{\partial x_n}(\mathbf{x})
+\end{pmatrix}
+\]</span></p>
 <h2 id="haskell-my-sweet-prince-³">Haskell my sweet prince ( ˘ ³˘)♥</h2>
 <p>If you’ve never seen functional programming before some of this might
 be an adjustment, but give me more time than its probably worth and I
@@ -128,7 +172,7 @@ progress towards solving your problem.</p>
 </span><span style="color:#ead4af;">
 </span><span style="color:#fb4938;">type </span><span style="color:#cc869b;">Activation </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">Double </span><span style="color:#cab990;">-&gt; </span><span style="color:#cc869b;">Double</span></pre>
 </pre></body></html>
-<p><code>data Theta</code> is how we define a new type in Haskell, the
+<p><code>data</code> is how we define a new type in Haskell, the
 <code>Theta</code> on the other side of the definition is the data
 constructor of this type. While not strictly necessary, I like using
 data constructors as a sort of built in label for parameters which is
@@ -136,17 +180,44 @@ helpful if you’re, like me, bad about naming your variables.
 <code>[(Matrix Double, Vector Double)]</code> means that this is a list
 of the tuple of a matrix of doubles, and a vector of doubles, our <span class="math inline">\(W^i\)</span> and <span class="math inline">\(b^i\)</span> respectively.
 <code>deriving (Show)</code> tells the compiler that we want this type
-to be showable, which in this case just means that it can be coereced
+to be show-able, which in this case just means that it can be coerced
 into a string so we can print it. When we can or cannot derive a
-<em>typeclass</em> (what we call characterisitics) is dependent on a
+<em>typeclass</em> (what we call characteristics) is dependent on a
 couple of things, but <code>Show</code> is relatively simple I thing. If
 you’ve programmed in Rust before, this is largely where
 <code>#[derive(Debug)]</code> comes from. The <code>type</code> keyword
 defines a synonyms for a type, as opposed to <code>data</code> which
-defines a <em>new</em> type. In this case, it’s just nicer to give it a
-name.</p>
-<p>Eventually, we’ll need to subtract thetas and scale them by a double
-value.</p>
+defines a <em>new</em> type. In this case, it’s just nicer to give this
+type a name.</p>
+<p>Eventually, we’ll need to subtract thetas and scale them by a
+<code>double</code> type. Of course, this is exactly defining a vector
+space over the theta type, and we could probably define a vector space
+typeclass to get some nice binary operations to do this, but this is
+just as achievable, and probably easier, to just do with functions.</p>
+<html><head></head><body><pre class="haskell"><pre style="background-color:#282828;"><span style="color:#8ab572;">scaleThetas </span><span style="color:#fb4938;">:: </span><span style="color:#fd971f;">Theta </span><span style="color:#fb4938;">-&gt; </span><span style="color:#fd971f;">Double </span><span style="color:#fb4938;">-&gt; </span><span style="color:#fd971f;">Theta
+</span><span style="color:#ead4af;">scaleThetas (Theta ts) eta </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">Theta</span><span style="color:#ead4af;"> (fmap (</span><span style="color:#cab990;">\</span><span style="color:#ead4af;">(x, y) </span><span style="color:#cab990;">-&gt;</span><span style="color:#ead4af;"> (scale eta x, scale eta y)) ts)
+</span><span style="color:#ead4af;">
+</span><span style="color:#8ab572;">subtractThetas </span><span style="color:#fb4938;">:: </span><span style="color:#fd971f;">Theta </span><span style="color:#fb4938;">-&gt; </span><span style="color:#fd971f;">Theta </span><span style="color:#fb4938;">-&gt; </span><span style="color:#fd971f;">Theta
+</span><span style="color:#ead4af;">subtractThetas (Theta ts) (Theta gs) </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">Theta</span><span style="color:#ead4af;"> (zipWith (</span><span style="color:#cab990;">\</span><span style="color:#ead4af;">(x, y) (u, v) </span><span style="color:#cab990;">-&gt;</span><span style="color:#ead4af;"> (x </span><span style="color:#cab990;">-</span><span style="color:#ead4af;"> u, y </span><span style="color:#cab990;">-</span><span style="color:#ead4af;"> v)) ts gs)</span></pre>
+</pre></body></html>
+<p>The double colon, <code>::</code> should be read as “has type of”.
+Exactly why there isn’t a distinction between what are procedurally
+thought of as the parameters and the output of the function is an iota
+outside of the scope of this article unfortunately, but I’ll attach some
+articles on learning Haskell. First, looking at the
+<code>scaleThetas</code> function, we take as input a theta and a
+double, then fmaps the anonymous function
+<code>(\x,y) -&gt; (scale eta x, scale eta y)</code> on the
+<code>Theta</code>. <code>fmap</code> stands for “function map”, and
+does just that, given a function and a list, return the list with the
+function applied to each element of the list, and <code>scale</code> is
+provided by the Vector and Matrix types to do scalar multiplication.
+Looking at the <code>subtractThetas</code> function,
+<code>zipWith</code> is a combination of <code>fmap</code> and
+<code>zip</code>, so we’re combining two lists, the inputs
+<code>ts</code> and <code>gs</code>, then applying the lambda function
+<code>\(x,y) (u,v) -&gt; (x - u, (y - v))</code> to that combined
+list.</p>
 </body></html>
     </article>
   </main>

@@ -1,4 +1,4 @@
-title = "Neural Network, Haskell, and You"
+title = "Neural Networks, Haskell, and You"
 subtitle = "On the surprising ergonomics of functional programming for machine learning" 
 author = "Nico OR"
 content_path = "assets/haskellNN/haskellNN.md"

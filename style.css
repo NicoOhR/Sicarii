@@ -173,6 +173,8 @@ main {
   margin: 10vh auto 0;           /* mt-[10vh] */
   margin-bottom: 10em;
   padding: 0 1rem;               /* px-4 */
+  text-align: justify;      
+  text-justify: inter-word;
 }
 
 /* —— Post header —— */

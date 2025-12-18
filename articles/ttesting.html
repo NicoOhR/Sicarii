@@ -52,306 +52,232 @@
     </div>
 
     <article class="post-content">
-      <html><head></head><body><p>Statisticians and probability theorists have historically salvaged
-and glued together from various mathematical disciplines to form their
-study. Measure spaces and <span class="math inline">\(\sigma\)</span>-algebras borrowed from topology,
-characteristic functions were appropriated from Fourier analysis,
-entropy got nicked from thermodynamics; first by information theory then
-from there by statistics. The list goes on, and we haven’t even
-mentioned geometry, linear algebra, or number theory, the latter two
-comprise a decent chunk of introductory statistics. There’s maybe an
-interesting thesis-sized article tracking the genealogy of this frankly
-pieced together field.</p>
-<p>While the ability for the various disciplines of mathematics to
-accommodate one another so well is one of maths more beautiful features,
-and the statistician’s eagerness to knead together several often
-unrelated ingredients to make the <span class="math inline">\(\pi\)</span> is often their virtue, it does make
-the subject incredibly hard to teach. There’s a lot that is simply taken
-for granted, and the rigorous construction of the daily tools is skipped
-because of the amount of content that there is to cover. As a result, I
-find that, at least at the undergrad level, most statistics students
-struggle to intuitively explain a tool like the <span class="math inline">\(t\)</span>-distribution. And that’s statistics
-students; biologists, economists, and psychologist who need the tools
-but often lack the prerequisite mathematics knowledge will often treat
-statistics with learned helplessness. Of course anecdotal, don’t worry,
-I don’t go around interrogating people about their statistical
-intuition. The hope of this article is to provide some mathematical
-meaning to the procedure that is often stated and briefly glossed
-over.</p>
-<h2 id="setting-up">Setting up</h2>
-<p>Let’s start with the problem statement, given a collection of data
-points (referred to as the sample), drawn from some unknown population,
-can we make any claims about the <em>characteristics</em> of the
-population, from the <em>statistics</em> of the sample? As it turns out,
-yeah (kinda). It’s important to recognize here that each sample <span class="math inline">\(x_i\)</span> is a realization of a random variable
-<span class="math inline">\(X\)</span>; our population is <em>not</em>
-random, however, it is exactly fixed. This is an important distinction
-to keep in mind. We use the framing of probability to give us the
-language to quantify what we don’t know about our population.</p>
-<p>Let’s pick out a characteristic of our population that we’re
-interested in and figure out what our sample tells us about it. For
-example, what can we say about the mean of our population, denoted as
-<span class="math inline">\(\mu\)</span>. What we want to do is take the
-information we got from the sample mean, denoted as <span class="math inline">\(\bar x\)</span>, and use it to test a guess (read,
-hypothesis) for <span class="math inline">\(\mu\)</span>, which we
-denote as <span class="math inline">\(\mu_0\)</span>. Basically we want
-to ask, *how likely is it that a distribution that produced <span class="math inline">\(\bar x\)</span> would have the actual mean <span class="math inline">\(\mu_0\)</span></p>
-<p>Since <span class="math inline">\(x_i\)</span> is a realization of a
-random variable <span class="math inline">\(X_i\)</span>, and a random
-variable scaled by a constant as well as the summation of random
-variables is also a random variable, <span class="math inline">\(\bar
-x\)</span> is the realization of a random variable as well, <span class="math display">\[\bar X = \frac1n\sum X_i\]</span>. To make life a
-bit easier, lets assume that we know the distribution of <span class="math inline">\(X_i\)</span> and by extension of <span class="math inline">\(\bar X\)</span>. If in fact <span class="math inline">\(\mu = \mu_0\)</span> then we would expect that
-over the long run, as the number of data points in our sample increases,
-then the difference between <span class="math inline">\(\bar X\)</span>
-and <span class="math inline">\(\mu_0\)</span> decrease. Notionally,
-this sentiment is expressed as the expected value: <span class="math display">\[E(\bar X - \mu_0) = 0\]</span></p>
-<p>The step above is critical to our understanding of this subject, so
-we should pause here a little before continuing. What we said in the
-above is that <em>if</em> <span class="math inline">\(\mu =
-\mu_0\)</span> then the <em>distribution</em> of <span class="math inline">\(\bar X - \mu\)</span> will have a mean of <span class="math inline">\(0\)</span>. This works because <span class="math inline">\(\bar X\)</span> is what we call an <em>unbiased
-estimator</em> of <span class="math inline">\(\mu\)</span>. An estimator
-(which is a random variable) is unbiased if it’s <em>expected value</em>
-is equal to the true value. There’s a couple of ways to think of the
-expected value function <span class="math inline">\(E\)</span>, but it’s
-probably easiest to conceptualize it as the <em>average</em> of
-realizations of a random variable, <em>weighted</em> by the likelihood
-of them appearing. Mathematically this is expressed as either a
-summation (in the discrete random variable case), or integration (in the
-continuous random variable case). So</p>
-<p><span class="math display">\[
+      <html><head></head><body><p>Statisticians and probability theorists have historically salvaged and glued
+together from various mathematical disciplines to form their
+study. Measure spaces and $\sigma$-algebras borrowed from topology,
+characteristic functions were appropriated from Fourier analysis, entropy
+got nicked from thermodynamics; first by information theory then from
+there by statistics. The list goes on, and we haven't even mentioned
+geometry, linear algebra, or number theory, the latter two comprise
+a decent chunk of introductory statistics. There's maybe an interesting
+thesis-sized article tracking the genealogy of this frankly pieced
+together field.</p>
+<p>While the ability for the various disciplines of mathematics to accommodate
+one another so well is one of maths more beautiful features, and the
+statistician's eagerness to knead together several often unrelated
+ingredients to make the $\pi$ is often their virtue, it does make the
+subject incredibly hard to teach. There's a lot that is simply taken for
+granted, and the rigorous construction of the daily tools is skipped
+because of the amount of content that there is to cover. As a result,
+I find that, at least at the undergrad level, most statistics students
+struggle to intuitively explain a tool like the $t$-distribution. And
+that's statistics students; biologists, economists, and psychologist who
+need the tools but often lack the prerequisite mathematics knowledge will
+often treat statistics with learned helplessness. Of course
+anecdotal, don't worry, I don't go around interrogating people about their
+statistical intuition. The hope of this article is to provide some
+mathematical meaning to the procedure that is often stated and briefly
+glossed over.</p>
+<h2>Setting up</h2>
+<p>Let's start with the problem statement, given a collection of data points
+(referred to as the sample), drawn from some unknown population, can we
+make any claims about the <em>characteristics</em> of the population, from the
+<em>statistics</em> of the sample? As it turns out, yeah (kinda). It's important
+to recognize here that each sample $x_i$ is a realization of a random
+variable $X$; our population is <em>not</em> random, however, it is exactly
+fixed. This is an important distinction to keep in mind. We use the
+framing of probability to give us the language to quantify what we don't
+know about our population.</p>
+<p>Let's pick out a characteristic of our population that we're interested in
+and figure out what our sample tells us about it. For example, what can we
+say about the mean of our population, denoted as $\mu$. What we want to do
+is take the information we got from the sample mean, denoted as $\bar x$,
+and use it to test a guess (read, hypothesis) for $\mu$, which we denote
+as $\mu_0$. Basically we want to ask, *how likely is it that
+a distribution that produced $\bar x$ would have the actual mean $\mu_0$</p>
+<p>Since $x_i$ is a realization of a random variable $X_i$, and a random
+variable scaled by a constant as well as the summation of random variables
+is also a random variable, $\bar x$ is the realization of a random
+variable as well, $$\bar X = \frac1n\sum X_i$$. To make life a bit easier,
+lets assume that we know the distribution of $X_i$ and by extension of
+$\bar X$. If in fact $\mu = \mu_0$ then we would expect that over the long
+run, as the number of data points in our sample increases, then the
+difference between $\bar X$ and $\mu_0$ decrease. Notionally, this
+sentiment is expressed as the expected value: $$E(\bar X - \mu_0) = 0$$</p>
+<p>The step above is critical to our understanding of this subject, so we
+should pause here a little before continuing. What we said in the above is
+that <em>if</em> $\mu = \mu_0$ then the <em>distribution</em> of $\bar X - \mu$ will
+have a mean of $0$. This works because $\bar X$ is what we call an
+<em>unbiased estimator</em> of $\mu$. An estimator (which is a random variable)
+is unbiased if it's <em>expected value</em> is equal to the true value. There's
+a couple of ways to think of the expected value function $E$, but it's
+probably easiest to conceptualize it as the <em>average</em> of realizations of
+a random variable, <em>weighted</em> by the likelihood of them appearing.
+Mathematically this is expressed as either a summation (in the discrete
+random variable case), or integration (in the continuous random variable
+case). So</p>
+<p>$$
 \begin{align*}
-\operatorname{E}[\bar X] = \mu &amp;\implies \operatorname{E}[\bar X] -
-\mu_0 = \mu - \mu_0  \\
+\operatorname{E}[\bar X] = \mu &amp;\implies \operatorname{E}[\bar X] - \mu_0 = \mu - \mu_0  \\
 &amp;\implies \operatorname{E}[\bar X - \mu_0] = \mu - \mu_0 = 0
 \end{align*}
-\]</span></p>
-<p>Philosophically, applying the expected value operation allows us to
-stop thinking about specific realizations of <span class="math inline">\(\bar X\)</span>, and start thinking about the
-overall <em>expectation</em> of <span class="math inline">\(\bar
-X\)</span>. So, if we know what distribution <span class="math inline">\(\bar X - \mu_0\)</span> follows, than we can test
-if our <em>hypothesis</em> <span class="math inline">\(\mu
-= \mu_0\)</span> is correct. In fact, if we know the distribution of
-<span class="math inline">\(\bar
-X - \mu_0\)</span> we can evaluate exactly how probable it is that <span class="math inline">\(\mu = \mu_0\)</span>. So… what is the distribution
-of <span class="math inline">\(\bar X - \mu_0\)</span>?</p>
-<p>Well, if we dictate that our hypothesis is true, then we already know
-the mean, what about the variance? Because variance is shift-invariant,
-that is, adding or subtracting by a constant does not effect the
-variance of the random variable:</p>
-<p><span class="math display">\[ \operatorname{Var}(\bar X - \mu_0) =
-\operatorname{Var}(\bar X)  \]</span></p>
+$$</p>
+<p>Philosophically, applying the expected value operation allows us to stop
+thinking about specific realizations of $\bar X$, and start thinking about
+the overall <em>expectation</em> of $\bar X$. So, if we know what distribution
+$\bar X - \mu_0$ follows, than we can test if our <em>hypothesis</em> $\mu
+= \mu_0$ is correct. In fact, if we know the distribution of $\bar
+X - \mu_0$ we can evaluate exactly how probable it is that $\mu = \mu_0$.
+So... what is the distribution of $\bar X - \mu_0$?</p>
+<p>Well, if we dictate that our hypothesis is true, then we already know the
+mean, what about the variance? Because variance is shift-invariant, that
+is, adding or subtracting by a constant does not effect the variance of
+the random variable:</p>
+<p>$$ \operatorname{Var}(\bar X - \mu_0) = \operatorname{Var}(\bar X)  $$</p>
 <p>We can expand the averaging and do some algebra</p>
-<p><span class="math display">\[
+<p>$$
 \begin{align*}
-\operatorname{Var}(\frac1n\sum X_i) &amp;=
-\frac1{n^2}\operatorname{Var}(\sum X_i) \\
-&amp;= \frac1{n^2}[\operatorname{Var}(X_1) + \operatorname{Var}(X_2) +
-... \operatorname{Var}(X_n) + \operatorname{Cov}(X_1, X_2) ... +
-\operatorname{Cov}(X_{n-1}, X_{n})]
+\operatorname{Var}(\frac1n\sum X_i) &amp;= \frac1{n^2}\operatorname{Var}(\sum X_i) \\
+&amp;= \frac1{n^2}[\operatorname{Var}(X_1) + \operatorname{Var}(X_2) + ... \operatorname{Var}(X_n) + \operatorname{Cov}(X_1, X_2) ... + \operatorname{Cov}(X_{n-1}, X_{n})]
 \end{align*}
-\]</span></p>
-<p>In most cases where we apply the t-test, we like to assume that <span class="math inline">\(X_i\)</span>’s are independent of each other,
-which means that <span class="math inline">\(\operatorname{Cov}(X_i,
-X_j) = 0, \forall i \ne j\)</span>. This is often a very reasonable
-assumption, e.g.&nbsp;in a population of humans of the same age, heights can
-be safely assumed to be independent. But we shouldn’t get too
-complacent, independent of samples is not always the case, the obvious
-example is time series data, where each new event is influenced by the
-last, but even the example of heights can be dubious, think of heights
-in a family, which is surely not independent.</p>
-<p>Anyway, we also assume that each <span class="math inline">\(X_i\)</span> is identical. A collection of random
-variables that identical and independently distributed will often be
-abbreviates as <span class="math inline">\(\text{i.i.d}\)</span>.
-Because they are identical, they share a variance.</p>
-<p><span class="math display">\[
+$$</p>
+<p>In most cases where we apply the t-test, we like to assume that $X_i$'s
+are independent of each other, which means that $\operatorname{Cov}(X_i,
+X_j) = 0, \forall i \ne j$. This is often a very reasonable assumption,
+e.g. in a population of humans of the same age, heights can be safely
+assumed to be independent. But we shouldn't get too complacent, independent
+of samples is not always the case, the obvious example is time series
+data, where each new event is influenced by the last, but even the example
+of heights can be dubious, think of heights in a family, which is surely
+not independent.</p>
+<p>Anyway, we also assume that each $X_i$ is identical. A collection of
+random variables that identical and independently distributed will often
+be abbreviates as $\text{i.i.d}$. Because they are identical, they share
+a variance.</p>
+<p>$$
 \begin{align*}
-\operatorname{Var}(\frac1n\sum X_i) &amp;=
-\frac1{n^2}\sum{\operatorname{Var}(X_i)} \\
+\operatorname{Var}(\frac1n\sum X_i) &amp;= \frac1{n^2}\sum{\operatorname{Var}(X_i)} \\
 &amp;= \frac1{n^2}\cdot n \operatorname{Var}(X) \\
 &amp;= \frac{\operatorname{Var}(X)}{n}
 \end{align*}
-\]</span></p>
-<p>You probably know that we call <span class="math inline">\(\operatorname{Var}(X) = \sigma^2\)</span>. So
-finally</p>
-<p><span class="math display">\[ \operatorname{Var}(\bar X - \mu_0) =
-\frac{\sigma^2}{n} \]</span></p>
-<p>(The division by <span class="math inline">\(n\)</span> has
-additional meaning beyond being a result of algebra, <span class="math inline">\(n\)</span> being the <em>degrees of freedom</em>
-of the data. This is a subject deserving it’s own article, and if you
-would like more information I can recommend Sam Levy’s still ongoing <a href="https://www.youtube.com/watch?v=VDlnuO96p58">series</a> on the
-subject).</p>
-<p>We want our transformed distribution to be easy to work with, and
-dividing it by it’s variance is a good way to do that, we’ll go over
-what that gives us soon.</p>
-<p><span class="math display">\[ \begin{align*}
-\frac{n}{\sigma^2}\operatorname{Var}(\bar X - \mu_0) &amp;=
-1 \\ \operatorname{Var}\left(\left (\sqrt{\frac{n}{\sigma^2}}
-\right)\bar
-X - \mu_0\right) &amp;= 1 \end{align*} \]</span></p>
-<p>So we get our final distribution, which we’ll call <span class="math inline">\(T\)</span>:</p>
-<p><span class="math display">\[ T = \frac{\bar X -
-\mu_0}{\sqrt{\sigma^2/n}}\]</span></p>
-<p>Effectively, we have divided our distribution by the <em>standard
-error</em> of <span class="math inline">\(\bar X\)</span>. This does a
-couple of things: firstly, it standardizes the distribution to have a
-variance of <span class="math inline">\(1\)</span>, it also makes the
-distribution <em>dimensionless</em>. When we say a distribution (or any
-value) is dimensionless, we mean that it does not have any units
-attached to it; they most commonly appear as a result of a division by a
-measurement of the same units, leading to cancellation of the
-“dimensions” of the measurements. These are confusing but critical to a
-lot of modern science, especially physics, where they allow us to say
-things in a very general sense, regardless of the particular
-characteristics of the system. Removing the dimensions of our system
-does a similar thing, we can now speak of our transformed distribution
-in absolute terms, if two data sets , whose population is sampled from
-the same type of distribution, fulfill the hypothesis that <span class="math inline">\(\mu = \mu_0\)</span>, then they have the exact
-same transformed distribution! Historically, back when computers were
-not common place and calculating the CDF of a particular distribution
-was time consuming, having a common distribution that we can reference
-precomputed values of was very important.</p>
-<h2 id="the-t-distribution">the t-distribution</h2>
+$$</p>
+<p>You probably know that we call $\operatorname{Var}(X) = \sigma^2$. So finally</p>
+<p>$$ \operatorname{Var}(\bar X - \mu_0) = \frac{\sigma^2}{n} $$</p>
+<p>(The division by $n$ has additional meaning beyond being a result of algebra, $n$ being the <em>degrees of freedom</em> of the data. This is a subject deserving it's own article, and if you would like more information I can recommend Sam Levy's still ongoing <a href="https://www.youtube.com/watch?v=VDlnuO96p58">series</a> on the subject).</p>
+<p>We want our transformed distribution to be easy to work with, and dividing it by it's variance is a good way to do that, we'll go over what that gives us soon.</p>
+<p>$$ \begin{align*} \frac{n}{\sigma^2}\operatorname{Var}(\bar X - \mu_0) &amp;=
+1 \ \operatorname{Var}\left(\left (\sqrt{\frac{n}{\sigma^2}} \right)\bar
+X - \mu_0\right) &amp;= 1 \end{align*} $$</p>
+<p>So we get our final distribution, which we'll call $T$:</p>
+<p>$$ T = \frac{\bar X - \mu_0}{\sqrt{\sigma^2/n}}$$</p>
+<p>Effectively, we have divided our distribution by the <em>standard error</em> of
+$\bar X$. This does a couple of things: firstly, it standardizes the
+distribution to have a variance of $1$, it also makes the distribution
+<em>dimensionless</em>. When we say a distribution (or any value) is
+dimensionless, we mean that it does not have any units attached to it;
+they most commonly appear as a result of a division by a measurement of
+the same units, leading to cancellation of the "dimensions" of the
+measurements. These are confusing but critical to a lot of modern science,
+especially physics, where they allow us to say things in a very general
+sense, regardless of the particular characteristics of the system.
+Removing the dimensions of our system does a similar thing, we can now
+speak of our transformed distribution in absolute terms, if two data sets
+, whose population is sampled from the same type of distribution, fulfill
+the hypothesis that $\mu = \mu_0$, then they have the exact same
+transformed distribution! Historically, back when computers were not
+common place and calculating the CDF of a particular distribution was time
+consuming, having a common distribution that we can reference precomputed
+values of was very important.</p>
+<h2>the t-distribution</h2>
 <p>However, this is not yet a t-distribution. If we assume that our data
-<span class="math inline">\(X_i\)</span> is normal, than the above
-transformed distribution is <em>exactly</em> a standard normal
-distribution, which we often denote with a <span class="math inline">\(Z\)</span>. The t-distribution arises when we
-<em>estimate</em> the variance of the population. It is much more common
-that we do not know the variance of our population, <em>a priori</em>.
-So, how should we estimate the variance of our population? A natural
-answer would be the variation of the sample.</p>
-<p><span class="math display">\[ s^2 = \frac{1}{n-1}\sum (X_i - \bar
-X)^2\]</span></p>
-<p>Again, we should recognize that <span class="math inline">\(s^2\)</span> is a random variable, which somewhat
-complicates our transformed distribution. But have no fear, <span class="math inline">\(s^2\)</span> luckily has a predictable
-distribution (after a little bit of fanengaling), we get the <span class="math inline">\(\chi^2_{n}\)</span> distribution (pronounced
-cai-squared with <span class="math inline">\(n\)</span> degrees of
-freedom). The <span class="math inline">\(\chi^2\)</span> distribution
-arises as a sum of <span class="math inline">\(n\)</span> squared <span class="math inline">\(N(0,1)\)</span>. The mean of <span class="math inline">\((X_i - \bar X)^2\)</span> is <span class="math inline">\(0\)</span> under our assumption that <span class="math inline">\(\mu = \mu_0\)</span>, then we scale it again by
-dividing by <span class="math inline">\(\sigma^2\)</span>, finally we
-move the <span class="math inline">\(n -1\)</span> to the other side
-so:</p>
-<p><span class="math display">\[ \frac{(n-1)s^2}{\sigma^2} =
-\frac{1}{\sigma^2}\sum_{i=1}^n (X_i - \bar X)^2
-\sim \chi^2_{n-1}\]</span></p>
-<p>So lets swap out <span class="math inline">\(\sigma^2\)</span> for
-<span class="math inline">\(s^2\)</span> in our transformed variable</p>
-<p><span class="math display">\[ \frac{\bar X - \bar x}{s/\sqrt{n}}
-\]</span></p>
-<p>To get the denominator to look like the <span class="math inline">\(\chi^2\)</span> distribution we described, we need
-to do some pretty meaningless algebra, which I have added for
-completeness sake</p>
-<p><span class="math display">\[
+$X_i$ is normal, than the above transformed distribution is <em>exactly</em>
+a standard normal distribution, which we often denote with a $Z$. The
+t-distribution arises when we <em>estimate</em> the variance of the population.
+It is much more common that we do not know the variance of our population,
+<em>a priori</em>. So, how should we estimate the variance of our population?
+A natural answer would be the variation of the sample.</p>
+<p>$$ s^2 = \frac{1}{n-1}\sum (X_i - \bar X)^2$$</p>
+<p>Again, we should recognize that $s^2$ is a random variable, which somewhat
+complicates our transformed distribution. But have no fear, $s^2$ luckily
+has a predictable distribution (after a little bit of fanengaling), we get
+the $\chi^2_{n}$ distribution (pronounced cai-squared with $n$ degrees of freedom). The $\chi^2$
+distribution arises as a sum of $n$ squared $N(0,1)$. The mean
+of $(X_i - \bar X)^2$ is $0$ under our assumption that $\mu = \mu_0$, then
+we scale it again by dividing by $\sigma^2$, finally we move the $n -1$ to
+the other side so:</p>
+<p>$$ \frac{(n-1)s^2}{\sigma^2} = \frac{1}{\sigma^2}\sum_{i=1}^n (X_i - \bar X)^2
+\sim \chi^2_{n-1}$$</p>
+<p>So lets swap out $\sigma^2$ for $s^2$ in our transformed variable</p>
+<p>$$ \frac{\bar X - \bar x}{s/\sqrt{n}} $$</p>
+<p>To get the denominator to look like the $\chi^2$ distribution we
+described, we need to do some pretty meaningless algebra, which I have
+added for completeness sake</p>
+<p>$$
 \begin{align*}
 T
-  &amp;= \frac{\bar X - \mu}{\,s/\sqrt{n}\,} \\[4pt] &amp;= \frac{(\bar
-  X - \mu)\,(\sqrt{n}/\sigma)}{(s/\sqrt{n})\,(\sqrt{n}/\sigma)} \\
-&amp;=
-  \frac{\displaystyle \frac{\bar X -
-\mu}{\sigma/\sqrt{n}}}{\displaystyle
-  s/\sigma} \\[10pt] &amp;= \frac{Z}{\,s/\sigma\,} \\[8pt] &amp;=
-  \frac{Z}{\sqrt{s^2/\sigma^2}} \\[6pt] &amp;=
-  \frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{\,n-1\,}}}  \\ &amp;=
-  \frac{Z}{\sqrt{V/n-1}}. \end{align*} \]</span></p>
-<p>Where <span class="math inline">\(V \sim \chi^2_{n-1}\)</span>. So we
-get that <span class="math inline">\(T\)</span> is the ratio of the
-standard normal distribution the square root of a scaled <span class="math inline">\(\chi^2\)</span> distribution, which, finally, is
-the t-distribution, denoted by <span class="math inline">\(t\)</span>. A
-complete proof of this fact can be found on one of my <a href="https://statproofbook.github.io/P/t-pdf.html">favorite
-sites</a>.</p>
-<p>Phew. That was a lot of work. So… why’s any of this useful? This
-whole derviation hinges on the fact that <span class="math inline">\(\mu
-= \mu_0\)</span> that is</p>
-<p><span class="math display">\[ T = \frac{\bar X - \mu_0}{s/\sqrt{n}}
-\sim t \]</span></p>
-<p><em>Only under the null hypothesis</em> <span class="math inline">\(H_0: \mu = \mu_0\)</span>. So, if we plug in the
-actually observed values <span class="math inline">\(\bar x\)</span> for
-<span class="math inline">\(\bar X\)</span>, we can see how extreme (how
-unlikely) it is that, in fact <span class="math inline">\(\mu =
-\mu_0\)</span> is to be. The more extreme of a value our realization of
-<span class="math inline">\(T\)</span> is, the less likely it is that
-our hypothesis is correct. Finally, we have arrived at a way evaluate a
-hypothesis in a numerical manner.</p>
-<h2 id="some-catching-up">Some catching up</h2>
-<p>The main take away here is that under certain assumptions,
-namely:</p>
-<ol type="1">
-<li><p>The data is independent</p></li>
-<li><p>The data is roughly normally distributed</p></li>
+&amp;= \frac{\bar X - \mu}{,s/\sqrt{n},} \\[4pt] &amp;= \frac{(\bar
+X - \mu),(\sqrt{n}/\sigma)}{(s/\sqrt{n}),(\sqrt{n}/\sigma)} \\ &amp;=
+\frac{\displaystyle \frac{\bar X - \mu}{\sigma/\sqrt{n}}}{\displaystyle
+s/\sigma} \\[10pt] &amp;= \frac{Z}{,s/\sigma,} \\[8pt] &amp;=
+\frac{Z}{\sqrt{s^2/\sigma^2}} \\[6pt] &amp;=
+\frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{,n-1,}}}  \\ &amp;=
+\frac{Z}{\sqrt{V/n-1}}. \end{align*} $$</p>
+<p>Where $V \sim \chi^2_{n-1}$. So we get that $T$ is the ratio of the standard normal distribution the
+square root of a scaled $\chi^2$ distribution, which, finally, is the
+t-distribution, denoted by $t$. A complete proof of this fact can be found on one of my
+<a href="https://statproofbook.github.io/P/t-pdf.html">favorite sites</a>.</p>
+<p>Phew. That was a lot of work. So... why's any of this useful? This whole
+derviation hinges on the fact that $\mu = \mu_0$ that is</p>
+<p>$$ T = \frac{\bar X - \mu_0}{s/\sqrt{n}} \sim t $$</p>
+<p><em>Only under the null hypothesis</em> $H_0: \mu = \mu_0$. So, if we plug in the
+actually observed values $\bar x$ for $\bar X$, we can see how extreme
+(how unlikely) it is that, in fact $\mu = \mu_0$ is to be. The more
+extreme of a value our realization of $T$ is, the less likely it is that
+our hypothesis is correct. Finally, we have arrived at a way evaluate
+a hypothesis in a numerical manner.</p>
+<h2>Some catching up</h2>
+<p>The main take away here is that under certain assumptions, namely:</p>
+<ol>
+<li>
+<p>The data is independent</p>
+</li>
+<li>
+<p>The data is roughly normally distributed</p>
+</li>
 </ol>
-<p>Then we can evaluate how likely it is that a hypothesized mean is in
-fact the true mean of our data (in reality, the t-test is empirically
-quite robust to non-normality with higher sample sizes). We did this by
-constructing a distribution (the <span class="math inline">\(t\)</span>
-distribution) which under the above assumptions and an additional
-hypothesis (that our guessed mean is equal to the true mean <span class="math inline">\(H_0: \mu_0 = \mu\)</span>) will behave in a
-predictable way. Then, after calculating the observed value of the
-distribution (referred to as the <span class="math inline">\(t\)</span>
-value) we can check exactly how likely we were to see this value under
-the null hypothesis.</p>
-<p>We haven’t actually discussed how to do the last step, we do this by
-using the <span class="math inline">\(p\)</span>-value. I’ll take a
-couple sentences here to emphasize something, it is <em>remarkably</em>
-easy to abuse the <span class="math inline">\(p\)</span>-value. It’s
-meaning is not directly obvious or intuitive, and the way we use the
-<span class="math inline">\(p\)</span>-value makes it seem like a
-measure of veracity. This is not the case. What the <span class="math inline">\(p\)</span>-value tells us is how likely it is that
-a distribution will take a value more extreme than the test statistic
-(the general term for something like the <span class="math inline">\(t\)</span> value) is, given the hypothesis. In
-formula form <span class="math display">\[
+<p>Then we can evaluate how likely it is that a hypothesized mean is in fact the true mean of our data (in reality, the t-test is empirically quite robust to non-normality with higher sample sizes). We did this by constructing a distribution (the $t$ distribution) which under the above assumptions and an additional hypothesis (that our guessed mean is equal to the true mean $H_0: \mu_0 = \mu$) will behave in a predictable way. Then, after calculating the observed value of the distribution (referred to as the $t$ value) we can check exactly how likely we were to see this value under the null hypothesis.</p>
+<p>We haven't actually discussed how to do the last step, we do this by using the $p$-value. I'll take a couple sentences here to emphasize something, it is <em>remarkably</em> easy to abuse the $p$-value. It's meaning is not directly obvious or intuitive, and the way we use the $p$-value makes it seem like a measure of veracity. This is not the case. What the $p$-value tells us is how likely it is that a distribution will take a value more extreme than the test statistic (the general term for something like the $t$ value) is, given the hypothesis. In formula form
+$$
 p = \text{Pr}[T\text{ is more extreme than }t\lvert H_0]
-\]</span> I’m obfuscating a little bit because there are several ways to
-think of “extreme” in this scenario. For simplicity we’ll work with the
-one sided right tail test statistic, but once we understand this it is
-not a large leap to understand the other</p>
-<p><span class="math display">\[
+$$
+I'm obfuscating a little bit because there are several ways to think of "extreme" in this scenario. For simplicity we'll work with the one sided right tail test statistic, but once we understand this it is not a large leap to understand the other</p>
+<p>$$
 p = \text{Pr}[T \ge t \lvert H_0]
-\]</span></p>
-<p>In the scenario that we’ve been working, where we want to test if our
-guess <span class="math inline">\(\mu_0\)</span> is close to <span class="math inline">\(\mu\)</span>, a low <span class="math inline">\(p\)</span> value would mean that the probability
-that the <span class="math inline">\(t\)</span>-distribution would
-produce the observed <span class="math inline">\(t\)</span> value low,
-which in turn means that we should reject the hypothesis that <span class="math inline">\(\mu_0 = \mu\)</span>. In practice, we usually use
-the <span class="math inline">\(t\)</span> test the other way around; in
-the linear regression case, our null hypothesis is “this independent
-variable has no statistically significant impact on the regressed
-variable”, that is, the coefficient of this independent variable in the
-linear regression is <span class="math inline">\(0\)</span>. We test
-this by constructing the <span class="math inline">\(t\)</span>
-distribution in a basically identical way, now a low <span class="math inline">\(p\)</span> value would imply that it is very
-unlikely that the independent variable is irrelevant (again, this does
-not make any claim about the magnitude of this variable’s impact, only
-that it is statistically relevant).</p>
-<h2 id="closing-remarks">Closing Remarks</h2>
-<p>I had originally planned to talk about some of the other tools that
-the <span class="math inline">\(t\)</span> distribution gives us namely
-confidence intervals, prediction intervals and touching on the basics of
-the ANOVA, although I already knew it deserved its own article; but I
-have severely underestimated how bad I am at being concise. While the
-focus of this exploration was the derviation of the <span class="math inline">\(t\)</span> distribution, it should be noted that
-the way we used the distribution in this article is a much more general
-process called the Hypothesis Testing Framework (sometimes abbreviated
-HTF). Different situations will yeild different distributions that get
-used in the test, for example, when we want to determine if two data
-sets come from two different distributions we would use the
-Kolmogorov–Smirnov distribution with the HTF to draw our conclusions. I
-hope you gained some intuition for this fundamental statistical tool,
-I’ll see you next time for some more statistics shop talk, that is if
-and when I get around to writing up my thoughts on Confidence Intervals
-and ANOVA.</p>
+$$</p>
+<p>In the scenario that we've been working, where we want to test if our guess $\mu_0$ is close to $\mu$, a low $p$ value would mean that the probability that the $t$-distribution would produce the observed $t$ value low, which in turn means that we should reject the hypothesis that $\mu_0 = \mu$. In practice, we usually use the $t$ test the other way around; in the linear regression case, our null hypothesis is "this independent variable has no statistically significant impact on the regressed variable", that is, the coefficient of this independent variable in the linear regression is $0$. We test this by constructing the $t$ distribution in a basically identical way, now a low $p$ value would imply that it is very unlikely that the independent variable is irrelevant (again, this does not make any claim about the magnitude of this variable's impact, only that it is statistically relevant).</p>
+<h2>Closing Remarks</h2>
+<p>I had originally planned to talk about some of the other tools that the $t$ distribution gives us namely confidence intervals, prediction intervals and touching on the basics of the ANOVA, although I already knew it deserved its own article; but I have severely underestimated how bad I am at being concise. While the focus of this exploration was the derviation of the $t$ distribution, it should be noted that the way we used the distribution in this article is a much more general process called the Hypothesis Testing Framework (sometimes abbreviated HTF). Different situations will yeild different distributions that get used in the test, for example, when we want to determine if two data sets come from two different distributions we would use the Kolmogorov–Smirnov distribution with the HTF to draw our conclusions. I hope you gained some intuition for this fundamental statistical tool, I'll see you next time for some more statistics shop talk, that is if and when I get around to writing up my thoughts on Confidence Intervals and ANOVA.</p>
 </body></html>
     </article>
   </main>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-        processEscapes: true
+  <script>
+    window.MathJax = {
+      loader: {load: ['[tex]/ams']},
+      tex: {
+        packages: {'[+]':['ams']},
+        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+        displayMath: [ ['$$', '$$'], ['\\[', '\\]'] ],
+      },
+      options: {
+        // Only elements with one of these classes get processed
+        processHtmlClass: 'math math-inline math-display',
+        ignoreHtmlClass: 'no-mathjax'
       }
-    });
+    };
   </script>
-
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 
 </body>
 </html>

@@ -52,37 +52,37 @@
     </div>
 
     <article class="post-content">
-      <html><head></head><body><p>The three body problem is a relatively well known scenario in
-classical mechanics, as well as a pretty good series of novels, with no
-closed form solution. It’s comprised of three, equal mass, bodies in
-space (the “three body” part) and the aim is describing the movement
-caused by gravitational attraction between the bodies(the “problem”
-part). Some restricted variations of the problem have solutions, and
-it’s most generally described as a system of three second order vector
-differential equations, or a really ugly eighteen part Hamiltonian
-differential scalar equations. In an attempt to avoid the physics, I set
-out to model the problem in a close-enough-to-have-fun simulation.</p>
-<p>The simulation is set up in Rust, using Bevy + Rapier 2D. I hesitated
-to commit to using Bevy since I thought it would be overkill for what I
-needed it for, and that was somewhat true, but this <a href="https://www.youtube.com/watch?v=PND2Wpy6U-E">particularly
-interesting</a> podcast convinced me to bite the bullet and figure out
-Bevy’s ECS system. With a little bit of hindsight, I can say confidently
-it would have been easier to use Rapier as a headless physics solver and
-simply visualize using some plotting library down the pipeline. If I
-wanted to eventually <em>solve</em> the problem, I needed a way for the
-program to communicate with external program; since, unfortunatly, <a href="https://www.arewelearningyet.com/">we are not learning yet</a> and
-I also just wanted to play around with IPC. I chose to use gRPC by way
-of Tokio’s Tonic since I already had the mind to write somewhat
-effecient code considering the computational demand of the problem. To
-complete the chain, I wrote up a small python client to interact with
-the simulation.</p>
-<p>The simulation is done in the system <code>gravity_update()</code>,
-which, for every combination of two bodies, fetches the mass and
-location of the bodies, then calculates and applies the gravitational
-force and its opposite that the bodies apply on each other. The
-<code>gravitational_force()</code>, calculation is adapted from Newton’s
-Gravitational Law. (No, that’s not the real gravitational constant)</p>
-<html><head></head><body><pre class="rust"><pre style="background-color:#282828;"><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">gravitational_force</span><span style="color:#ead4af;">(
+      <html><head></head><body><p>The three body problem is a relatively well known scenario in classical
+mechanics, as well as a pretty good series of novels, with no closed form
+solution. It's comprised of three, equal mass, bodies in space (the "three
+body" part) and the aim is describing the movement caused by gravitational
+attraction between the bodies(the "problem" part). Some restricted variations of the
+problem have solutions, and it's most generally described as a system of
+three second order vector differential equations, or a really ugly
+eighteen part Hamiltonian differential scalar equations. In an attempt to
+avoid the physics, I set out to model the problem in
+a close-enough-to-have-fun simulation.</p>
+<p>The simulation is set up in Rust, using Bevy + Rapier 2D. I hesitated to commit
+to using Bevy since I thought it would be overkill for what I needed it for,
+and that was somewhat true, but this <a href="https://www.youtube.com/watch?v=PND2Wpy6U-E">particularly interesting</a> podcast convinced me
+to bite the bullet and figure out Bevy's ECS system. With a little bit of
+hindsight, I can say confidently it would have been easier to use Rapier
+as a headless physics solver and simply visualize using some plotting
+library down the pipeline. If I wanted to eventually <em>solve</em> the problem,
+I needed a way for the program to communicate with external program;
+since, unfortunatly, <a href="https://www.arewelearningyet.com/">we are not learning
+yet</a> and I also just wanted to play
+around with IPC. I chose to use gRPC by way of Tokio's Tonic since
+I already had the mind to write somewhat effecient code considering the
+computational demand of the problem. To complete the chain, I wrote up
+a small python client to interact with the simulation.</p>
+<p>The simulation is done in the system <code>gravity_update()</code>, which, for
+every combination of two bodies, fetches the mass and location of the
+bodies, then calculates and applies the gravitational force and its
+opposite that the bodies apply on each other. The <code>gravitational_force()</code>,
+calculation is adapted from Newton's Gravitational Law.
+(No, that's not the real gravitational constant)</p>
+<html><head></head><body><pre><code class="language-Rust"><pre style="background-color:#282828;"><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">gravitational_force</span><span style="color:#ead4af;">(
 </span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">mass1</span><span style="color:#ead4af;">: </span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">,
 </span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">mass2</span><span style="color:#ead4af;">: </span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">,
 </span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">position1</span><span style="color:#ead4af;">: Vector2&lt;</span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">&gt;,
@@ -92,11 +92,12 @@ Gravitational Law. (No, that’s not the real gravitational constant)</p>
 </span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> direction </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> r.</span><span style="color:#f1c050;">norm</span><span style="color:#ead4af;">();
 </span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> f_mag </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1000.0 </span><span style="color:#cab990;">* </span><span style="color:#ead4af;">((mass1 </span><span style="color:#cab990;">*</span><span style="color:#ead4af;"> mass2) </span><span style="color:#cab990;">/</span><span style="color:#ead4af;"> direction.</span><span style="color:#f1c050;">powi</span><span style="color:#ead4af;">(</span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">));
 </span><span style="color:#ead4af;">    r.</span><span style="color:#f1c050;">normalize</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">*</span><span style="color:#ead4af;"> f_mag
-</span><span style="color:#ead4af;">}</span></pre>
-</pre></body></html>
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
 <p>Briefly, I added vectors to show more obviously the velocities of the
 bodies during the simulation.</p>
-<html><head></head><body><pre class="rust"><pre style="background-color:#282828;"><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">setup_vectors</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">mut </span><span style="color:#fd971f;">commands</span><span style="color:#ead4af;">: Commands, </span><span style="color:#fd971f;">query_bodies</span><span style="color:#ead4af;">: Query&lt;</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">Transform&gt;) {
+<html><head></head><body><pre><code class="language-Rust"><pre style="background-color:#282828;"><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">setup_vectors</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">mut </span><span style="color:#fd971f;">commands</span><span style="color:#ead4af;">: Commands, </span><span style="color:#fd971f;">query_bodies</span><span style="color:#ead4af;">: Query&lt;</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">Transform&gt;) {
 </span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">for </span><span style="color:#cab990;">_ in</span><span style="color:#ead4af;"> query_bodies.</span><span style="color:#f1c050;">iter</span><span style="color:#ead4af;">() {
 </span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> line </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">shapes::Line(Vec2::</span><span style="color:#cc869b;">ZERO</span><span style="color:#ead4af;">, Vec2::new(</span><span style="color:#cc869b;">0.0</span><span style="color:#ead4af;">, </span><span style="color:#cc869b;">0.0</span><span style="color:#ead4af;">));
 </span><span style="color:#ead4af;">        commands.</span><span style="color:#f1c050;">spawn</span><span style="color:#ead4af;">((
@@ -116,14 +117,15 @@ bodies during the simulation.</p>
 </span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> new_line </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">shapes::Line(center_of_mass, center_of_mass </span><span style="color:#cab990;">+</span><span style="color:#ead4af;"> vel);
 </span><span style="color:#ead4af;">        </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">path </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">ShapePath::build_as(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">new_line);
 </span><span style="color:#ead4af;">    }
-</span><span style="color:#ead4af;">}</span></pre>
-</pre></body></html>
-<p>The gRPC server handles the setting of initial conditions (the
-solution, as it were), as well as resetting the simulation and handing
-out the current state of the simulation. The <code>SimState</code>
-message is simply an array of <code>BodyAttributes</code>, values
-necessary to make the calculations for the simulation.</p>
-<html><head></head><body><pre class="c++"><pre style="background-color:#282828;"><span style="color:#ead4af;">syntax </span><span style="color:#cab990;">= </span><span style="color:#aab11e;">"proto3"</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>The gRPC server handles the setting of initial conditions (the solution,
+as it were), as well as resetting the simulation and handing out the
+current state of the simulation. The <code>SimState</code> message is simply an
+array of <code>BodyAttributes</code>, values necessary to make the calculations
+for the simulation.</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">syntax </span><span style="color:#cab990;">= </span><span style="color:#aab11e;">"proto3"</span><span style="color:#ead4af;">;
 </span><span style="color:#ead4af;">
 </span><span style="color:#ead4af;">package simulation;
 </span><span style="color:#ead4af;">
@@ -154,16 +156,16 @@ necessary to make the calculations for the simulation.</p>
 </span><span style="color:#ead4af;">
 </span><span style="color:#ead4af;">message SimState{
 </span><span style="color:#ead4af;">  repeated BodyAttributes bodies </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">}</span></pre>
-</pre></body></html>
-<p>The Tonic Server is attached as a startup system in the Bevy ECS, and
-the tokio runtime is added as a resource so the server can handle
-requests as they come in asynchronously. We can connect to it on
-<code>localhost:50051</code> and get the velocity and position of our
-bodies.</p>
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>The Tonic Server is attached as a startup system in the Bevy ECS, and the
+tokio runtime is added as a resource so the server can handle requests as
+they come in asynchronously. We can connect to it on <code>localhost:50051</code>
+and get the velocity and position of our bodies.</p>
 <p>The client on the reciving end of the gRPC contract is implemented in
 a seperate python script.</p>
-<html><head></head><body><pre class="python"><pre style="background-color:#282828;"><span style="color:#fd971f;">def </span><span style="color:#8ab572;">set_configuration</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bodies</span><span style="color:#ead4af;">, </span><span style="color:#fd971f;">stub</span><span style="color:#ead4af;">):
+<html><head></head><body><pre><code class="language-Python"><pre style="background-color:#282828;"><span style="color:#fd971f;">def </span><span style="color:#8ab572;">set_configuration</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bodies</span><span style="color:#ead4af;">, </span><span style="color:#fd971f;">stub</span><span style="color:#ead4af;">):
 </span><span style="color:#ead4af;">    </span><span style="color:#908476;">"""
 </span><span style="color:#908476;">    Calls the SetConfiguration RPC to set the simulation configuration.
 </span><span style="color:#908476;">    """
@@ -194,14 +196,15 @@ a seperate python script.</p>
 </span><span style="color:#ead4af;">        response </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">stub.StateReply(request)
 </span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">response
 </span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">except </span><span style="color:#ead4af;">grpc.RpcError </span><span style="color:#fb4938;">as </span><span style="color:#ead4af;">e:
-</span><span style="color:#ead4af;">        </span><span style="color:#f1c050;">print</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">f</span><span style="color:#aab11e;">"gRPC call failed: </span><span style="color:#ead4af;">{e.code()}</span><span style="color:#aab11e;">: </span><span style="color:#ead4af;">{e.details()}</span><span style="color:#aab11e;">"</span><span style="color:#ead4af;">)</span></pre>
-</pre></body></html>
-<p>Using the dictionary that the service provides, the client evaluates
-if the simulation has effectively ended, or if the initial configuration
-no longer has the chance of being stable. The “fail states” of the
-simulation occur when either there was a collision or if one of the
-bodies escapes from the orbit of the other two.</p>
-<html><head></head><body><pre class="python"><pre style="background-color:#282828;"><span style="color:#fd971f;">def </span><span style="color:#8ab572;">collision</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bodies</span><span style="color:#ead4af;">):
+</span><span style="color:#ead4af;">        </span><span style="color:#f1c050;">print</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">f</span><span style="color:#aab11e;">"gRPC call failed: </span><span style="color:#ead4af;">{e.code()}</span><span style="color:#aab11e;">: </span><span style="color:#ead4af;">{e.details()}</span><span style="color:#aab11e;">"</span><span style="color:#ead4af;">)
+</span></pre>
+</code></pre></body></html>
+<p>Using the dictionary that the service provides, the client evaluates if
+the simulation has effectively ended, or if the initial configuration no
+longer has the chance of being stable. The "fail states" of the simulation
+occur when either there was a collision or if one of the bodies escapes
+from the orbit of the other two.</p>
+<html><head></head><body><pre><code class="language-Python"><pre style="background-color:#282828;"><span style="color:#fd971f;">def </span><span style="color:#8ab572;">collision</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bodies</span><span style="color:#ead4af;">):
 </span><span style="color:#ead4af;">    </span><span style="color:#908476;">"""
 </span><span style="color:#908476;">    returns true if body positions are within radii of one another
 </span><span style="color:#908476;">    """
@@ -232,29 +235,38 @@ bodies escapes from the orbit of the other two.</p>
 </span><span style="color:#ead4af;">        g_f </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">(b1.mass </span><span style="color:#cab990;">* </span><span style="color:#ead4af;">b2.mass) </span><span style="color:#cab990;">/ </span><span style="color:#ead4af;">(distance</span><span style="color:#cab990;">**</span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">)
 </span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">if </span><span style="color:#f1c050;">round</span><span style="color:#ead4af;">(g_f, </span><span style="color:#cc869b;">3</span><span style="color:#ead4af;">) </span><span style="color:#cab990;">== </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">:
 </span><span style="color:#ead4af;">            distance_flag </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">true
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">distance_flag</span></pre>
-</pre></body></html>
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">distance_flag
+</span></pre>
+</code></pre></body></html>
 <p>I already implemented a simple genetic algorithm hoping to find some
-stable configurations, it iterated with mild success, confirming that
-the simulation-solver set up was working, although the method itself
-failed due to its own simplicity, as each generation simply edged
-further away while not triggering the <code>escape()</code> fail
-condition. From here I plan to integrate a gradient descent algorithm
-with the formulization described <a href="https://www.sciencedirect.com/science/article/pii/S1384107622001737">here</a>.
+stable configurations, it iterated with mild success, confirming that the
+simulation-solver set up was working, although the method itself failed
+due to its own simplicity, as each generation simply edged further away
+while not triggering the <code>escape()</code> fail condition. From here I plan
+to integrate a gradient descent algorithm with the formulization described
+<a href="https://www.sciencedirect.com/science/article/pii/S1384107622001737">here</a>.
 If you are reading this, I have not done so yet, au revouir.</p>
 </body></html>
     </article>
   </main>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-        processEscapes: true
+  <script>
+    window.MathJax = {
+      loader: {load: ['[tex]/ams']},
+      tex: {
+        packages: {'[+]':['ams']},
+        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+        displayMath: [ ['$$', '$$'], ['\\[', '\\]'] ],
+      },
+      options: {
+        // Only elements with one of these classes get processed
+        processHtmlClass: 'math math-inline math-display',
+        ignoreHtmlClass: 'no-mathjax'
       }
-    });
+    };
   </script>
-
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 
 </body>
 </html>

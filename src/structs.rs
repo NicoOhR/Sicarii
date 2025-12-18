@@ -3,6 +3,7 @@ use chrono::format::ParseError;
 use chrono::NaiveDate;
 use kuchikiki::traits::*;
 use pandoc::{InputFormat, OutputKind, Pandoc, PandocOption, PandocOutput};
+use pulldown_cmark::Options;
 use serde::Deserialize;
 use std::fs;
 use std::fs::File;
@@ -13,6 +14,7 @@ use syntect::highlighting::{Color, ThemeSet};
 use syntect::html::{highlighted_html_for_string, ClassStyle, ClassedHTMLGenerator};
 use syntect::parsing::SyntaxSet;
 use syntect::util::LinesWithEndings;
+use yaml_rust::parser::Parser;
 
 #[derive(Deserialize)]
 pub struct Article {
@@ -57,48 +59,58 @@ impl Article {
         let mut static_path = PathBuf::from("./");
         static_path.push(&self.content_path);
 
-        let mut pandoc = pandoc::new();
+        let text = fs::read_to_string(static_path).unwrap();
+        let mut options = Options::empty();
+        //options.insert(Options::ENABLE_MATH);
+        let parser = pulldown_cmark::Parser::new_ext(&text, options);
 
-        pandoc
-            .add_input(&static_path)
-            .add_option(PandocOption::MathJax(None))
-            .add_option(PandocOption::NoHighlight)
-            .set_output(OutputKind::Pipe);
+        let mut html: String = String::new();
+        pulldown_cmark::html::push_html(&mut html, parser);
 
-        let output = pandoc.execute().unwrap();
-
-        let html: String = match output {
-            PandocOutput::ToBuffer(s) => s,
-            PandocOutput::ToBufferRaw(bytes) => String::from_utf8(bytes).unwrap(),
-            PandocOutput::ToFile(path) => fs::read_to_string(path)?,
-        };
-
+        // Kuchikiki parses HTML and adds syntect as needed
         let doc = kuchikiki::parse_html().one(html);
-        let mut matches: Vec<_> = doc.select("pre").unwrap().collect();
-        for css_match in matches {
-            let node = css_match.as_node();
-            if let Some(element) = node.as_element() {
-                let attributes = &element.attributes.borrow();
-                if let Some(lang) = attributes.get("class") {
-                    let mut code = String::new();
-                    for child in node.inclusive_descendants().text_nodes() {
-                        code.push_str(&child.borrow());
-                    }
-                    let ss = SyntaxSet::load_defaults_newlines();
+        // cmarkdown outputs display code as <pre><class ="language-lang">
+        let matches: Vec<_> = doc
+            .select("pre > code[class^=\"language-\"]")
+            .unwrap()
+            .collect();
+        let ss = SyntaxSet::load_defaults_newlines();
+        let theme = ThemeSet::get_theme(Path::new("./src/Gruvbox-N.tmTheme")).unwrap();
 
-                    let syntax = ss
-                        .find_syntax_by_token(lang)
-                        .or_else(|| ss.find_syntax_by_name(&lang))
-                        .unwrap_or_else(|| ss.find_syntax_plain_text());
-                    let theme = ThemeSet::get_theme(Path::new("./src/Gruvbox-N.tmTheme")).unwrap();
-                    let output_html =
-                        highlighted_html_for_string(&code, &ss, syntax, &theme).unwrap();
-                    let new_pre_html = format!(r#"<pre class="{}">{}</pre>"#, lang, output_html);
-                    let fragment = kuchikiki::parse_html().one(new_pre_html);
-                    node.insert_after(fragment);
-                    node.detach();
-                }
-            }
+        for css_match in matches {
+            let code_node = css_match.as_node();
+
+            //get the class attributes of the node
+            let class_attr = code_node
+                .as_element()
+                .and_then(|el| el.attributes.borrow().get("class").map(|s| s.to_string()))
+                .unwrap_or_default();
+
+            //extract the language name in the way that syntact expects
+            let lang = class_attr
+                .split_whitespace()
+                .find_map(|c| c.strip_prefix("language-"))
+                .unwrap_or("text");
+
+            let code_text = code_node.text_contents();
+
+            let syntax = ss
+                .find_syntax_by_token(lang)
+                .or_else(|| ss.find_syntax_by_name(lang))
+                .unwrap_or_else(|| ss.find_syntax_plain_text());
+
+            let highlighted = highlighted_html_for_string(&code_text, &ss, syntax, &theme).unwrap();
+
+            let pre_node = code_node.parent().expect("code should have a parent <pre>");
+
+            let new_html = format!(
+                r#"<pre><code class="language-{}">{}</code></pre>"#,
+                lang, highlighted
+            );
+
+            let fragment = kuchikiki::parse_html().one(new_html);
+            pre_node.insert_after(fragment);
+            pre_node.detach();
         }
 
         let output = doc.to_string();

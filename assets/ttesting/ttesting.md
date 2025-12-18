@@ -71,7 +71,7 @@ case). So
 
 $$
 \begin{align*}
-\operatorname{E}[\bar X] = \mu &\implies \operatorname{E}[\bar X] - \mu_0 = \mu - \mu_0  \\
+\operatorname{E}[\bar X] = \mu &\implies \operatorname{E}[\bar X] - \mu_0 = \mu - \mu_0  \\\\
 &\implies \operatorname{E}[\bar X - \mu_0] = \mu - \mu_0 = 0
 \end{align*}
 $$
@@ -95,7 +95,7 @@ We can expand the averaging and do some algebra
 
 $$ 
 \begin{align*} 
-\operatorname{Var}(\frac1n\sum X_i) &= \frac1{n^2}\operatorname{Var}(\sum X_i) \\
+\operatorname{Var}(\frac1n\sum X_i) &= \frac1{n^2}\operatorname{Var}(\sum X_i) \\\\
 &= \frac1{n^2}[\operatorname{Var}(X_1) + \operatorname{Var}(X_2) + ... \operatorname{Var}(X_n) + \operatorname{Cov}(X_1, X_2) ... + \operatorname{Cov}(X_{n-1}, X_{n})]
 \end{align*}
 $$
@@ -117,8 +117,8 @@ a variance.
 
 $$ 
 \begin{align*} 
-\operatorname{Var}(\frac1n\sum X_i) &= \frac1{n^2}\sum{\operatorname{Var}(X_i)} \\
-&= \frac1{n^2}\cdot n \operatorname{Var}(X) \\
+\operatorname{Var}(\frac1n\sum X_i) &= \frac1{n^2}\sum{\operatorname{Var}(X_i)} \\\\
+&= \frac1{n^2}\cdot n \operatorname{Var}(X) \\\\
 &= \frac{\operatorname{Var}(X)}{n}
 \end{align*}
 $$
@@ -193,12 +193,12 @@ added for completeness sake
 $$
 \begin{align*}
 T
-  &= \frac{\bar X - \mu}{\,s/\sqrt{n}\,} \\[4pt] &= \frac{(\bar
-  X - \mu)\,(\sqrt{n}/\sigma)}{(s/\sqrt{n})\,(\sqrt{n}/\sigma)} \\ &=
+  &= \frac{\bar X - \mu}{\,s/\sqrt{n}\,} \\\\[4pt] &= \frac{(\bar
+  X - \mu)\,(\sqrt{n}/\sigma)}{(s/\sqrt{n})\,(\sqrt{n}/\sigma)} \\\\ &=
   \frac{\displaystyle \frac{\bar X - \mu}{\sigma/\sqrt{n}}}{\displaystyle
-  s/\sigma} \\[10pt] &= \frac{Z}{\,s/\sigma\,} \\[8pt] &=
-  \frac{Z}{\sqrt{s^2/\sigma^2}} \\[6pt] &=
-  \frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{\,n-1\,}}}  \\ &=
+  s/\sigma} \\\\[10pt] &= \frac{Z}{\,s/\sigma\,} \\\\[8pt] &=
+  \frac{Z}{\sqrt{s^2/\sigma^2}} \\\\[6pt] &=
+  \frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{\,n-1\,}}}  \\\\ &=
   \frac{Z}{\sqrt{V/n-1}}. \end{align*} $$
 
 Where $V \sim \chi^2_{n-1}$. So we get that $T$ is the ratio of the standard normal distribution the

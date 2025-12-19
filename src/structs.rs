@@ -1,21 +1,16 @@
 use askama::Template;
-use chrono::format::ParseError;
 use chrono::NaiveDate;
 use kuchikiki::traits::*;
-use pandoc::{InputFormat, OutputKind, Pandoc, PandocOption, PandocOutput};
 use pulldown_cmark::Options;
 use regex::{Captures, Regex};
 use serde::Deserialize;
 use std::fs;
-use std::fs::File;
-use std::io::{self, Read};
+use std::io;
 use std::path::Path;
 use std::path::PathBuf;
-use syntect::highlighting::{Color, ThemeSet};
-use syntect::html::{highlighted_html_for_string, ClassStyle, ClassedHTMLGenerator};
+use syntect::highlighting::ThemeSet;
+use syntect::html::highlighted_html_for_string;
 use syntect::parsing::SyntaxSet;
-use syntect::util::LinesWithEndings;
-use yaml_rust::parser::Parser;
 
 #[derive(Deserialize)]
 pub struct Article {

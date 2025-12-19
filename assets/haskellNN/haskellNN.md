@@ -1,16 +1,9 @@
 {{{assets/haskellNN/training.html}}}
 
-Every year, starting at December 1st, a new programming puzzle is
-published to adventofcode.com. Each puzzle contains in it two parts, and
-are almost always some of the best designed puzzles I play during the
-year. I typically solve Advent of Code in Haskell, since I find that the
-strictly functional nature of the language encourages more interesting
-solutions than the brute force calculations that are often possible. The
-Haskell itch came a little early this year and advent isn't starting for another... sorry? it's already December? Look I already wrote this intro and the scope of this project crept a little bit, so let's just agree to move on my inability to keep to self imposed deadlines yeah?
-Anyway, it didn't exactly sit right with me that I have never implemented a neural
+It never exactly sat right with me that I have never implemented a neural
 network from scratch by myself, and the fact that Haskell is pretty
 awesome for linear algebra stuff, as we will see, I figured it would be
-fun to go through the implementation of an NN in Haskell. This article
+fun to go through the implementation of a neural network in Haskell. This article
 assumes no knowledge of Haskell or machine learning, but does require some
 knowledge in calculus and linear algebra, and that you are familiar with *a* programming language. I hope to achieve two things in
 this article, firstly I want to demonstrate that the basic primitive of
@@ -52,8 +45,8 @@ $$ g(x) = f(W^L(f(W^{L-1}f(...f(W^1x + b^1)))+b^{L-1})+b^L) $$
 With the correct values of $W^i$ and $b^i$, together referred to as the
 parameters of the neural network, and denoted as $theta$ (I pinky promise
 this will probably be the only Greek letter we use) we can approximate any
-function $f$, kinda. Quick mathematical aside: there is a theorem named,
-quite badly, universal approximation theorem, which states that for any
+function $f$. As a quick mathematical aside: there is a theorem named,
+badly, the universal approximation theorem, which states that for any
 continuous function $f$ and an arbitrary $\varepsilon > 0$, there exists
 an arbitrarily large linear transformation $A$ and some $b$ such that for
 all $x$, 
@@ -64,19 +57,19 @@ We're in the real world, so we might not be able to compute the "arbitrarily lar
 
 ## Actually Finding the Parameters.
 
-In optimization, we generally like thinking about minimization problems rather than maximization problems, more by convention than by any other reason. In this case we're trying to find the parameters which are *least wrong* which is the same as the parameters that are *most right*. This is expressed notationaly as 
+In optimization, we generally like thinking about minimization problems rather than maximization problems, more by convention than by any other reason. In this case we're trying to find the parameters which are *least wrong* which is the same as the parameters that are *most right*. This is expressed notationally as 
 
 $$
 \operatorname*{argmin}_\theta ||f(x) - g\_{\theta}(x)||
 $$
 
-And is read as "find $theta$ such that the difference between the function $f$ and the the function paramterized by $\theta$, $g$, is minimized". In this case, we can use the standard euclidean norm
+And is read as "find $theta$ such that the difference between the function $f$ and the function parameterized by $\theta$, $g$, is minimized". In this case, we can use the standard euclidean norm to compute the difference between our functions:
 
 $$
 ||v|| = \sqrt{v_1^2 + v_2^2 + ... v_n^2}
 $$
 
-To compute the difference between our functions, but sometimes, depending on your problem and what the output of your network is, other *metrics* should be used (for example, for probability distributions, we use the KL-divergence metric to quantify how far our network is from our function). Because we'll do the chosen metric operation a lot, we'd like it to be computationally cheap, and the square root function is anything but. We can avoid doing the square root by recognizing that, because the square function is strictly increasing for positive values, minimizing the square of the norm is exactly the same as minimizing the norm itself, so, our goals becomes: 
+Sometimes, depending on your problem and what the output of your network is, other *metrics* should be used (for example, for probability distributions, we use the KL-divergence metric to quantify how far our network is from our function). Because we'll do the chosen metric operation a lot, we'd like it to be computationally cheap, and while the square root operation has become close to constant time as hardware and compiler optimizations have advanced, we would still like to not do it on every iteration. We can avoid doing the square root by recognizing that, because the square function is strictly increasing for positive values, minimizing the square of the norm is exactly the same as minimizing the norm itself, so, our goals becomes: 
 
 
 $$
@@ -89,9 +82,7 @@ $$
 \operatorname*{argmin}_\theta~ (f(x)_1 - g(x)_1)^2+(f(x)_2-g(x)_2)^2+...(f(x)_n - g(x)_n)^2
 $$
 
-We call the measure of how "wrong" our network is the cost function (also loss, depending on whose writing the paper) and we denote it by $C$. Cost is parameterized by both $\theta$ and $x$, which is important to keep in mind as we do the derivations for backpropagation, the algorithm of choice to find the best parameters.
-
-Now that we've stated the goal, how do we find it? Here we introduce the gradient, which is, for a vector valued function $f: \mathbb{R}^n \to \mathbb{R}$ defined as 
+We call the measure of how "wrong" our network is the cost function (also loss, depending on whose writing the paper) and we denote it by $C$. Cost is parameterized by both $\theta$ and $x$. Now that we've stated the goal, how do we find it? Here we introduce the gradient, which is, for a vector valued function $f: \mathbb{R}^n \to \mathbb{R}$ defined as 
 
 $$
 \nabla f(\mathbf{x}) =
@@ -105,7 +96,7 @@ $$
 
 I'll ask you to take the following on axiom, the gradient of $f$, $\nabla f$ evaluated at $x$ is the direction of fastest change positive change, and $-\nabla f$ is the direction of fastest negative change. When (read, if) I find the time to figure out javascript widgets, there will be a nice interactive diagram showing, geometrically, why this is the case. So if we follow the negative gradient of the cost function at every point, we'll eventually find *a* minimum! Importantly, this is not the global minimum, only a local minimum, where "moving" in any direction would increase the function.
 
-So to find the optimal $\theta$, we find the the negative gradient of the cost function, with respect to $\theta$ for each $x$ in our data set, and move along the direction of the gradient. There are really quite a lot of addendums and technicalities that we're glossing over with this corse treatment. But we're working fast here, and a slightly more rigorous treatment which I suspect most people interested in machine learning have already read can be found [here](http://neuralnetworksanddeeplearning.com/index.html) , written by Michael Nielsen. Since I rather poorly timed this project with finals season, I will be skipping the derivation of backpropagation for the time being. Taken from the link above, the governing equations we need to calculate how much we need to change our parameters by is given as: 
+So to find the optimal $\theta$, we find the negative gradient of the cost function, with respect to $\theta$ for each $x$ in our data set, and move along the direction of the gradient. There are really quite a lot of addenda and technicalities that we're glossing over with this coarse treatment. We're working fast here, and a more rigorous treatment which I suspect most people interested in machine learning have already read can be found [here](http://neuralnetworksanddeeplearning.com/index.html) , written by Michael Nielsen. Since I rather poorly timed this project with finals season, I will be skipping the derivation of back propagation for the time being. Taken from the link above, the governing equations we need to calculate how much we need to change our parameters by is given as: 
 
 
 $$
@@ -157,9 +148,9 @@ subtractThetas (Theta ts) (Theta gs) = Theta (zipWith (\(x, y) (u, v) -> (x - u,
 ```
 
 The double colon, `::` should be read as "has type of". Exactly why there isn't a distinction between what are procedurally thought of as the parameters and the output of the function is an iota outside of the scope of this article unfortunately, but the keyword to google here is *currying* (maybe like the food, I never asked). First, looking at the `scaleThetas` function, we take as input a theta and a double, then fmaps the anonymous function `(\x,y) -> (scale eta x, scale eta y)` on the `Theta`. `fmap` stands for "function map", and does just that, given a function and a list, return the list with the function applied to each element of the list, and `scale` is provided by the Vector and Matrix types to do scalar multiplication. Looking at the `subtractThetas` function, `zipWith` is a combination of `fmap` and `zip`, so we're combining two lists, the inputs `ts` and `gs`, then applying the lambda function `\(x,y) (u,v) -> (x - u, (y - v))` to that combined list. 
-Let's write the function for running running our nueral network, that is, of obtaining an approximation $\hat y$ for an input $x$. Remember that our network is just a composition of matricies, vector additions, and activation functions which we apply iteratively, this is rather cleanly expressed by the `fold` function which haskell provides us with. 
+Let's write the function for running running our neural network, that is, of obtaining an approximation $\hat y$ for an input $x$. Remember that our network is just a composition of matrices, vector additions, and activation functions which we apply iteratively, this is rather cleanly expressed by the `fold` function which Haskell provides us with. 
 
-Interpreted as concretly as possible, the `fold` function takes a binary operator, an accumulator and a list, applies the operator to each element in the list with the accumulator, in order. `foldl` "folds" the list starting from the left, and has a type of `foldl:: Foldable t => (b -> a -> b) -> b -> t a -> b`. `Foldable t` is a restriction on the type of `t`, meaning that whatever `t a` is, it should be foldable over, this is another example of a typeclass, like `Show` from earlier. In our case, we'll be iterating over our $\theta$ which has the list type, which is foldable over. Next, we see from the type that we want a function `(b -> a -> b)` that is, it takes a type `b` and a type `a` and gives back a type `b`, this is our binary operator. Then we also require a `b`, which is our accumulator value, and finaly the list `t a` which we process, returning a `b`. Maybe you can already see how this applies to our neural network. Recall our mathematical definition of a neural network: 
+Interpreted as concretely as possible, the `fold` function takes a binary operator, an accumulator and a list, applies the operator to each element in the list with the accumulator, in order. `foldl` "folds" the list starting from the left, and has a type of `foldl:: Foldable t => (b -> a -> b) -> b -> t a -> b`. `Foldable t` is a restriction on the type of `t`, meaning that whatever `t a` is, it should be foldable over, this is another example of a typeclass, like `Show` from earlier. In our case, we'll be iterating over our $\theta$ which has the list type, which is foldable over. Next, we see from the type that we want a function `(b -> a -> b)` that is, it takes a type `b` and a type `a` and gives back a type `b`, this is our binary operator. Then we also require a `b`, which is our accumulator value, and finally the list `t a` which we process, returning a `b`. Maybe you can already see how this applies to our neural network. Recall our mathematical definition of a neural network: 
 
 $$ g(x) = f(W^L(f(W^{L-1}f(...f(W^1x + b^1)))+b^{L-1})+b^L) $$
 
@@ -178,11 +169,21 @@ forward (Network (Theta ts) _ f _) x0 =
 
 ## Monoids in the Category of Endofunctors
 
-One of the more famously unhelpful sentences in programming is the answer to the question "What is a monad?" which, canonically, is "Well simple! It's just a monoid in the category of endofunctors! Of course!". Believe it or not, with only a little bit of abstract algebra and category theory, this is a relatively simple defintion, but feels almost impossible to ground to programming. There are countless blogs and videos (I reccomend the sheafification of g's video on the subject personally) trying to explain monads; it's a rite of passage of sorts I think. Today, we'll focus specifically on only the monad we care about, the `Writer` monad, to demonstrate how you would actually use one of these things in the field. I will qoute Kwang's excellent article on the monad to define it 
+One of the more famously unhelpful sentences in programming is the answer to the question "What is a monad?" which, canonically, is "Well simple! It's just a monoid in the category of endofunctors! Of course!". Believe it or not, with only a little bit of abstract algebra and category theory, this is a relatively simple definition, but feels almost impossible to ground to programming. There are countless blogs and videos (I recommend the sheafification of g's video on the subject personally) trying to explain monads; it's a rite of passage for functional bros I think. Today, we'll focus specifically on only the monad we care about, the `Writer` monad, to demonstrate how you would actually use one of these things in the field. I will quote Kwang's excellent article on the writer monad to define it 
 
     "The Writer monad represents computations which produce a stream of data in addition to the computed values"
 
-This definition is a little funny because, in many ways, this is what *all* monads do; encode additional "sideffects" of otherwise pure code. When in the context of the writer monad, we can use `tell` to add to our list of logs, and `pure` to give back our actual value. A slight hitch in this is that `foldl` is a pure function, which means that the type checker will get very mad at you if you try to use monads with it, luckily we have `foldlM` which allows us to pass monadic functions to it. Implementing the writer monad into our naive `forward` we get 
+This definition is a little funny because, in many ways, this is what *all* monads do; encode additional "side effects" of otherwise pure code. When in the context of the writer monad, we can use `tell` to add to our list of logs, and `pure` to give back our actual value. The writer monad allows us to turn a function that would otherwise look like this:
+
+```{Haskell}
+functionWithLogsPure :: inputType -> (outputType, [logType])
+```
+To a function that looks like this:
+
+```{Haskell}
+functionWithLogsWriter :: inputType -> Writer logType outputType
+```
+While also affording us the common operations we expect from logging functionality. A slight hitch in this is that `foldl` is a pure function, which means that the type checker will get very mad at you if you try to use monads with it, luckily we have `foldlM` which allows us to pass monadic functions to it. Implementing the writer monad into our naive `forward` we get 
 
 ```Haskell
 forwardW ::
@@ -204,11 +205,11 @@ forwardW (Network (Theta ts) _ f _) x1 = do
         pure z
 ```
 
-(Authors note: This is wrong now that I look at it, we should be `tell`ing the preacticated `z`s, with ReLU the bug is functionally invisable but does need to be fixed).
+(Authors note: This is wrong now that I look at it, we should be `tell`ing the preactivated `z`s, with ReLU the bug is functionally invisible but does need to be fixed).
 
 Every step of the `foldlM`, we `tell` to our List the resulting `z`, and pass to the next call `pure z`. The resulting output of the `fowardW` function is `[y_hat, [a_1, a_2, a_3 ... a_l]]` (`DList` is an interesting data structure that I will not be reviewing today, think of it simply as a list). The last piece of the puzzle before we can train our neural network is implementing the backpropagation. The output of backpropagation is in effect just a $\theta$ type, so what we need to compute backpropagation is an input value, the actual output value, the network, and we'll return a $\theta$.  
 
-Similarily to how `foldl` rather cleanly desribes the forward pass of the neural network. We can use `scanr`, which does effectively the same thing, only instead of from the left it does so from the right, and also instead of returning the accumulated value, it returns a list of iterations, which, for a recursive formula like the one that the backpropagation equations describe, is a perfect fit. All told, this is what a backpropagation implementation looks like: 
+Similarly to how `foldl` rather cleanly describes the forward pass of the neural network. We can use `scanr`, which does effectively the same thing, only instead of from the left it does so from the right, and also instead of returning the accumulated value, it returns a list of iterations, which, for a recursive formula like the one that the backpropagation equations describe, is a perfect fit. All told, this is what a backpropagation implementation looks like: 
 
 ```Haskell
 backprop :: Vector Double -> Vector Double -> Network -> Theta
@@ -245,7 +246,16 @@ sinTest = zip x y
     y = map sin x
 ```
 
-and now we can run it like so: 
+The `$` operator is the lowest priority, right associative infix operator, it simply takes `a` on the left and applies it to `b` on the right. This is in contrast to normal function application, which is the highest priority and left associative. In particle terms, it dictates that `take k` is applied to the result of `uniformRs` before `fmap scalar` is every applied. The above `x` binding can be equivalently rewritten as 
+
+```{Haskell}
+x = fmap scalar (take k (uniformRs (0 :: Double, 2 * pi :: Double) gen))
+```
+
+I hope you can see why `$` makes life a little easier. Before we move on to the main function, I'd like to highlight a neat feature of Haskell, namely, how a feature called lazy evaluation allows us to generate arbitrary random numbers. Lazy evaluation dictates that code will only be ran when it is needed, this allows lists to be practically "infinite". The function `uniformRs` takes a range, in this case from $0$ to $2\pi$, and a generator, and returns an arbitrarily long list of random numbers, uniformly distributed in that range. When we `take k`, we're basically asking Haskell to evaluate the first `k`, and return it as a list, this is very similar to how we can treat iterators as infinite lists in python. I find lazy evaluation to be one of those language features that, due to the reality of hardware, is understandably missing from mainstream programming paradigms (although, I guess JIT is in its own way lazily evaluating programs), but is an incredibly natural way to reason about your program.
+
+
+We can put all of the above together in a main function like so:
 
 ```Haskell
 main :: IO ()
@@ -263,6 +273,8 @@ main = do
     writeFile "output.txt" $ show inputResultList
 ```
 
+This funny looking operator `<$>` is the infixed version of `fmap` is really just saying, "take the function on the left and apply it to the list on the right".  The `.` operator is the infixed composition operator. I didn't include it since it's rather trivial but `scaleInput` simply normalizes the data input to range from $[0,1]$, which is mostly standard in machine learning since networks can be a little fussy about the magnitude of their inputs. We then scan over all of the training batches, keeping a record of the network at that point, and then we test it and extract the output by `fst . runWriter . forwardW`. Finally, we write the array to a file, which is rendered by plotly at the top of the page.
+
 ## Wrapping Up 
 
-At the top of the page you can view the fruits of our labour. We pretty closely manage to converge to the desired sin function. So, whats next? Well, there's a lot of even the basics of neural networks we haven't touched on yet. It would be interesting, I think to implement the various optimizers that are industry standards now, namely AdamW and Muon are both on the list. Once the basics are covered, I think I'll try my hand at implementing more advanced architectures, firstly CNN, and once that's done the skys the limit really. I also want to refactor the way I'm doing the forward pass to be a bit more modular in nature, kind of like PyTorch where a network is composed of several seperate layers, a design desicision that should have, honestly, been rather obvious considering that composition is one of the monads strengths. Lastly, towards the end of this project the training times did get a little prohibitive, and I think it would be really interesting to see how well Haskell can handle parallelizing code. 
+At the top of the page you can view the fruits of our labour. We pretty closely manages to converge to the desired sin function. So, whats next? There's a lot of even the basics of neural networks we haven't touched on yet. It would be interesting to implement the various optimizers that are industry standards now, namely AdamW and Muon. Muon especially has roots in polynomial algebra, and I wonder if Haskell will have an elegant representation of it. Once the basics are covered, I think I'll try my hand at implementing more advanced architectures, firstly CNN, and once that's done the sky's the limit really. I also want to refactor the way I'm doing the forward pass to be a bit more modular in nature, kind of like PyTorch where a network is composed of several separate layers, a design decision that should have, honestly, been obvious considering that composition is one of the monads strengths. Lastly, towards the end of this project the training times did get a little prohibitive, and I think it would be really interesting to see how well Haskell can handle parallelizing code; alternatively, using a library like `copilot` which has been making waves in the embedded space for the last couple of years, we can pawn out the computationally expensive subroutines to CUDA code and only worry about high level architecture in Haskell.

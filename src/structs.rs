@@ -4,6 +4,7 @@ use chrono::NaiveDate;
 use kuchikiki::traits::*;
 use pandoc::{InputFormat, OutputKind, Pandoc, PandocOption, PandocOutput};
 use pulldown_cmark::Options;
+use regex::{Captures, Regex};
 use serde::Deserialize;
 use std::fs;
 use std::fs::File;
@@ -55,13 +56,23 @@ impl PartialEq for Article {
 }
 
 impl Article {
-    pub fn create_template(&self) -> io::Result<EditorialTemplate> {
+    pub fn resolve_content(&self) -> String {
+        //read the content from the path and add imports
         let mut static_path = PathBuf::from("./");
         static_path.push(&self.content_path);
 
         let text = fs::read_to_string(static_path).unwrap();
-        let mut options = Options::empty();
-        //options.insert(Options::ENABLE_MATH);
+        let re = Regex::new(r"\{\{\{([^}]*)\}\}\}").unwrap();
+        let result = re.replace(&text, |caps: &Captures| {
+            let mut src_path = PathBuf::from("./");
+            src_path.push(&caps[1]);
+            fs::read_to_string(src_path).unwrap()
+        });
+        result.to_string()
+    }
+    pub fn create_template(&self) -> io::Result<EditorialTemplate> {
+        let text = self.resolve_content();
+        let options = Options::empty();
         let parser = pulldown_cmark::Parser::new_ext(&text, options);
 
         let mut html: String = String::new();

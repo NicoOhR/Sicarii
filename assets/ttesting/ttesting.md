@@ -193,12 +193,12 @@ added for completeness sake
 $$
 \begin{align*}
 T
-  &= \frac{\bar X - \mu}{\,s/\sqrt{n}\,} \\\\[4pt] &= \frac{(\bar
-  X - \mu)\,(\sqrt{n}/\sigma)}{(s/\sqrt{n})\,(\sqrt{n}/\sigma)} \\\\ &=
+  &= \frac{\bar X - \mu}{s/\sqrt{n}} \\\\[4pt] &= \frac{(\bar
+  X - \mu)\,(\sqrt{n}/\sigma)}{(s/\sqrt{n})(\sqrt{n}/\sigma)} \\\\ &=
   \frac{\displaystyle \frac{\bar X - \mu}{\sigma/\sqrt{n}}}{\displaystyle
-  s/\sigma} \\\\[10pt] &= \frac{Z}{\,s/\sigma\,} \\\\[8pt] &=
+  s/\sigma} \\\\[10pt] &= \frac{Z}{s/\sigma} \\\\[8pt] &=
   \frac{Z}{\sqrt{s^2/\sigma^2}} \\\\[6pt] &=
-  \frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{\,n-1\,}}}  \\\\ &=
+  \frac{Z}{\sqrt{\frac{(n-1)s^2/\sigma^2}{n-1}}}  \\\\ &=
   \frac{Z}{\sqrt{V/n-1}}. \end{align*} $$
 
 Where $V \sim \chi^2_{n-1}$. So we get that $T$ is the ratio of the standard normal distribution the

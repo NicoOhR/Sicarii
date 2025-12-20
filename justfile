@@ -1,5 +1,5 @@
 run:
-  cargo run
+  cargo run --release
 
 serve:
   python3 -m http.server --directory site > /dev/null 2>&1 &

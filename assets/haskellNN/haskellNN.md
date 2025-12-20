@@ -1,8 +1,14 @@
 {{{assets/haskellNN/training.html}}}
 
-It never exactly sat right with me that I have never implemented a neural
-network from scratch by myself, and the fact that Haskell is pretty
-awesome for linear algebra stuff, as we will see, I figured it would be
+## Recruiter TL;DR
+
+I implemented a multilayer perceptron, using ReLU as the activation function, in Haskell from scratch (with the exception of linear algebra operations). In the first half, I detail the mathematical grounding of neural networks, and in the second half walk through the implementation. Above you see the plot of the learned function in blue and the actual funcion in red. The resulting neural network is able to learn trigonmetric functions, logical functions (AND, XOR, OR etc.), with more yet to be tested.
+
+## Wait, why?
+
+Being honest, it never exactly sat right with me that I have never implemented a neural
+network from scratch by myself, being a Math/CS guy (tm), and as we will see Haskell is pretty
+awesome for linear algebra stuff, so I figured it would be
 fun to go through the implementation of a neural network in Haskell. This article
 assumes no knowledge of Haskell or machine learning, but does require some
 knowledge in calculus and linear algebra, and that you are familiar with *a* programming language. I hope to achieve two things in

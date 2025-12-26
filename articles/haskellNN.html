@@ -10,7 +10,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../tufte.css">
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 </head>
 <body>
@@ -192,8 +192,9 @@ Let's write the function for running running our neural network, that is, of obt
 <p><code>#&gt;</code> is just the Matrix-by-vector multiplication that <code>hmatrix</code>, the linear algebra library I tend to default to, uses. As nice as this is, if you're familiar with neural networks you might be wrinkling your nose a little right now. Firstly, we'll often not apply an activation layer to our last layer to ensure that our network can produce the entire range of values we're interested in, so we'll need to special case our last layer. Additionally, recall from the backpropagation equations, we need <em>all</em> $z^l$, not just the final output. But never fret reader, any problem is really just a teachable moment, and we'll use this particular problem to learn about monads!</p>
 <h2>Monoids in the Category of Endofunctors</h2>
 <p>One of the more famously unhelpful sentences in programming is the answer to the question "What is a monad?" which, canonically, is "Well simple! It's just a monoid in the category of endofunctors! Of course!". Believe it or not, with only a little bit of abstract algebra and category theory, this is a relatively simple definition, but feels almost impossible to ground to programming. There are countless blogs and videos (I recommend the sheafification of g's video on the subject personally) trying to explain monads; it's a rite of passage for functional bros I think. Today, we'll focus specifically on only the monad we care about, the <code>Writer</code> monad, to demonstrate how you would actually use one of these things in the field. I will quote Kwang's excellent article on the writer monad to define it</p>
-<pre><code>"The Writer monad represents computations which produce a stream of data in addition to the computed values"
-</code></pre>
+<blockquote>
+<p>"The Writer monad represents computations which produce a stream of data in addition to the computed values"</p>
+</blockquote>
 <p>This definition is a little funny because, in many ways, this is what <em>all</em> monads do; encode additional "side effects" of otherwise pure code. When in the context of the writer monad, we can use <code>tell</code> to add to our list of logs, and <code>pure</code> to give back our actual value. The writer monad allows us to turn a function that would otherwise look like this:</p>
 <html><head></head><body><pre><code class="language-{Haskell}"><pre style="background-color:#282828;"><span style="color:#ead4af;">functionWithLogsPure :: inputType -&gt; (outputType, [logType])
 </span></pre>

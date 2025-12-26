@@ -177,7 +177,7 @@ forward (Network (Theta ts) _ f _) x0 =
 
 One of the more famously unhelpful sentences in programming is the answer to the question "What is a monad?" which, canonically, is "Well simple! It's just a monoid in the category of endofunctors! Of course!". Believe it or not, with only a little bit of abstract algebra and category theory, this is a relatively simple definition, but feels almost impossible to ground to programming. There are countless blogs and videos (I recommend the sheafification of g's video on the subject personally) trying to explain monads; it's a rite of passage for functional bros I think. Today, we'll focus specifically on only the monad we care about, the `Writer` monad, to demonstrate how you would actually use one of these things in the field. I will quote Kwang's excellent article on the writer monad to define it 
 
-    "The Writer monad represents computations which produce a stream of data in addition to the computed values"
+>"The Writer monad represents computations which produce a stream of data in addition to the computed values"
 
 This definition is a little funny because, in many ways, this is what *all* monads do; encode additional "side effects" of otherwise pure code. When in the context of the writer monad, we can use `tell` to add to our list of logs, and `pure` to give back our actual value. The writer monad allows us to turn a function that would otherwise look like this:
 

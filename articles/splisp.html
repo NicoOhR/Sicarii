@@ -1,0 +1,80 @@
+<!-- post.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get In, We&#x27;re Making A Lisp: Part 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../tufte.css">
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+</head>
+<body>
+  <style>
+  :not(pre) > code{
+      background: #2b303b;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      overflow-x: auto;
+  }
+  pre.syntect,
+  pre[class*="syntax"],
+  pre.highlight,
+  pre codeblock,          
+  pre {
+    max-width: 100%;
+    overflow-x: auto;      
+    overflow-y: hidden;     
+    white-space: pre;        
+    background: #111111
+    -webkit-overflow-scrolling: touch;
+  }
+  </style>
+  <nav class="nav editorial-nav">
+    <div class="nav-center">
+      <a href="../" class="nav-title divider-link">Sicarii</a>
+    </div>
+  </nav>
+
+  <div class="editorial">
+    <main class="post-container">
+      <div class="post-header">
+        <h1 class="post-title">Get In, We&#x27;re Making A Lisp: Part 1</h1>
+        <div class="post-meta">
+          <div class="author">Nico OR</div>
+          <div class="date">2025-12-26</div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <html><head></head><body><h2>Lexing</h2>
+<p>The Lexer, full name lexical analyzer, is generally the entry point of a compiler or interpreter. Sometimes there's a pre-processor which works on plaintext, and if you've worked with C macros enough you probably winced just now. The lexer is responsible for taking the plaintext characters and categorizes them into broad categories in the same that we process natural language by nouns, vervs, adjectives etc, our lexer will identify keywords and operations. For a lisp implemented for pedagogical reasons, there is not typically much of a reason to make a fully fledged lexer because of the simplicity of Lisp's syntax.</p>
+</body></html>
+      </article>
+    </main>
+  </div>
+  <script>
+    window.MathJax = {
+      loader: {load: ['[tex]/ams']},
+      tex: {
+        packages: {'[+]':['ams']},
+        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+        displayMath: [ ['$$', '$$'], ['\\[', '\\]'] ],
+      },
+      options: {
+        // Only elements with one of these classes get processed
+        processHtmlClass: 'math math-inline math-display',
+        ignoreHtmlClass: 'no-mathjax'
+      }
+    };
+  </script>
+<script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+</body>
+</html>

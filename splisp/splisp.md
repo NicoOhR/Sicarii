@@ -1,0 +1,3 @@
+## Lexing
+
+The Lexer, full name lexical analyzer, is generally the entry point of a compiler or interpreter. Sometimes there's a pre-processor which works on plaintext, and if you've worked with C macros enough you probably winced just now. The lexer is responsible for taking the plaintext characters and categorizes them into broad categories in the same that we process natural language by nouns, vervs, adjectives etc, our lexer will identify keywords and operations. For a lisp implemented for pedagogical reasons, there is not typically much of a reason to make a fully fledged lexer because of the simplicity of Lisp's syntax. 

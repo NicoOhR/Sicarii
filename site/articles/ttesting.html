@@ -34,25 +34,24 @@
     -webkit-overflow-scrolling: touch;
   }
   </style>
-  <nav class="nav">
-    <ul class="nav-list">
-      <li class="nav-item">
-        <a href="../" class="nav-title divider-link">Sicarii</a>
-      </li>
-    </ul>
+  <nav class="nav editorial-nav">
+    <div class="nav-center">
+      <a href="../" class="nav-title divider-link">Sicarii</a>
+    </div>
   </nav>
 
-  <main class="post-container">
-    <div class="post-header">
-      <h1 class="post-title">the t-distribution and its consequences</h1>
-      <div class="post-meta">
-        <div class="author">Nico OR</div>
-        <div class="date">2025-09-21</div>
+  <div class="editorial">
+    <main class="post-container">
+      <div class="post-header">
+        <h1 class="post-title">the t-distribution and its consequences</h1>
+        <div class="post-meta">
+          <div class="author">Nico OR</div>
+          <div class="date">2025-09-21</div>
+        </div>
       </div>
-    </div>
 
-    <article class="post-content">
-      <html><head></head><body><p>Statisticians and probability theorists have historically salvaged and glued
+      <article class="post-content">
+        <html><head></head><body><p>Statisticians and probability theorists have historically salvaged and glued
 together from various mathematical disciplines to form their
 study. Measure spaces and $\sigma$-algebras borrowed from topology,
 characteristic functions were appropriated from Fourier analysis, entropy
@@ -258,8 +257,9 @@ $$</p>
 <h2>Closing Remarks</h2>
 <p>I had originally planned to talk about some of the other tools that the $t$ distribution gives us namely confidence intervals, prediction intervals and touching on the basics of the ANOVA, although I already knew it deserved its own article; but I have severely underestimated how bad I am at being concise. While the focus of this exploration was the derviation of the $t$ distribution, it should be noted that the way we used the distribution in this article is a much more general process called the Hypothesis Testing Framework (sometimes abbreviated HTF). Different situations will yeild different distributions that get used in the test, for example, when we want to determine if two data sets come from two different distributions we would use the Kolmogorov–Smirnov distribution with the HTF to draw our conclusions. I hope you gained some intuition for this fundamental statistical tool, I'll see you next time for some more statistics shop talk, that is if and when I get around to writing up my thoughts on Confidence Intervals and ANOVA.</p>
 </body></html>
-    </article>
-  </main>
+      </article>
+    </main>
+  </div>
   <script>
     window.MathJax = {
       loader: {load: ['[tex]/ams']},

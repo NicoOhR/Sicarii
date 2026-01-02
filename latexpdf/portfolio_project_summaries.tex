@@ -1,0 +1,91 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{parskip}
+\usepackage{hyperref}
+
+\begin{document}
+\title{Project Portfolio Summary}
+\author{Nico OR}
+\date{}
+\maketitle
+
+\section{Neural Networks, Haskell, and You}
+\textit{On the surprising ergonomics of functional programming for
+machine learning}
+
+\begin{itemize}
+  \item \textbf{Learning outcomes}
+    \begin{itemize}
+      \item Implemented a multilayer perceptron from scratch and
+        reviewed the math behind training.
+      \item Applied functional programming patterns to linear
+        algebra-heavy code.
+      \item Connected gradient-based optimization theory to a working
+        implementation.
+    \end{itemize}
+  \item \textbf{Impact}
+    \begin{itemize}
+      \item Demonstrated a working neural network with a clear,
+        educational write-up.
+    \end{itemize}
+  \item \textbf{Technologies}
+    \begin{itemize}
+      \item Haskell
+      \item HMatrix
+      \item matplotlib
+    \end{itemize}
+\end{itemize}
+
+\section{the t-distribution and its consequences}
+\textit{Some of the mathematical leg work behind a fundamental statistical tool}
+
+\begin{itemize}
+  \item \textbf{Learning outcomes}
+    \begin{itemize}
+      \item Traced the derivation and intuition behind the
+        t-distribution and hypothesis testing.
+      \item Connected variance, sampling, and degrees of freedom to
+        practical inference.
+      \item Strengthened technical exposition of probability concepts.
+    \end{itemize}
+  \item \textbf{Impact}
+    \begin{itemize}
+      \item Produced an accessible explanation for students learning
+        statistical inference.
+    \end{itemize}
+  \item \textbf{Technologies}
+    \begin{itemize}
+      \item Mathematical writing
+    \end{itemize}
+\end{itemize}
+
+\section{FSAEStats}
+\textit{Scalable Analytics for the FSAE student competition}
+
+\begin{itemize}
+  \item \textbf{Learning outcomes}
+    \begin{itemize}
+      \item Evaluated ORM tradeoffs and moved toward a columnar,
+        record-batch approach.
+      \item Integrated DuckDB with Apache Arrow for efficient query
+        and transport.
+      \item Streamlined PDF-to-CSV extraction workflows for
+        downstream analytics.
+    \end{itemize}
+  \item \textbf{Impact}
+    \begin{itemize}
+      \item Delivered a lightweight API for querying FSAE results
+        without heavy joins.
+      \item Enabled faster analysis by packaging results as Arrow
+        record batches.
+    \end{itemize}
+  \item \textbf{Technologies}
+    \begin{itemize}
+      \item Rust
+      \item DuckDB
+      \item Apache Arrow
+      \item Camelot (PDF table extraction)
+    \end{itemize}
+\end{itemize}

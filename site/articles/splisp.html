@@ -51,8 +51,334 @@
       </div>
 
       <article class="post-content">
-        <html><head></head><body><h2>Lexing</h2>
-<p>The Lexer, full name lexical analyzer, is generally the entry point of a compiler or interpreter. Sometimes there's a pre-processor which works on plaintext, and if you've worked with C macros enough you probably winced just now. The lexer is responsible for taking the plaintext characters and categorizes them into broad categories in the same that we process natural language by nouns, vervs, adjectives etc, our lexer will identify keywords and operations. For a lisp implemented for pedagogical reasons, there is not typically much of a reason to make a fully fledged lexer because of the simplicity of Lisp's syntax.</p>
+        <html><head></head><body><h2>Introduction</h2>
+<p>Lisp is a language/concept/idea/philosophy that has been, by people a sizable margin older than me on the internet, sermonized to me on occasion. I've written a touch of it here and there, having started but never finished SICP, which I'll do one day soon I promise, and getting as far as 15 out of the famous 99 lisp problems. This is to say that I know enough lisp to understand why for a certain generation of programmers it was a synecdoche for software writ large. It's trivially easy to parse and writing an interpreter for it can famously be written in some 40 lines, in lisp itself no less! I've chosen to write a Lisp compiler for a couple of reasons, firstly, I've wanted to write a compiler for sometime; motivated by a basic hubris that I could do better, which I think all software people share to some extent. I was spurred into actually starting this project by Stevey's article, <a href="https://steve-yegge.blogspot.com/2007/06/rich-programmer-food.html?">Rich Programmer Food</a> where this slightly bold claim:</p>
+<blockquote>
+<p>If you don't know how compilers work, then you don't know how computers work</p>
+</blockquote>
+<p>Being an unfortunately Kant-y "first principles" guy who painfully taught himself E&amp;M because "it's embarrassing to be a computer person who doesn't understand how electricity works",I found Stevey's admittedly diatribal argument very persuasive. The language of choice for this escapade is C++ because I need some way to prove I can program in C++. I also felt that I haven't given C++ a fair chance, only having used it when a pre-existing project I have been vetted into used it or in class. Scout's honour, I will try to reserve overly opinionated judgements on the language to snarky remarks and side notes. This article will be organized in the order that I implemented these features in an effort to put together a narrative, as well as allow us to get right to programming and sprinkle theory along the way.</p>
+<h2>Build Systems</h2>
+<p>Fudge. Before we can get to coding we have to contend with building the project, I don't say anything very interesting from a technical perspective here, none of this will be on the test. You almost forget that this isn't an entirely solved problem. In Python uv has solved any pip issue I've ever had, cargo is delightful, and even in Haskell cabal is serviceable, probably, I will not pretend to have attempted to deploy in Haskell. In C/C++ we still have to contend with the early architectural decision of "how should I build this?"</p>
+<p>For this project, we'll use CMake. Coming from embedded land, CMake is certainly the "lesser evil" compared to vendor provided IDEs. CMake is a makefile generator<label for="cmake" id="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="cmake" class="margin-toggle"><span class="sidenote">This is kind of important, CMake is a meta build system, as in, it builds what builds your project. It is <em>not</em> what builds your project. Here, we'll just stick to makefiles, but I can vouch for Ninja</span>, and a domain specific language. It was created to fix "we have too many makefiles and these autoconf to manage multiple build types are getting out of hand!", and introduced "we have too many CMakeLists and these CMake scripts to manage multiple build types are getting out of hand!"</p>
+<p>Hey, I said I'll reserve judgement for C++, CMake is fair game. That quick rant aside, I'm using CMake here because I prefer interfacing with <code>gtest</code> through the <code>ctest</code> framework, and also I know how to use it and I didn't want to think terribly hard about build systems for this project. Maybe one day I'll revert to using a monolithic makefile, or give Bazel a go.</p>
+<p>We'll split our program up into <code>src</code>, <code>lib</code> and <code>tests</code>. The majority of the code will be in <code>lib</code>, which will define each stage of the compilation process as it's own class, and use <code>src</code> to define the CLI which will ingest a file and output a program. The root level CMakeLists.txt, the file name that CMake uses to interact with your program like this</p>
+<html><head></head><body><pre><code class="language-CMake"><pre style="background-color:#282828;"><span style="color:#ead4af;">cmake_minimum_required(VERSION 3.23)
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">project(
+</span><span style="color:#ead4af;">  splisp
+</span><span style="color:#ead4af;">  ...
+</span><span style="color:#ead4af;">)
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">include(CTest)
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">...
+</span><span style="color:#ead4af;">set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">add_subdirectory(lib)
+</span><span style="color:#ead4af;">add_subdirectory(src)
+</span><span style="color:#ead4af;">if(BUILD_TESTING)
+</span><span style="color:#ead4af;">  add_subdirectory(tests)
+</span><span style="color:#ead4af;">endif()
+</span></pre>
+</code></pre></body></html>
+<p>The only gotcha here if you're doing this yourself is <code>CMAKE_EXPORT_COMPILE_COMMANDS</code> which you must turn on to get proper LSP support in your editor. The <code>add_subdirectory</code> directive tells CMake to "go look at that directory and execute the CMakeLists.txt in there". In the <code>lib/splisp_lib</code> directory, the CMakeLists look like this</p>
+<html><head></head><body><pre><code class="language-CMake"><pre style="background-color:#282828;"><span style="color:#ead4af;">add_library(splisp_lib STATIC
+</span><span style="color:#ead4af;">...
+</span><span style="color:#ead4af;">)
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">find_package(Boost 1.74 REQUIRED)
+</span><span style="color:#ead4af;">target_link_libraries(splisp_lib PRIVATE Boost::boost)
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">target_include_directories(splisp_lib 
+</span><span style="color:#ead4af;">  PUBLIC 
+</span><span style="color:#ead4af;">    $&lt;BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include&gt;
+</span><span style="color:#ead4af;">    $&lt;INSTALL_INTERFACE:include&gt;
+</span><span style="color:#ead4af;">)
+</span><span style="color:#ead4af;">target_compile_features(splisp_lib PUBLIC cxx_std_20)
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">target_compile_options(splisp_lib PRIVATE
+</span><span style="color:#ead4af;">  $&lt;$&lt;CXX_COMPILER_ID:GNU,Clang,AppleClang&gt;:-Wall -Wextra -Wpedantic&gt;
+</span><span style="color:#ead4af;">  -g
+</span><span style="color:#ead4af;">  $&lt;$&lt;CXX_COMPILER_ID:MSVC&gt;:/W4 /permissive-&gt;
+</span><span style="color:#ead4af;">)
+</span></pre>
+</code></pre></body></html>
+<p>I'll highlight two things here, one, we're using Boost, and I recommend anyone using C++ to add Boost, and secondly using generator expressions, what CMake calls the meta-commands like <code>$&lt;INSTALL_INTERFACE:include&gt;</code> will cost you some upfront complexity but simplify managing the CMake configuration down the line. I don't know if this is exactly the perfect project setup, but it really didn't seem like there was a decided upon community project template to work off of. Sorry, this article is about a lisp implementation, one day I'll write a programmer-polemic about CMake.</p>
+<h2>Lexing</h2>
+<p>The Lexer, full name lexical analyzer, is generally the entry point of a compiler or interpreter. Sometimes there's a pre-processor which works on plain text, and if you've worked with C macros enough you probably winced just now. The lexer is responsible for taking the plain text characters and categorizes them into broad categories in the same that we process natural language by nouns, verbs, adjectives etc, our lexer will identify keywords and operations, collectively called tokens. For a lisp implemented for pedagogical reasons, there is not typically much of a reason to make a fully fledged lexer as a result of Lisp's simple syntax, which can be summarized as "code is data and data is code and all are lists", a motto we'll revisit when we get to the parsing and compiling stage. I like having the lexer since it simplifies the usually extensive parsing process and it's not too hard. I've opted to make the lexer into an iterator-like class, so for our public interface we'll only expose the <code>next()</code> and <code>peek()</code> methods:</p>
+<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fb4938;">class </span><span style="color:#babc52;">Lexer </span><span style="color:#ead4af;">{
+</span><span style="color:#fb4938;">public</span><span style="color:#ead4af;">:
+</span><span style="color:#ead4af;">  </span><span style="color:#8ab572;">Lexer</span><span style="color:#ead4af;">(std::string </span><span style="color:#fd971f;">program</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  std::optional&lt;Token&gt; </span><span style="color:#8ab572;">next</span><span style="color:#ead4af;">();
+</span><span style="color:#ead4af;">  std::optional&lt;Token&gt; </span><span style="color:#8ab572;">peek</span><span style="color:#ead4af;">() </span><span style="color:#fb4938;">const</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">private</span><span style="color:#ead4af;">:
+</span><span style="color:#ead4af;">  std::vector&lt;Token&gt; tokenized;
+</span><span style="color:#ead4af;">  </span><span style="color:#cab990;">...
+</span><span style="color:#ead4af;">};
+</span></pre>
+</code></pre></body></html>
+<p>We'll be using <code>std::optional</code> rather often, justified as Rust-withdrawals, which more conveniently use the result of <code>next</code> and <code>peek</code> as conditionals, and generally just makes working with these functions a bit more explicit. For midsized projects like this, where several componenets have to get implemented before we can verify that the component Just Works (tm), unit tests give us some confidence in proceeding. Using <code>gtest</code>, we can define a few tests to make sure we're on the right track. This test verifies that we can lex basic tokens:</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">TEST(ParserTests, KeywordsAndBools) {
+</span><span style="color:#ead4af;">  Parser parser(Lexer(</span><span style="color:#aab11e;">"(if #t 1 0)"</span><span style="color:#ead4af;">));
+</span><span style="color:#ead4af;">  ast::AST ast </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> parser.parse();
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  ASSERT_EQ(ast.size(), </span><span style="color:#cc869b;">1U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(ast[</span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">], </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_list(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">ast[</span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">]);
+</span><span style="color:#ead4af;">  ASSERT_NE(list, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_EQ(list-&gt;list.size(), </span><span style="color:#cc869b;">4U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(kw_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(kw, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;ast::Keyword&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">kw-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(kw_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_EQ(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_val, ast::Keyword::if_expr);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(cond_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(cond, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;</span><span style="color:#fb4938;">bool</span><span style="color:#ead4af;">&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">cond-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(cond_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_TRUE(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_val);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(then_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(then_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_num </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;std::</span><span style="color:#f1c050;">uint64_t</span><span style="color:#ead4af;">&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">then_val-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(then_num, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_EQ(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_num, </span><span style="color:#cc869b;">1U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">3</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(else_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(else_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_num </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;std::</span><span style="color:#f1c050;">uint64_t</span><span style="color:#ead4af;">&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">else_val-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(else_num, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_EQ(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_num, </span><span style="color:#cc869b;">0U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>The above is really enough for a simple component like the Lexer which has very few invariants, with that as a goal to shoot for, we can start implementing the lexer. In most simple lisp implementations, the lexer adds white space to either side of <code>(</code> and <code>)</code>, and then splits the text by white spaces. This is the first step for us as well.</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#8ab572;">Lexer::Lexer</span><span style="color:#ead4af;">(std::string </span><span style="color:#fd971f;">program</span><span style="color:#ead4af;">) {
+</span><span style="color:#ead4af;">  </span><span style="color:#908476;">// preprocess string
+</span><span style="color:#ead4af;">  boost::replace_all(program, </span><span style="color:#aab11e;">"("</span><span style="color:#ead4af;">, </span><span style="color:#aab11e;">" ( "</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  boost::replace_all(program, </span><span style="color:#aab11e;">")"</span><span style="color:#ead4af;">, </span><span style="color:#aab11e;">" ) "</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  boost::algorithm::trim(program);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  std::vector&lt;std::string&gt; words;
+</span><span style="color:#ead4af;">  boost::split(words, program, boost::is_space(), boost::token_compress_on);
+</span><span style="color:#ead4af;">  </span><span style="color:#cab990;">...
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>Our tokens can be starting a list <code>(</code>, ending a list <code>)</code>, atomic, for this project this will be just numbers, or an identity. Identities (idents) are sometimes called symbols in the wider lisp world, I burrowed the name from Scheme, and basically describe non-lists which evaluate to something else, e.g. variable names. I went through the trouble of doing this since it allows us to use primitive operations as values which can be passed as values to higher order functions, like <code>fmap</code>. In an effort to avoid chaining <code>if</code> statements, I summarized these rules in an <code>unordered_map</code> and used <code>.find()</code> to get back the <code>TokenKind</code>. The map is defined in our header file</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const</span><span style="color:#ead4af;"> std::unordered_map&lt;std::string, TokenKind&gt; keywords </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">{
+</span><span style="color:#ead4af;">      {</span><span style="color:#aab11e;">"("</span><span style="color:#ead4af;">, TokenKind::lparn},  {</span><span style="color:#aab11e;">")"</span><span style="color:#ead4af;">, TokenKind::rparn}, {</span><span style="color:#aab11e;">"+"</span><span style="color:#ead4af;">, TokenKind::ident},
+</span><span style="color:#ead4af;">      {</span><span style="color:#aab11e;">"-"</span><span style="color:#ead4af;">, TokenKind::ident},  {</span><span style="color:#aab11e;">"*"</span><span style="color:#ead4af;">, TokenKind::ident}, {</span><span style="color:#aab11e;">"/"</span><span style="color:#ead4af;">, TokenKind::ident},
+</span><span style="color:#ead4af;">      {</span><span style="color:#aab11e;">"#t"</span><span style="color:#ead4af;">, TokenKind::atoms}, {</span><span style="color:#aab11e;">"#f"</span><span style="color:#ead4af;">, TokenKind::atoms}};
+</span></pre>
+</code></pre></body></html>
+<p>And is used in the constructor like so</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#cab990;">...</span><span style="color:#ead4af;"> Token curr;
+</span><span style="color:#fb4938;">for </span><span style="color:#ead4af;">(std::string str </span><span style="color:#7ba093;">:</span><span style="color:#ead4af;"> words) {
+</span><span style="color:#ead4af;">  curr.lexeme </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> str;
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">auto</span><span style="color:#ead4af;"> match </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> keywords.find(curr.lexeme);
+</span><span style="color:#ead4af;">  </span><span style="color:#908476;">// first we match tokens for exact matches
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">if </span><span style="color:#ead4af;">(match </span><span style="color:#cab990;">!=</span><span style="color:#ead4af;"> keywords.end()) {
+</span><span style="color:#ead4af;">    curr.kind </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> match-&gt;second;
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  </span><span style="color:#908476;">// everything else has to be a non kword ident or non bool atom, for now
+</span><span style="color:#ead4af;">  </span><span style="color:#908476;">// we don't consider variable names
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">else </span><span style="color:#ead4af;">{
+</span><span style="color:#ead4af;">    curr.kind </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> TokenKind::atoms;
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  tokenized.push_back(curr);
+</span><span style="color:#ead4af;">}
+</span><span style="color:#cab990;">...
+</span></pre>
+</code></pre></body></html>
+<p>The <code>lexeme</code> field of the <code>Token</code> struct is just the raw string of the token. With that, we have an iterator of <code>Tokens</code> which represent our program.</p>
+<h2>Parsing</h2>
+<p>Now that we have the program in tokenized form, we start parsing the program. If lexing is recognizing individual words, we can think of parsing as organizing these words into sentences and paragraphs. Our goal is to take in tokens and output an Abstract Syntax Tree (AST). In general, tree's do a good job of capturing the meaning of <em>language-like things</em> because they describe the flow of composition naturally, where leaves describe basic objects and the intermediate nodes are "compose children by this rule". Extending this philosopical meandering going for a little bit, strings are linear and create meaning through composition, composition is recursive, and recursive structure is a tree.<label for="language" id="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="language" class="margin-toggle"><span class="sidenote">I will not be contending with a Deluzian approach to compiler design today, though I guess DAGs are rhizomatic in a manner.</span> The AST is especially apt at describing a lisp because the basic object of a lisp, the S-expression, is in itself treelike. As I mentioned earlier, in lisp "code is data and data is code and all are lists", while that's philosophically accurate, it would be more accurate to say that "all are S-expressions", abbreviated as <code>sexp</code>. A S-expression is either an atom, $x$, or an expression $(x . y)$ where both $x$ and $y$ are S-expressions themselves, in modern syntax we usually just drop the $.$ all together. So all together, we have <code>Symbol</code>s which basic atoms of the language numbers, bools, keywords, we have <code>List</code>s which are a collection of <code>SExp</code>s, and we have <code>SExp</code>s which are either a <code>List</code> or a <code>Symbol</code>. The recursive definition of <code>SExp</code> is one of the more satisfying aspects of the language, <label for="rust" id="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="rust" class="margin-toggle"><span class="sidenote">And also the only time I was actively glad to not be using Rust during this project</span>and likely the source of the taoist imagery that's often associated with lisp.</p>
+<p>Let me take a quick aside to explain the syntax of lisp, it doesn't take very long. Lisp uses <em>prefix notation</em> also known as <em>polish notation</em>, where instead of a binary operation being <em>between</em> two operands, it is <em>before</em> operands. So in lisp the computation <code>(1 + 1)</code> is notated as <code>(+ 1 1)</code>. This simplifies the parsing process, since we don't have to consider the precedence of an operator, computing <code>(2 * 1 + 1)</code> would require us to recognize that <code>*</code> happens before <code>+</code>, using prefix notation <code>(+ 1 (* 2 1))</code> localizes the syntax and removes ambiguity. The other rule, and the only one we'll have to think about for a while is that <code>(</code> starts a list and <code>)</code> ends a list. That's about the size of it.</p>
+<p>So how do we actually parse this? There's a number of ways to parse a string into a tree, but in the process of immanent critique it's been decided that <em>recursive decent</em> strikes the happy middle between being easy to implement and not having an obscene run time. First we have to start with a grammar rules, recall again that we're only concerning ourselves with lists, so in effect our rules look like:</p>
+<pre><code>sexp := Symbol | list; 
+
+list := "(" { sexp }  ")"
+</code></pre>
+<p>Since the definitions are mutually recursive, we can append to our tree and then recur until we hit a symbol.</p>
+<p>The grammar rules are translated into C++ with the help of forward declaration</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">struct </span><span style="color:#ead4af;">Symbol {
+</span><span style="color:#ead4af;">  std::variant&lt;Keyword, std::string, std::</span><span style="color:#f1c050;">uint64_t</span><span style="color:#ead4af;">, </span><span style="color:#fb4938;">bool</span><span style="color:#ead4af;">&gt; value;
+</span><span style="color:#ead4af;">};
+</span><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">struct </span><span style="color:#ead4af;">SExp;
+</span><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">struct </span><span style="color:#ead4af;">List {
+</span><span style="color:#ead4af;">  std::vector&lt;std::unique_ptr&lt;SExp&gt;&gt; list;
+</span><span style="color:#ead4af;">};
+</span><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">struct </span><span style="color:#ead4af;">SExp {
+</span><span style="color:#ead4af;">  std::variant&lt;List, Symbol&gt; node;
+</span><span style="color:#ead4af;">};
+</span></pre>
+</code></pre></body></html>
+<p>Now that we have the representation set up, we should probably also create the tests which will verify it:</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">TEST(ParserTests, KeywordsAndBools) {
+</span><span style="color:#ead4af;">  Parser parser(Lexer(</span><span style="color:#aab11e;">"(if #t 1 0)"</span><span style="color:#ead4af;">));
+</span><span style="color:#ead4af;">  ast::AST ast </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> parser.parse();
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  ASSERT_EQ(ast.size(), </span><span style="color:#cc869b;">1U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(ast[</span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">], </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_list(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">ast[</span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">]);
+</span><span style="color:#ead4af;">  ASSERT_NE(list, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_EQ(list-&gt;list.size(), </span><span style="color:#cc869b;">4U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(kw_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(kw, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;ast::Keyword&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">kw-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(kw_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_EQ(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">kw_val, ast::Keyword::if_expr);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(cond_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(cond, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;</span><span style="color:#fb4938;">bool</span><span style="color:#ead4af;">&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">cond-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(cond_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_TRUE(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">cond_val);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(then_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(then_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_num </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;std::</span><span style="color:#f1c050;">uint64_t</span><span style="color:#ead4af;">&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">then_val-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(then_num, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_EQ(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">then_num, </span><span style="color:#cc869b;">1U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_item </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">list_item(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">list, </span><span style="color:#cc869b;">3</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  ASSERT_NE(else_item, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_val </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">as_symbol(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_item);
+</span><span style="color:#ead4af;">  ASSERT_NE(else_val, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">const auto </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_num </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">std::get_if&lt;std::</span><span style="color:#f1c050;">uint64_t</span><span style="color:#ead4af;">&gt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">else_val-&gt;value);
+</span><span style="color:#ead4af;">  ASSERT_NE(else_num, </span><span style="color:#cc869b;">nullptr</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">  EXPECT_EQ(</span><span style="color:#cab990;">*</span><span style="color:#ead4af;">else_num, </span><span style="color:#cc869b;">0U</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>Here, the functions <code>list_item</code>, <code>as_symbol</code>, and <code>as_list</code> are helper functions which strip the <code>std::variant</code> and return back the struct itself. This functionality is not really necessary outside of testing the parser, so we relegate it to the test's namespace. We want our compilation process to stop here if the program contains any issues, so we include two obvious ones here, mismatched parentheses, and invalid atoms:</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">TEST(ParserTests, MismatchedParensThrows) {
+</span><span style="color:#ead4af;">  Parser parser(Lexer(</span><span style="color:#aab11e;">")"</span><span style="color:#ead4af;">));
+</span><span style="color:#ead4af;">  EXPECT_THROW((</span><span style="color:#fb4938;">void</span><span style="color:#ead4af;">)parser.parse(), std::logic_error);
+</span><span style="color:#ead4af;">}
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">TEST(ParserTests, InvalidAtomThrows) {
+</span><span style="color:#ead4af;">  Parser parser(Lexer(</span><span style="color:#aab11e;">"foo"</span><span style="color:#ead4af;">));
+</span><span style="color:#ead4af;">  EXPECT_THROW((</span><span style="color:#fb4938;">void</span><span style="color:#ead4af;">)parser.parse(), std::invalid_argument);
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>A quick note on testing methodology, you might have noticed I am only testing the public methods for both the Lexer and the Parser, this is because I am almost certain that the implementation details for the internals might change as we introduce more complicated "nice to haves" later on, like error reporting or debugging capabilities.</p>
+<p>Now that we can forge ahead with some confidence, we can finally implement recursive decent parsing with a relatively simple procedure: if the next value is <code>(</code>, then we go into the <code>create_list()</code> routine. In the <code>create_list()</code> routine, until a <code>)</code> is encountered, we create new S-expressions recursively by calling <code>create_sexp()</code>. These two methods will call each other until an atom is encountered, which is pushed into the list and continue the list creation loop. I genuinely love recursive solutions to things, stack safety and performance be damned.</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">std::unique_ptr&lt;SExp&gt; </span><span style="color:#8ab572;">Parser::create_sexp</span><span style="color:#ead4af;">() {
+</span><span style="color:#ead4af;">  Token next </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> lex.next().value();
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">switch </span><span style="color:#ead4af;">(next.kind) {
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">case </span><span style="color:#ead4af;">(TokenKind::lparn): {
+</span><span style="color:#ead4af;">    SExp sexp </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">{.node </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">create_list()};
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">std::make_unique&lt;SExp&gt;(std::move(sexp));
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">case </span><span style="color:#ead4af;">(TokenKind::atoms): {
+</span><span style="color:#ead4af;">    SExp sexp;
+</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">auto</span><span style="color:#ead4af;"> num </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">is_number(next.lexeme);
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">if </span><span style="color:#ead4af;">(num) {
+</span><span style="color:#ead4af;">      sexp </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">{.node </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> Symbol{num.value()}};
+</span><span style="color:#ead4af;">      </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">std::make_unique&lt;SExp&gt;(std::move(sexp));
+</span><span style="color:#ead4af;">    };
+</span><span style="color:#ead4af;">    </span><span style="color:#908476;">// identical procedure to the above is repeated for keywords and bools...
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">throw </span><span style="color:#ead4af;">std::invalid_argument(</span><span style="color:#aab11e;">"invalid atom"</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">break</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">case </span><span style="color:#ead4af;">(TokenKind::rparn): {
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">throw </span><span style="color:#ead4af;">std::logic_error(</span><span style="color:#aab11e;">"mismatched parantheses"</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">break</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">case </span><span style="color:#ead4af;">(TokenKind::ident): {
+</span><span style="color:#ead4af;">    SExp sexp </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">{.node </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> Symbol{next.lexeme}};
+</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">std::make_unique&lt;SExp&gt;(std::move(sexp));
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">throw </span><span style="color:#ead4af;">std::logic_error(</span><span style="color:#aab11e;">"strange construction"</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">}
+</span><span style="color:#ead4af;">
+</span><span style="color:#ead4af;">List </span><span style="color:#8ab572;">Parser::create_list</span><span style="color:#ead4af;">() {
+</span><span style="color:#ead4af;">  List ret </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">List();
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">while </span><span style="color:#ead4af;">(lex.peek().value().kind </span><span style="color:#cab990;">!=</span><span style="color:#ead4af;"> TokenKind::rparn) {
+</span><span style="color:#ead4af;">    ret.list.push_back((create_sexp()));
+</span><span style="color:#ead4af;">  }
+</span><span style="color:#ead4af;">  lex.next();
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">return</span><span style="color:#ead4af;"> ret;
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>The above passes the tests with flying colors, but we'd still like to verify visually what our AST looks like. Printing the AST is somewhat complicated by the fact that we used <code>std::variant</code>, reason being is that there is not a built in formatter for the container, so we have to either chain <code>std::get_if&lt;T&gt;</code> statements or use the <code>std::visit</code> method which applies the visitor pattern to the variant, we choose the former rather than the later for reasons we'll explain in a second.</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#fb4938;">void </span><span style="color:#8ab572;">print_symbol</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">const</span><span style="color:#ead4af;"> Symbol </span><span style="color:#cab990;">&amp;</span><span style="color:#fd971f;">sym</span><span style="color:#ead4af;">, </span><span style="color:#fd971f;">int level</span><span style="color:#ead4af;">) {
+</span><span style="color:#ead4af;">  std::visit(
+</span><span style="color:#ead4af;">      [level](</span><span style="color:#fb4938;">const </span><span style="color:#fd971f;">auto </span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">v) {
+</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">using</span><span style="color:#ead4af;"> T </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> std::decay_t</span><span style="color:#cab990;">&lt;</span><span style="color:#fd971f;">decltype</span><span style="color:#ead4af;">(v)</span><span style="color:#cab990;">&gt;</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">        std::string stuff(level </span><span style="color:#cab990;">* </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">, </span><span style="color:#aab11e;">' '</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">if constexpr </span><span style="color:#ead4af;">(std::is_same_v&lt;T, std::string&gt;) {
+</span><span style="color:#ead4af;">          std::cout </span><span style="color:#cab990;">&lt;&lt;</span><span style="color:#ead4af;"> stuff </span><span style="color:#cab990;">&lt;&lt; </span><span style="color:#aab11e;">"Ident " </span><span style="color:#cab990;">&lt;&lt;</span><span style="color:#ead4af;"> v;
+</span><span style="color:#ead4af;">        } </span><span style="color:#fb4938;">else if constexpr </span><span style="color:#ead4af;">(std::is_same_v&lt;T, std::</span><span style="color:#f1c050;">uint64_t</span><span style="color:#ead4af;">&gt;) {
+</span><span style="color:#ead4af;">          std::cout </span><span style="color:#cab990;">&lt;&lt;</span><span style="color:#ead4af;"> stuff </span><span style="color:#cab990;">&lt;&lt; </span><span style="color:#aab11e;">"Int " </span><span style="color:#cab990;">&lt;&lt;</span><span style="color:#ead4af;"> v;
+</span><span style="color:#ead4af;">        } </span><span style="color:#fb4938;">else if constexpr </span><span style="color:#ead4af;">(std::is_same_v&lt;T, </span><span style="color:#fd971f;">bool</span><span style="color:#ead4af;">&gt;) {
+</span><span style="color:#ead4af;">          std::cout </span><span style="color:#cab990;">&lt;&lt;</span><span style="color:#ead4af;"> stuff </span><span style="color:#cab990;">&lt;&lt; </span><span style="color:#aab11e;">"Bool " </span><span style="color:#cab990;">&lt;&lt; </span><span style="color:#ead4af;">(v </span><span style="color:#7ba093;">? </span><span style="color:#aab11e;">"true" </span><span style="color:#7ba093;">: </span><span style="color:#aab11e;">"false"</span><span style="color:#ead4af;">);
+</span><span style="color:#ead4af;">        } </span><span style="color:#fb4938;">else if constexpr </span><span style="color:#ead4af;">(std::is_same_v&lt;T, Keyword&gt;) {
+</span><span style="color:#ead4af;">          std::cout </span><span style="color:#cab990;">&lt;&lt;</span><span style="color:#ead4af;"> stuff </span><span style="color:#cab990;">&lt;&lt; </span><span style="color:#aab11e;">"Kword " </span><span style="color:#cab990;">&lt;&lt; </span><span style="color:#ead4af;">print_keyword(v);
+</span><span style="color:#ead4af;">        }
+</span><span style="color:#ead4af;">      },
+</span><span style="color:#ead4af;">      sym.value);
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>Despite using <code>std::get_if&lt;T&gt;</code> inside the visitor anyway, the benefit of <code>std::visit</code> is that it <em>forces</em> us to implement a case for every possible type. So, if we introduce another thing that symbol can be, the program would fail to compile until we handle it in the print as well. The purpose of using <code>decay_t&lt;decltype(t)&gt;</code> is a little complex but boils down to the fact that since we're passing <code>v</code> by a constant reference to avoid copying, <code>std::decay_t</code> allows us to match the type concretly, <code>std::decay_t</code> strips the reference and gives us back what we're actually interested in matching against<label for="decay" id="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="decay" class="margin-toggle"><span class="sidenote">More percisely, <code>decay_t</code> strips the <em>const and volatile qualifications</em> and references. The docs refer to this as "perform type conversions equivalent to the ones performed when passing to a function by value".</span>. That is, instead of checking if the <code>std::is_same_v&lt;T, std::uint64&amp;&gt;</code>, we simply check <code>std::is_same_v&lt;T, std::uint64&gt;</code>. I feel like surely <code>std::variant</code> is worthy of having a built in formatter to hide this implementation from a frankly disinterested user, but there's probably some edge cases that need to be left up to the user which prevent this from being easily printable.</p>
+<h2>Simple results</h2>
+<p>Trying all of this out in a simple main function,</p>
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#fb4938;">#include </span><span style="color:#aab11e;">&lt;frontend/lexer.hpp&gt;
+</span><span style="color:#fb4938;">#include </span><span style="color:#aab11e;">&lt;frontend/parser.hpp&gt;
+</span><span style="color:#fb4938;">#include </span><span style="color:#aab11e;">&lt;iostream&gt;
+</span><span style="color:#fb4938;">#include </span><span style="color:#aab11e;">&lt;string&gt;
+</span><span style="color:#ead4af;">
+</span><span style="color:#fb4938;">int </span><span style="color:#8ab572;">main</span><span style="color:#ead4af;">() {
+</span><span style="color:#ead4af;">  std::string program </span><span style="color:#cab990;">= </span><span style="color:#aab11e;">"(if #t (+ 3 4) 5)"</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">  Lexer lex(program);
+</span><span style="color:#ead4af;">  Parser parser(std::move(lex));
+</span><span style="color:#ead4af;">  </span><span style="color:#fd971f;">auto</span><span style="color:#ead4af;"> ast </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> parser.parse();
+</span><span style="color:#ead4af;">  std::cout </span><span style="color:#cab990;">&lt;&lt; </span><span style="color:#aab11e;">"--+--" </span><span style="color:#cab990;">&lt;&lt;</span><span style="color:#ead4af;"> std::endl;
+</span><span style="color:#ead4af;">  ast::print_ast(ast);
+</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">return </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
+</span><span style="color:#ead4af;">}
+</span></pre>
+</code></pre></body></html>
+<p>Will output:</p>
+<pre><code>AST
+  List
+    Kword if
+    Bool true
+    List
+      Ident +
+      Int 3
+      Int 4
+    Int 5
+</code></pre>
+<p>Exactly as expected. From here we need to build the code generator which will take the AST and convert it into what will actually run on the machine. Ah. That sounds hard. Generating x86 assembly is not impossible especially for simple operations like we're planning to do, but part of what I wanted out of this project is an animated output that will visualize the program through the compilation steps (lexer, parser, assembly, stack) which is a little hard to do if we're running on actual hardware. So next article, I'll go through the stack based virtual machine that I implemented, and finally for part three we'll discuss generating assembly from the AST.</p>
 </body></html>
       </article>
     </main>

@@ -1,0 +1,123 @@
+<!-- post.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Note on the Monad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../tufte.css">
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+</head>
+<body>
+  <style>
+  :not(pre) > code{
+      background: #2b303b;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      overflow-x: auto;
+  }
+  pre.syntect,
+  pre[class*="syntax"],
+  pre.highlight,
+  pre codeblock,          
+  pre {
+    max-width: 100%;
+    overflow-x: auto;      
+    overflow-y: hidden;     
+    white-space: pre;        
+    background: #111111
+    -webkit-overflow-scrolling: touch;
+  }
+  </style>
+  <nav class="nav editorial-nav">
+    <div class="nav-center">
+      <a href="../" class="nav-title divider-link">Sicarii</a>
+    </div>
+  </nav>
+
+  <div class="editorial">
+    <main class="post-container">
+      <div class="post-header">
+        <h1 class="post-title">Note on the Monad</h1>
+        <div class="post-meta">
+          <div class="author">Nico OR</div>
+          <div class="date">2026-01-02</div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <html><head></head><body><h2>Do we really need another article about this?</h2>
+<p>In a previous article on implementing a neural network in Haskell we used
+the writer monad to propagate intermediate calculations through the
+forward pass of the network. While I wanted to explain the monad in its
+full generality, I felt as though this subject has been covered to death
+in the past by people significantly smarter than me, best illustrated by
+this frankly hilarious graphic from the Haskell wiki:</p>
+<div style="text-align: center;">
+<p><img src="/img/Monad-tutorials-chart.png" alt="monads over time"></p>
+</div>
+<p>However, after finishing that article up, I found that I do have a few
+things to say, and we'll try to keep this one short. In a couple hundered
+words I hope to explain what monads are from both the mathematical
+perspective (Eilenberg-Moore category) and the programming perspective
+(Klesili categoties).</p>
+<h2>A Word on Higher Algebra</h2>
+<p>Even if you went to <em>higher education institution of choice</em> to study
+mathematics you've probably only taken a single class in abstract algebra,
+and even if you have, you've probably blocked it out of your mind as best
+you can. The reason being, I think, that abstraction is just difficult,
+and should usually be justified. While I by no means can speak for the
+field, personally, the study of abstract algebra is motivated by the fact
+that operations <em>induce</em> a structure on otherwise uncoordinanted objects,
+and understanding the structure they induce will organize objects into
+certain high level categories. Going off of that, we'll now introduce (or
+reintroduce) the concept of a <em>group</em>, explain how it explains the
+structure of <em>actual</em> things, and off that we'll discuss the <em>monoid</em>
+which will naturally lead us to monads.</p>
+<h2>The G</h2>
+<p>Classically, a <strong>group</strong> $G$ is a set, equipped with an associative
+operation $(\cdot)$, with resepct to that operation, there is an identity
+element $i$, such that $\forall g \in G, g \cdot i = g$, and each element
+in the set of $G$ has an inverse, that is $\forall g \in G, \exists
+g^{-1}: g \cdot g^{-1} = i$. Because of Cayley's theorem, which we will
+not be covering today, we almost always view the operation $\cdot$ as
+a <em>composition</em> of the the elements of $G$ and we call it the <em>product</em> of
+$G$. If I can insist that you take away anything from this article is that
+a <em>product</em> is <em>compositional</em>.</p>
+<p>Again because of Cayely's theorem, all groups are permutation groups, that
+is, every group describes how to order a list of things. Before we use
+that, let's try a counting problem: How many ways can you arrange $n$
+objects, with $q$ of them being non-unique?</p>
+<p>While this is relatively easy to count out in your head for $n = 3$ and $q
+= 2$ ($3$), it gets prohibitive at $n = 5$ and on, and what if there are
+multiple classes of objecst which are non-unique?</p>
+</body></html>
+      </article>
+    </main>
+  </div>
+  <script>
+    window.MathJax = {
+      loader: {load: ['[tex]/ams']},
+      tex: {
+        packages: {'[+]':['ams']},
+        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+        displayMath: [ ['$$', '$$'], ['\\[', '\\]'] ],
+      },
+      options: {
+        // Only elements with one of these classes get processed
+        processHtmlClass: 'math math-inline math-display',
+        ignoreHtmlClass: 'no-mathjax'
+      }
+    };
+  </script>
+<script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+</body>
+</html>

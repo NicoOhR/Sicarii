@@ -122,33 +122,33 @@ as it decouples from the hardware. If I wanted to switch to an NXP chip
 instead, I would only have to re implement this layer, as the Application
 and Sensor layer uses the interfaces we make here.</p>
 <p>Here is an example of one of the interfaces, the GPIO interface:</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#ead4af;">
-</span><span style="color:#fb4938;">class </span><span style="color:#babc52;">IGpio </span><span style="color:#ead4af;">{
-</span><span style="color:#fb4938;">public</span><span style="color:#ead4af;">:
-</span><span style="color:#ead4af;">	</span><span style="color:#fb4938;">virtual </span><span style="color:#8ab572;">~IGpio</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">= </span><span style="color:#fb4938;">default</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">	</span><span style="color:#fb4938;">virtual bool </span><span style="color:#8ab572;">Read</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">	</span><span style="color:#fb4938;">virtual void </span><span style="color:#8ab572;">Write</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">bool </span><span style="color:#fd971f;">signal</span><span style="color:#ead4af;">) </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">	</span><span style="color:#fb4938;">virtual bool </span><span style="color:#8ab572;">ToggleDetected</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">};
-</span><span style="color:#ead4af;">
+<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fdf4c1aa;">
+</span><span style="color:#fa5c4b;">class </span><span style="color:#8ec07c;">IGpio </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fa5c4b;">public</span><span style="color:#fdf4c1aa;">:
+</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual </span><span style="color:#8ec07c;">~IGpio</span><span style="color:#fdf4c1aa;">() </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">default</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual bool </span><span style="color:#8ec07c;">Read</span><span style="color:#fdf4c1aa;">() </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual void </span><span style="color:#8ec07c;">Write</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">bool </span><span style="color:#fdf4c1;">signal</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual bool </span><span style="color:#8ec07c;">ToggleDetected</span><span style="color:#fdf4c1aa;">() </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">};
+</span><span style="color:#fdf4c1aa;">
 </span></pre>
 </code></pre></body></html>
 <p>And we implement the Write method like this</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fb4938;">void </span><span style="color:#8ab572;">GpioStmF4::Write</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bool signal</span><span style="color:#ead4af;">) {
-</span><span style="color:#ead4af;">	GPIO_PinState pin_state;
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">	</span><span style="color:#fb4938;">if </span><span style="color:#ead4af;">(signal) {
-</span><span style="color:#ead4af;">		pin_state </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> GPIO_PIN_SET;
-</span><span style="color:#ead4af;">	} </span><span style="color:#fb4938;">else </span><span style="color:#ead4af;">{
-</span><span style="color:#ead4af;">		pin_state </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> GPIO_PIN_RESET;
-</span><span style="color:#ead4af;">	}
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">	HAL_GPIO_WritePin(port_, pin_, pin_state);
-</span><span style="color:#ead4af;">}
-</span><span style="color:#ead4af;">
+<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">void </span><span style="color:#fdf4c1aa;">GpioStmF4::</span><span style="color:#8ec07c;">Write</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">bool </span><span style="color:#fdf4c1;">signal</span><span style="color:#fdf4c1aa;">) {
+</span><span style="color:#fdf4c1aa;">	GPIO_PinState pin_state;
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">if </span><span style="color:#fdf4c1aa;">(signal) {
+</span><span style="color:#fdf4c1aa;">		pin_state </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> GPIO_PIN_SET;
+</span><span style="color:#fdf4c1aa;">	} </span><span style="color:#fa5c4b;">else </span><span style="color:#fdf4c1aa;">{
+</span><span style="color:#fdf4c1aa;">		pin_state </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> GPIO_PIN_RESET;
+</span><span style="color:#fdf4c1aa;">	}
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fdf4c1;">HAL_GPIO_WritePin(port_, pin_, pin_state)</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">}
+</span><span style="color:#fdf4c1aa;">
 </span></pre>
 </code></pre></body></html>
 <p>With this we cut down on how verbose our code is, and reduce how likely
@@ -161,12 +161,12 @@ need to, however we haven't really had the opportunity to put this to the
 test as we haven't upgraded sensors in a long while.</p>
 <p>For example, here's the interface for the linear potentiometer, which
 reads the displacement of the suspension shocks.</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fb4938;">class </span><span style="color:#babc52;">ILinearPotentiometer </span><span style="color:#ead4af;">{ </span><span style="color:#fb4938;">public</span><span style="color:#ead4af;">: </span><span style="color:#fb4938;">virtual </span><span style="color:#cab990;">~</span><span style="color:#ead4af;">ILinearPotentiometer()
-</span><span style="color:#cab990;">= </span><span style="color:#fb4938;">default</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">virtual void </span><span style="color:#8ab572;">DisplacementInches</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">float </span><span style="color:#fd971f;">quantized_counts</span><span style="color:#ead4af;">[]) </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">virtual void </span><span style="color:#8ab572;">DisplacementMillimeters</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">float </span><span style="color:#fd971f;">quantized_counts</span><span style="color:#ead4af;">[]) </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">};
+<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">class </span><span style="color:#8ec07c;">ILinearPotentiometer </span><span style="color:#fdf4c1aa;">{ </span><span style="color:#fa5c4b;">public</span><span style="color:#fdf4c1aa;">: </span><span style="color:#fa5c4b;">virtual </span><span style="color:#fe8019;">~</span><span style="color:#fdf4c1;">ILinearPotentiometer()
+</span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">default</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">virtual void </span><span style="color:#8ec07c;">DisplacementInches</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">float </span><span style="color:#fdf4c1;">quantized_counts</span><span style="color:#fdf4c1aa;">[]) </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">virtual void </span><span style="color:#8ec07c;">DisplacementMillimeters</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">float </span><span style="color:#fdf4c1;">quantized_counts</span><span style="color:#fdf4c1aa;">[]) </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">};
 </span></pre>
 </code></pre></body></html>
 <p>Lastly is the Application layer, which handles the state of the device,

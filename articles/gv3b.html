@@ -81,42 +81,42 @@ bodies, then calculates and applies the gravitational force and its
 opposite that the bodies apply on each other. The <code>gravitational_force()</code>,
 calculation is adapted from Newton's Gravitational Law.
 (No, that's not the real gravitational constant)</p>
-<html><head></head><body><pre><code class="language-Rust"><pre style="background-color:#282828;"><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">gravitational_force</span><span style="color:#ead4af;">(
-</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">mass1</span><span style="color:#ead4af;">: </span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">,
-</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">mass2</span><span style="color:#ead4af;">: </span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">,
-</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">position1</span><span style="color:#ead4af;">: Vector2&lt;</span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">&gt;,
-</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">position2</span><span style="color:#ead4af;">: Vector2&lt;</span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">&gt;,
-</span><span style="color:#ead4af;">) -&gt; Vector2&lt;</span><span style="color:#fd971f;">f32</span><span style="color:#ead4af;">&gt; {
-</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> r </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> position2 </span><span style="color:#cab990;">-</span><span style="color:#ead4af;"> position1;
-</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> direction </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> r.</span><span style="color:#f1c050;">norm</span><span style="color:#ead4af;">();
-</span><span style="color:#ead4af;">    </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> f_mag </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1000.0 </span><span style="color:#cab990;">* </span><span style="color:#ead4af;">((mass1 </span><span style="color:#cab990;">*</span><span style="color:#ead4af;"> mass2) </span><span style="color:#cab990;">/</span><span style="color:#ead4af;"> direction.</span><span style="color:#f1c050;">powi</span><span style="color:#ead4af;">(</span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">));
-</span><span style="color:#ead4af;">    r.</span><span style="color:#f1c050;">normalize</span><span style="color:#ead4af;">() </span><span style="color:#cab990;">*</span><span style="color:#ead4af;"> f_mag
-</span><span style="color:#ead4af;">}
+<html><head></head><body><pre><code class="language-Rust"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">pub fn </span><span style="color:#8ec07c;">gravitational_force</span><span style="color:#fdf4c1aa;">(
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">mass1</span><span style="color:#fdf4c1aa;">: </span><span style="color:#fa5c4b;">f32</span><span style="color:#fdf4c1aa;">,
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">mass2</span><span style="color:#fdf4c1aa;">: </span><span style="color:#fa5c4b;">f32</span><span style="color:#fdf4c1aa;">,
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">position1</span><span style="color:#fdf4c1aa;">: Vector2&lt;</span><span style="color:#fa5c4b;">f32</span><span style="color:#fdf4c1aa;">&gt;,
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">position2</span><span style="color:#fdf4c1aa;">: Vector2&lt;</span><span style="color:#fa5c4b;">f32</span><span style="color:#fdf4c1aa;">&gt;,
+</span><span style="color:#fdf4c1aa;">) -&gt; Vector2&lt;</span><span style="color:#fa5c4b;">f32</span><span style="color:#fdf4c1aa;">&gt; {
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">let</span><span style="color:#fdf4c1aa;"> r </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> position2 </span><span style="color:#fe8019;">-</span><span style="color:#fdf4c1aa;"> position1;
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">let</span><span style="color:#fdf4c1aa;"> direction </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> r.</span><span style="color:#fabd2f;">norm</span><span style="color:#fdf4c1aa;">();
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">let</span><span style="color:#fdf4c1aa;"> f_mag </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1000.0 </span><span style="color:#fe8019;">* </span><span style="color:#fdf4c1aa;">((mass1 </span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1aa;"> mass2) </span><span style="color:#fe8019;">/</span><span style="color:#fdf4c1aa;"> direction.</span><span style="color:#fabd2f;">powi</span><span style="color:#fdf4c1aa;">(</span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1aa;">));
+</span><span style="color:#fdf4c1aa;">    r.</span><span style="color:#fabd2f;">normalize</span><span style="color:#fdf4c1aa;">() </span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1aa;"> f_mag
+</span><span style="color:#fdf4c1aa;">}
 </span></pre>
 </code></pre></body></html>
 <p>Briefly, I added vectors to show more obviously the velocities of the
 bodies during the simulation.</p>
-<html><head></head><body><pre><code class="language-Rust"><pre style="background-color:#282828;"><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">setup_vectors</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">mut </span><span style="color:#fd971f;">commands</span><span style="color:#ead4af;">: Commands, </span><span style="color:#fd971f;">query_bodies</span><span style="color:#ead4af;">: Query&lt;</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">Transform&gt;) {
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">for </span><span style="color:#cab990;">_ in</span><span style="color:#ead4af;"> query_bodies.</span><span style="color:#f1c050;">iter</span><span style="color:#ead4af;">() {
-</span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> line </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">shapes::Line(Vec2::</span><span style="color:#cc869b;">ZERO</span><span style="color:#ead4af;">, Vec2::new(</span><span style="color:#cc869b;">0.0</span><span style="color:#ead4af;">, </span><span style="color:#cc869b;">0.0</span><span style="color:#ead4af;">));
-</span><span style="color:#ead4af;">        commands.</span><span style="color:#f1c050;">spawn</span><span style="color:#ead4af;">((
-</span><span style="color:#ead4af;">            ShapeBundle {
-</span><span style="color:#ead4af;">                path: GeometryBuilder::build_as(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">line),
-</span><span style="color:#ead4af;">                </span><span style="color:#cab990;">..</span><span style="color:#f1c050;">default</span><span style="color:#ead4af;">()
-</span><span style="color:#ead4af;">            },
-</span><span style="color:#ead4af;">            Stroke::new(Color::</span><span style="color:#cc869b;">WHITE</span><span style="color:#ead4af;">, </span><span style="color:#cc869b;">5.0</span><span style="color:#ead4af;">), </span><span style="color:#908476;">// Spawn in lines
-</span><span style="color:#ead4af;">        ));
-</span><span style="color:#ead4af;">    }
-</span><span style="color:#ead4af;">}
-</span><span style="color:#ead4af;">
-</span><span style="color:#fb4938;">pub </span><span style="color:#fd971f;">fn </span><span style="color:#8ab572;">vector_update</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">query_body</span><span style="color:#ead4af;">: Query&lt;(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">Transform, </span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">Velocity)&gt;, </span><span style="color:#fb4938;">mut </span><span style="color:#fd971f;">query_path</span><span style="color:#ead4af;">: Query&lt;</span><span style="color:#cab990;">&amp;</span><span style="color:#fb4938;">mut</span><span style="color:#ead4af;"> Path&gt;) {
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">for </span><span style="color:#ead4af;">((transform, velocity), </span><span style="color:#fb4938;">mut</span><span style="color:#ead4af;"> path) </span><span style="color:#cab990;">in</span><span style="color:#ead4af;"> query_body.</span><span style="color:#f1c050;">iter</span><span style="color:#ead4af;">().</span><span style="color:#f1c050;">zip</span><span style="color:#ead4af;">(query_path.</span><span style="color:#f1c050;">iter_mut</span><span style="color:#ead4af;">()) {
-</span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> center_of_mass </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> transform.translation.</span><span style="color:#f1c050;">truncate</span><span style="color:#ead4af;">();
-</span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> vel </span><span style="color:#cab990;">=</span><span style="color:#ead4af;"> velocity.linvel;
-</span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">let</span><span style="color:#ead4af;"> new_line </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">shapes::Line(center_of_mass, center_of_mass </span><span style="color:#cab990;">+</span><span style="color:#ead4af;"> vel);
-</span><span style="color:#ead4af;">        </span><span style="color:#cab990;">*</span><span style="color:#ead4af;">path </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">ShapePath::build_as(</span><span style="color:#cab990;">&amp;</span><span style="color:#ead4af;">new_line);
-</span><span style="color:#ead4af;">    }
-</span><span style="color:#ead4af;">}
+<html><head></head><body><pre><code class="language-Rust"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">pub fn </span><span style="color:#8ec07c;">setup_vectors</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">mut </span><span style="color:#fdf4c1;">commands</span><span style="color:#fdf4c1aa;">: Commands, </span><span style="color:#fdf4c1;">query_bodies</span><span style="color:#fdf4c1aa;">: Query&lt;</span><span style="color:#fe8019;">&amp;</span><span style="color:#fdf4c1aa;">Transform&gt;) {
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">for </span><span style="color:#fe8019;">_ in</span><span style="color:#fdf4c1aa;"> query_bodies.</span><span style="color:#fabd2f;">iter</span><span style="color:#fdf4c1aa;">() {
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">let</span><span style="color:#fdf4c1aa;"> line </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">shapes::Line(Vec2::</span><span style="color:#fdf4c1;">ZERO</span><span style="color:#fdf4c1aa;">, Vec2::new(</span><span style="color:#d3869b;">0.0</span><span style="color:#fdf4c1aa;">, </span><span style="color:#d3869b;">0.0</span><span style="color:#fdf4c1aa;">));
+</span><span style="color:#fdf4c1aa;">        commands.</span><span style="color:#fabd2f;">spawn</span><span style="color:#fdf4c1aa;">((
+</span><span style="color:#fdf4c1aa;">            ShapeBundle {
+</span><span style="color:#fdf4c1aa;">                path: GeometryBuilder::build_as(</span><span style="color:#fe8019;">&amp;</span><span style="color:#fdf4c1aa;">line),
+</span><span style="color:#fdf4c1aa;">                </span><span style="color:#fe8019;">..</span><span style="color:#fabd2f;">default</span><span style="color:#fdf4c1aa;">()
+</span><span style="color:#fdf4c1aa;">            },
+</span><span style="color:#fdf4c1aa;">            Stroke::new(Color::</span><span style="color:#fdf4c1;">WHITE</span><span style="color:#fdf4c1aa;">, </span><span style="color:#d3869b;">5.0</span><span style="color:#fdf4c1aa;">), </span><span style="font-style:italic;color:#928374;">// Spawn in lines
+</span><span style="color:#fdf4c1aa;">        ));
+</span><span style="color:#fdf4c1aa;">    }
+</span><span style="color:#fdf4c1aa;">}
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fa5c4b;">pub fn </span><span style="color:#8ec07c;">vector_update</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">query_body</span><span style="color:#fdf4c1aa;">: Query&lt;(</span><span style="color:#fe8019;">&amp;</span><span style="color:#fdf4c1aa;">Transform, </span><span style="color:#fe8019;">&amp;</span><span style="color:#fdf4c1aa;">Velocity)&gt;, </span><span style="color:#fa5c4b;">mut </span><span style="color:#fdf4c1;">query_path</span><span style="color:#fdf4c1aa;">: Query&lt;</span><span style="color:#fe8019;">&amp;</span><span style="color:#fa5c4b;">mut</span><span style="color:#fdf4c1aa;"> Path&gt;) {
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1aa;">((transform, velocity), </span><span style="color:#fa5c4b;">mut</span><span style="color:#fdf4c1aa;"> path) </span><span style="color:#fe8019;">in</span><span style="color:#fdf4c1aa;"> query_body.</span><span style="color:#fabd2f;">iter</span><span style="color:#fdf4c1aa;">().</span><span style="color:#fabd2f;">zip</span><span style="color:#fdf4c1aa;">(query_path.</span><span style="color:#fabd2f;">iter_mut</span><span style="color:#fdf4c1aa;">()) {
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">let</span><span style="color:#fdf4c1aa;"> center_of_mass </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> transform.translation.</span><span style="color:#fabd2f;">truncate</span><span style="color:#fdf4c1aa;">();
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">let</span><span style="color:#fdf4c1aa;"> vel </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> velocity.linvel;
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">let</span><span style="color:#fdf4c1aa;"> new_line </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">shapes::Line(center_of_mass, center_of_mass </span><span style="color:#fe8019;">+</span><span style="color:#fdf4c1aa;"> vel);
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1aa;">path </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">ShapePath::build_as(</span><span style="color:#fe8019;">&amp;</span><span style="color:#fdf4c1aa;">new_line);
+</span><span style="color:#fdf4c1aa;">    }
+</span><span style="color:#fdf4c1aa;">}
 </span></pre>
 </code></pre></body></html>
 <p>The gRPC server handles the setting of initial conditions (the solution,
@@ -124,38 +124,38 @@ as it were), as well as resetting the simulation and handing out the
 current state of the simulation. The <code>SimState</code> message is simply an
 array of <code>BodyAttributes</code>, values necessary to make the calculations
 for the simulation.</p>
-<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#ead4af;">syntax </span><span style="color:#cab990;">= </span><span style="color:#aab11e;">"proto3"</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">package simulation;
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">service Sim {
-</span><span style="color:#ead4af;">  rpc StateReply(SimCurrentStateReq) returns (SimState) {}
-</span><span style="color:#ead4af;">  rpc SetConfiguration(SimState) returns (ConfigValid) {}
-</span><span style="color:#ead4af;">}
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">message SimCurrentStateReq{
-</span><span style="color:#ead4af;">  optional string bodyID </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">}
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">message Vec2D{
-</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">float</span><span style="color:#ead4af;"> x </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">float</span><span style="color:#ead4af;"> y </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">}
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">message ConfigValid{
-</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">bool</span><span style="color:#ead4af;"> succeeded </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">}
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">message BodyAttributes{
-</span><span style="color:#ead4af;">  Vec2D velocity </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">  Vec2D position </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">  </span><span style="color:#fb4938;">float</span><span style="color:#ead4af;"> mass </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">3</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">  uint32 bodyID </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">4</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">}
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">message SimState{
-</span><span style="color:#ead4af;">  repeated BodyAttributes bodies </span><span style="color:#cab990;">= </span><span style="color:#cc869b;">1</span><span style="color:#ead4af;">;
-</span><span style="color:#ead4af;">}
+<html><head></head><body><pre><code class="language-C++"><pre style="background-color:#282828;"><span style="color:#fdf4c1aa;">syntax </span><span style="color:#fe8019;">= </span><span style="color:#b8bb26;">"proto3"</span><span style="color:#fdf4c1aa;">;
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">package simulation;
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">service Sim {
+</span><span style="color:#fdf4c1aa;">  rpc </span><span style="color:#fdf4c1;">StateReply(SimCurrentStateReq) returns (SimState) </span><span style="color:#fdf4c1aa;">{}
+</span><span style="color:#fdf4c1aa;">  rpc </span><span style="color:#fdf4c1;">SetConfiguration(SimState) returns (ConfigValid) </span><span style="color:#fdf4c1aa;">{}
+</span><span style="color:#fdf4c1aa;">}
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">message </span><span style="color:#fdf4c1;">SimCurrentStateReq{
+</span><span style="color:#fdf4c1;">  optional string bodyID </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">message </span><span style="color:#fdf4c1;">Vec2D{
+</span><span style="color:#fdf4c1;">  </span><span style="color:#fa5c4b;">float</span><span style="color:#fdf4c1;"> x </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">  </span><span style="color:#fa5c4b;">float</span><span style="color:#fdf4c1;"> y </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">message </span><span style="color:#fdf4c1;">ConfigValid{
+</span><span style="color:#fdf4c1;">  </span><span style="color:#fa5c4b;">bool</span><span style="color:#fdf4c1;"> succeeded </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">message </span><span style="color:#fdf4c1;">BodyAttributes{
+</span><span style="color:#fdf4c1;">  Vec2D velocity </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">  Vec2D position </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">  </span><span style="color:#fa5c4b;">float</span><span style="color:#fdf4c1;"> mass </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">3</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">  uint32 bodyID </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">4</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">}
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">message </span><span style="color:#fdf4c1;">SimState{
+</span><span style="color:#fdf4c1;">  repeated BodyAttributes bodies </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">1</span><span style="color:#fdf4c1;">;
+</span><span style="color:#fdf4c1;">}
 </span></pre>
 </code></pre></body></html>
 <p>The Tonic Server is attached as a startup system in the Bevy ECS, and the
@@ -164,38 +164,38 @@ they come in asynchronously. We can connect to it on <code>localhost:50051</code
 and get the velocity and position of our bodies.</p>
 <p>The client on the reciving end of the gRPC contract is implemented in
 a seperate python script.</p>
-<html><head></head><body><pre><code class="language-Python"><pre style="background-color:#282828;"><span style="color:#fd971f;">def </span><span style="color:#8ab572;">set_configuration</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bodies</span><span style="color:#ead4af;">, </span><span style="color:#fd971f;">stub</span><span style="color:#ead4af;">):
-</span><span style="color:#ead4af;">    </span><span style="color:#908476;">"""
-</span><span style="color:#908476;">    Calls the SetConfiguration RPC to set the simulation configuration.
-</span><span style="color:#908476;">    """
-</span><span style="color:#ead4af;">    sim_state </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">simulation_pb2.SimState(
-</span><span style="color:#ead4af;">        </span><span style="color:#fd971f;">bodies</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">[
-</span><span style="color:#ead4af;">            simulation_pb2.BodyAttributes(
-</span><span style="color:#ead4af;">                </span><span style="color:#fd971f;">bodyID</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">body[</span><span style="color:#aab11e;">"bodyID"</span><span style="color:#ead4af;">],
-</span><span style="color:#ead4af;">                </span><span style="color:#fd971f;">position</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">simulation_pb2.Vec2D(
-</span><span style="color:#ead4af;">                    </span><span style="color:#fd971f;">x</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">body[</span><span style="color:#aab11e;">"position"</span><span style="color:#ead4af;">][</span><span style="color:#aab11e;">"x"</span><span style="color:#ead4af;">], </span><span style="color:#fd971f;">y</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">body[</span><span style="color:#aab11e;">"position"</span><span style="color:#ead4af;">][</span><span style="color:#aab11e;">"y"</span><span style="color:#ead4af;">]
-</span><span style="color:#ead4af;">                ),
-</span><span style="color:#ead4af;">                </span><span style="color:#fd971f;">velocity</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">simulation_pb2.Vec2D(
-</span><span style="color:#ead4af;">                    </span><span style="color:#fd971f;">x</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">body[</span><span style="color:#aab11e;">"velocity"</span><span style="color:#ead4af;">][</span><span style="color:#aab11e;">"x"</span><span style="color:#ead4af;">], </span><span style="color:#fd971f;">y</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">body[</span><span style="color:#aab11e;">"velocity"</span><span style="color:#ead4af;">][</span><span style="color:#aab11e;">"y"</span><span style="color:#ead4af;">]
-</span><span style="color:#ead4af;">                ),
-</span><span style="color:#ead4af;">                </span><span style="color:#fd971f;">mass</span><span style="color:#cab990;">=</span><span style="color:#ead4af;">body[</span><span style="color:#aab11e;">"mass"</span><span style="color:#ead4af;">],
-</span><span style="color:#ead4af;">            )
-</span><span style="color:#ead4af;">            </span><span style="color:#fb4938;">for </span><span style="color:#ead4af;">body </span><span style="color:#fb4938;">in </span><span style="color:#ead4af;">bodies
-</span><span style="color:#ead4af;">        ]
-</span><span style="color:#ead4af;">    )
-</span><span style="color:#ead4af;">    response </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">stub.SetConfiguration(sim_state)
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">
-</span><span style="color:#fd971f;">def </span><span style="color:#8ab572;">body_request</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">stub</span><span style="color:#ead4af;">):
-</span><span style="color:#ead4af;">    </span><span style="color:#908476;">"""
-</span><span style="color:#908476;">    Requests the location, velocity, and mass of bodies in the current simulation
-</span><span style="color:#908476;">    """
-</span><span style="color:#ead4af;">    request </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">simulation_pb2.SimCurrentStateReq()
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">try</span><span style="color:#ead4af;">:
-</span><span style="color:#ead4af;">        response </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">stub.StateReply(request)
-</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">response
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">except </span><span style="color:#ead4af;">grpc.RpcError </span><span style="color:#fb4938;">as </span><span style="color:#ead4af;">e:
-</span><span style="color:#ead4af;">        </span><span style="color:#f1c050;">print</span><span style="color:#ead4af;">(</span><span style="color:#fb4938;">f</span><span style="color:#aab11e;">"gRPC call failed: </span><span style="color:#ead4af;">{e.code()}</span><span style="color:#aab11e;">: </span><span style="color:#ead4af;">{e.details()}</span><span style="color:#aab11e;">"</span><span style="color:#ead4af;">)
+<html><head></head><body><pre><code class="language-Python"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">set_configuration</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">bodies</span><span style="color:#fdf4c1aa;">, </span><span style="color:#fdf4c1;">stub</span><span style="color:#fdf4c1aa;">):
+</span><span style="color:#fdf4c1aa;">    </span><span style="font-style:italic;color:#928374;">"""
+</span><span style="font-style:italic;color:#928374;">    Calls the SetConfiguration RPC to set the simulation configuration.
+</span><span style="font-style:italic;color:#928374;">    """
+</span><span style="color:#fdf4c1aa;">    sim_state </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">simulation_pb2.SimState(
+</span><span style="color:#fdf4c1;">        bodies</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">[
+</span><span style="color:#fdf4c1;">            simulation_pb2.BodyAttributes(
+</span><span style="color:#fdf4c1;">                bodyID</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">body[</span><span style="color:#b8bb26;">"bodyID"</span><span style="color:#fdf4c1;">],
+</span><span style="color:#fdf4c1;">                position</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">simulation_pb2.Vec2D(
+</span><span style="color:#fdf4c1;">                    x</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">body[</span><span style="color:#b8bb26;">"position"</span><span style="color:#fdf4c1;">][</span><span style="color:#b8bb26;">"x"</span><span style="color:#fdf4c1;">], y</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">body[</span><span style="color:#b8bb26;">"position"</span><span style="color:#fdf4c1;">][</span><span style="color:#b8bb26;">"y"</span><span style="color:#fdf4c1;">]
+</span><span style="color:#fdf4c1;">                ),
+</span><span style="color:#fdf4c1;">                velocity</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">simulation_pb2.Vec2D(
+</span><span style="color:#fdf4c1;">                    x</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">body[</span><span style="color:#b8bb26;">"velocity"</span><span style="color:#fdf4c1;">][</span><span style="color:#b8bb26;">"x"</span><span style="color:#fdf4c1;">], y</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">body[</span><span style="color:#b8bb26;">"velocity"</span><span style="color:#fdf4c1;">][</span><span style="color:#b8bb26;">"y"</span><span style="color:#fdf4c1;">]
+</span><span style="color:#fdf4c1;">                ),
+</span><span style="color:#fdf4c1;">                mass</span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1;">body[</span><span style="color:#b8bb26;">"mass"</span><span style="color:#fdf4c1;">],
+</span><span style="color:#fdf4c1;">            )
+</span><span style="color:#fdf4c1;">            </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1;">body </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1;">bodies
+</span><span style="color:#fdf4c1;">        ]
+</span><span style="color:#fdf4c1;">    )
+</span><span style="color:#fdf4c1aa;">    response </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">stub.SetConfiguration(sim_state)
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">body_request</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">stub</span><span style="color:#fdf4c1aa;">):
+</span><span style="color:#fdf4c1aa;">    </span><span style="font-style:italic;color:#928374;">"""
+</span><span style="font-style:italic;color:#928374;">    Requests the location, velocity, and mass of bodies in the current simulation
+</span><span style="font-style:italic;color:#928374;">    """
+</span><span style="color:#fdf4c1aa;">    request </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">simulation_pb2.SimCurrentStateReq()
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">try</span><span style="color:#fdf4c1aa;">:
+</span><span style="color:#fdf4c1aa;">        response </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">stub.StateReply(request)
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">return </span><span style="color:#fdf4c1aa;">response
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">except </span><span style="color:#fdf4c1aa;">grpc.RpcError </span><span style="color:#fa5c4b;">as </span><span style="color:#fdf4c1aa;">e:
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fabd2f;">print</span><span style="color:#fdf4c1;">(</span><span style="color:#fa5c4b;">f</span><span style="color:#b8bb26;">"gRPC call failed: </span><span style="color:#fdf4c1;">{e.code()}</span><span style="color:#b8bb26;">: </span><span style="color:#fdf4c1;">{e.details()}</span><span style="color:#b8bb26;">"</span><span style="color:#fdf4c1;">)
 </span></pre>
 </code></pre></body></html>
 <p>Using the dictionary that the service provides, the client evaluates if
@@ -203,38 +203,38 @@ the simulation has effectively ended, or if the initial configuration no
 longer has the chance of being stable. The "fail states" of the simulation
 occur when either there was a collision or if one of the bodies escapes
 from the orbit of the other two.</p>
-<html><head></head><body><pre><code class="language-Python"><pre style="background-color:#282828;"><span style="color:#fd971f;">def </span><span style="color:#8ab572;">collision</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bodies</span><span style="color:#ead4af;">):
-</span><span style="color:#ead4af;">    </span><span style="color:#908476;">"""
-</span><span style="color:#908476;">    returns true if body positions are within radii of one another
-</span><span style="color:#908476;">    """
-</span><span style="color:#ead4af;">    combinations </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">itertools.combinations(bodies, </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">)
-</span><span style="color:#ead4af;">    collision_flag </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">false
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">for </span><span style="color:#ead4af;">combination </span><span style="color:#fb4938;">in </span><span style="color:#ead4af;">combinations:
-</span><span style="color:#ead4af;">        b1, b2 </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">combination
-</span><span style="color:#ead4af;">        vec1 </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">np.array([b1.position.x, b1.position.y])
-</span><span style="color:#ead4af;">        vec2 </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">np.array([b2.position.x, b2.position.y])
-</span><span style="color:#ead4af;">        distance </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">np.linalg.norm(vec1 </span><span style="color:#cab990;">- </span><span style="color:#ead4af;">vec2)
-</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">if </span><span style="color:#f1c050;">round</span><span style="color:#ead4af;">(distance, </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">) </span><span style="color:#cab990;">&lt;= </span><span style="color:#cc869b;">80.0</span><span style="color:#ead4af;">:
-</span><span style="color:#ead4af;">            collision_flag </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">true
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">collision_flag
-</span><span style="color:#ead4af;">
-</span><span style="color:#ead4af;">
-</span><span style="color:#fd971f;">def </span><span style="color:#8ab572;">escape</span><span style="color:#ead4af;">(</span><span style="color:#fd971f;">bodies</span><span style="color:#ead4af;">):
-</span><span style="color:#ead4af;">    </span><span style="color:#908476;">"""
-</span><span style="color:#908476;">    returns true if a body is no longer effect by the gravitational force of one of the others
-</span><span style="color:#908476;">    """
-</span><span style="color:#ead4af;">    combinations </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">itertools.combinations(bodies, </span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">)
-</span><span style="color:#ead4af;">    distance_flag </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">false
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">for </span><span style="color:#ead4af;">combination </span><span style="color:#fb4938;">in </span><span style="color:#ead4af;">combinations:
-</span><span style="color:#ead4af;">        b1, b2 </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">combination
-</span><span style="color:#ead4af;">        vec1 </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">np.array([b1.position.x, b1.position.y])
-</span><span style="color:#ead4af;">        vec2 </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">np.array([b2.position.x, b2.position.y])
-</span><span style="color:#ead4af;">        distance </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">np.linalg.norm(vec1 </span><span style="color:#cab990;">- </span><span style="color:#ead4af;">vec2)
-</span><span style="color:#ead4af;">        g_f </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">(b1.mass </span><span style="color:#cab990;">* </span><span style="color:#ead4af;">b2.mass) </span><span style="color:#cab990;">/ </span><span style="color:#ead4af;">(distance</span><span style="color:#cab990;">**</span><span style="color:#cc869b;">2</span><span style="color:#ead4af;">)
-</span><span style="color:#ead4af;">        </span><span style="color:#fb4938;">if </span><span style="color:#f1c050;">round</span><span style="color:#ead4af;">(g_f, </span><span style="color:#cc869b;">3</span><span style="color:#ead4af;">) </span><span style="color:#cab990;">== </span><span style="color:#cc869b;">0</span><span style="color:#ead4af;">:
-</span><span style="color:#ead4af;">            distance_flag </span><span style="color:#cab990;">= </span><span style="color:#ead4af;">true
-</span><span style="color:#ead4af;">    </span><span style="color:#fb4938;">return </span><span style="color:#ead4af;">distance_flag
+<html><head></head><body><pre><code class="language-Python"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">collision</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">bodies</span><span style="color:#fdf4c1aa;">):
+</span><span style="color:#fdf4c1aa;">    </span><span style="font-style:italic;color:#928374;">"""
+</span><span style="font-style:italic;color:#928374;">    returns true if body positions are within radii of one another
+</span><span style="font-style:italic;color:#928374;">    """
+</span><span style="color:#fdf4c1aa;">    combinations </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">itertools.combinations(bodies, </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1;">)
+</span><span style="color:#fdf4c1aa;">    collision_flag </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">false
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1aa;">combination </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1aa;">combinations:
+</span><span style="color:#fdf4c1aa;">        b1, b2 </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">combination
+</span><span style="color:#fdf4c1aa;">        vec1 </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">np.array([b1.position.x, b1.position.y])
+</span><span style="color:#fdf4c1aa;">        vec2 </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">np.array([b2.position.x, b2.position.y])
+</span><span style="color:#fdf4c1aa;">        distance </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">np.linalg.norm(vec1 </span><span style="color:#fe8019;">- </span><span style="color:#fdf4c1;">vec2)
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">if </span><span style="color:#fabd2f;">round</span><span style="color:#fdf4c1;">(distance, </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1;">) </span><span style="color:#fe8019;">&lt;= </span><span style="color:#d3869b;">80.0</span><span style="color:#fdf4c1aa;">:
+</span><span style="color:#fdf4c1aa;">            collision_flag </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">true
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">return </span><span style="color:#fdf4c1aa;">collision_flag
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fdf4c1aa;">
+</span><span style="color:#fa5c4b;">def </span><span style="color:#8ec07c;">escape</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">bodies</span><span style="color:#fdf4c1aa;">):
+</span><span style="color:#fdf4c1aa;">    </span><span style="font-style:italic;color:#928374;">"""
+</span><span style="font-style:italic;color:#928374;">    returns true if a body is no longer effect by the gravitational force of one of the others
+</span><span style="font-style:italic;color:#928374;">    """
+</span><span style="color:#fdf4c1aa;">    combinations </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">itertools.combinations(bodies, </span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1;">)
+</span><span style="color:#fdf4c1aa;">    distance_flag </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">false
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1aa;">combination </span><span style="color:#fa5c4b;">in </span><span style="color:#fdf4c1aa;">combinations:
+</span><span style="color:#fdf4c1aa;">        b1, b2 </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">combination
+</span><span style="color:#fdf4c1aa;">        vec1 </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">np.array([b1.position.x, b1.position.y])
+</span><span style="color:#fdf4c1aa;">        vec2 </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">np.array([b2.position.x, b2.position.y])
+</span><span style="color:#fdf4c1aa;">        distance </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1;">np.linalg.norm(vec1 </span><span style="color:#fe8019;">- </span><span style="color:#fdf4c1;">vec2)
+</span><span style="color:#fdf4c1aa;">        g_f </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">(b1.mass </span><span style="color:#fe8019;">* </span><span style="color:#fdf4c1aa;">b2.mass) </span><span style="color:#fe8019;">/ </span><span style="color:#fdf4c1aa;">(distance</span><span style="color:#fe8019;">**</span><span style="color:#d3869b;">2</span><span style="color:#fdf4c1aa;">)
+</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">if </span><span style="color:#fabd2f;">round</span><span style="color:#fdf4c1;">(g_f, </span><span style="color:#d3869b;">3</span><span style="color:#fdf4c1;">) </span><span style="color:#fe8019;">== </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">:
+</span><span style="color:#fdf4c1aa;">            distance_flag </span><span style="color:#fe8019;">= </span><span style="color:#fdf4c1aa;">true
+</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fa5c4b;">return </span><span style="color:#fdf4c1aa;">distance_flag
 </span></pre>
 </code></pre></body></html>
 <p>I already implemented a simple genetic algorithm hoping to find some

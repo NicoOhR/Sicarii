@@ -4,15 +4,15 @@ Lisp is a language/concept/idea/philosophy that has been, by people a sizable ma
 
 > If you don't know how compilers work, then you don't know how computers work
 
-Being an unfortunately Kant-y "first principles" guy who painfully taught himself E&M because "it's embarrassing to be a computer person who doesn't understand how electricity works",I found Stevey's admittedly diatribal argument very persuasive. The language of choice for this escapade is C++ because I need some way to prove I can program in C++. I also felt that I haven't given C++ a fair chance, only having used it when a pre-existing project I have been vetted into used it or in class. Scout's honour, I will try to reserve overly opinionated judgements on the language to snarky remarks and side notes. This article will be organized in the order that I implemented these features in an effort to put together a narrative, as well as allow us to get right to programming and sprinkle theory along the way.
+Being an unfortunately Kant-y "first principles" guy who painfully taught himself E&M because "it's embarrassing to be a computer person who doesn't understand how electricity works",I found Stevey's admittedly diatribal argument very persuasive. The language of choice for this escapade is c++ because I need some way to prove I can program in c++. I also felt that I haven't given c++ a fair chance, only having used it when a pre-existing project I have been vetted into used it or in class. Scout's honour, I will try to reserve overly opinionated judgements on the language to snarky remarks and side notes. This article will be organized in the order that I implemented these features in an effort to put together a narrative, as well as allow us to get right to programming and sprinkle theory along the way.
 
 ## Build Systems
 
-Fudge. Before we can get to coding we have to contend with building the project, I don't say anything very interesting from a technical perspective here, none of this will be on the test. You almost forget that this isn't an entirely solved problem. In Python uv has solved any pip issue I've ever had, cargo is delightful, and even in Haskell cabal is serviceable, probably, I will not pretend to have attempted to deploy in Haskell. In C/C++ we still have to contend with the early architectural decision of "how should I build this?" 
+Fudge. Before we can get to coding we have to contend with building the project, I don't say anything very interesting from a technical perspective here, none of this will be on the test. You almost forget that this isn't an entirely solved problem. In Python uv has solved any pip issue I've ever had, cargo is delightful, and even in Haskell cabal is serviceable, probably, I will not pretend to have attempted to deploy in Haskell. In C/c++ we still have to contend with the early architectural decision of "how should I build this?" 
 
 For this project, we'll use CMake. Coming from embedded land, CMake is certainly the "lesser evil" compared to vendor provided IDEs. CMake is a makefile generator<label for="cmake" id="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="cmake" class="margin-toggle"/><span class="sidenote">This is kind of important, CMake is a meta build system, as in, it builds what builds your project. It is *not* what builds your project. Here, we'll just stick to makefiles, but I can vouch for Ninja</span>, and a domain specific language. It was created to fix "we have too many makefiles and these autoconf to manage multiple build types are getting out of hand!", and introduced "we have too many CMakeLists and these CMake scripts to manage multiple build types are getting out of hand!" 
 
-Hey, I said I'll reserve judgement for C++, CMake is fair game. That quick rant aside, I'm using CMake here because I prefer interfacing with `gtest` through the `ctest` framework, and also I know how to use it and I didn't want to think terribly hard about build systems for this project. Maybe one day I'll revert to using a monolithic makefile, or give Bazel a go.
+Hey, I said I'll reserve judgement for c++, CMake is fair game. That quick rant aside, I'm using CMake here because I prefer interfacing with `gtest` through the `ctest` framework, and also I know how to use it and I didn't want to think terribly hard about build systems for this project. Maybe one day I'll revert to using a monolithic makefile, or give Bazel a go.
 
 We'll split our program up into `src`, `lib` and `tests`. The majority of the code will be in `lib`, which will define each stage of the compilation process as it's own class, and use `src` to define the CLI which will ingest a file and output a program. The root level CMakeLists.txt, the file name that CMake uses to interact with your program like this
 
@@ -60,7 +60,7 @@ target_compile_options(splisp_lib PRIVATE
 )
 ```
 
-I'll highlight two things here, one, we're using Boost, and I recommend anyone using C++ to add Boost, and secondly using generator expressions, what CMake calls the meta-commands like `$<INSTALL_INTERFACE:include>` will cost you some upfront complexity but simplify managing the CMake configuration down the line. I don't know if this is exactly the perfect project setup, but it really didn't seem like there was a decided upon community project template to work off of. Sorry, this article is about a lisp implementation, one day I'll write a programmer-polemic about CMake.
+I'll highlight two things here, one, we're using Boost, and I recommend anyone using c++ to add Boost, and secondly using generator expressions, what CMake calls the meta-commands like `$<INSTALL_INTERFACE:include>` will cost you some upfront complexity but simplify managing the CMake configuration down the line. I don't know if this is exactly the perfect project setup, but it really didn't seem like there was a decided upon community project template to work off of. Sorry, this article is about a lisp implementation, one day I'll write a programmer-polemic about CMake.
 
 ## Lexing
 
@@ -81,7 +81,7 @@ private:
 
 We'll be using `std::optional` rather often, justified as Rust-withdrawals, which more conveniently use the result of `next` and `peek` as conditionals, and generally just makes working with these functions a bit more explicit. For midsized projects like this, where several componenets have to get implemented before we can verify that the component Just Works (tm), unit tests give us some confidence in proceeding. Using `gtest`, we can define a few tests to make sure we're on the right track. This test verifies that we can lex basic tokens:
 
-```C++
+```c++
 TEST(ParserTests, KeywordsAndBools) {
   Parser parser(Lexer("(if #t 1 0)"));
   ast::AST ast = parser.parse();
@@ -128,7 +128,7 @@ TEST(ParserTests, KeywordsAndBools) {
 
 The above is really enough for a simple component like the Lexer which has very few invariants, with that as a goal to shoot for, we can start implementing the lexer. In most simple lisp implementations, the lexer adds white space to either side of `(` and `)`, and then splits the text by white spaces. This is the first step for us as well. 
 
-```C++
+```c++
 Lexer::Lexer(std::string program) {
   // preprocess string
   boost::replace_all(program, "(", " ( ");
@@ -143,7 +143,7 @@ Lexer::Lexer(std::string program) {
 
 Our tokens can be starting a list `(`, ending a list `)`, atomic, for this project this will be just numbers, or an identity. Identities (idents) are sometimes called symbols in the wider lisp world, I burrowed the name from Scheme, and basically describe non-lists which evaluate to something else, e.g. variable names. I went through the trouble of doing this since it allows us to use primitive operations as values which can be passed as values to higher order functions, like `fmap`. In an effort to avoid chaining `if` statements, I summarized these rules in an `unordered_map` and used `.find()` to get back the `TokenKind`. The map is defined in our header file
 
-```C++
+```c++
   const std::unordered_map<std::string, TokenKind> keywords = {
       {"(", TokenKind::lparn},  {")", TokenKind::rparn}, {"+", TokenKind::ident},
       {"-", TokenKind::ident},  {"*", TokenKind::ident}, {"/", TokenKind::ident},
@@ -152,7 +152,7 @@ Our tokens can be starting a list `(`, ending a list `)`, atomic, for this proje
 
 And is used in the constructor like so
 
-```C++
+```c++
 ... Token curr;
 for (std::string str : words) {
   curr.lexeme = str;
@@ -188,10 +188,12 @@ list := "(" { sexp }  ")"
 ```
 
 Since the definitions are mutually recursive, we can append to our tree and then recur until we hit a symbol.
+<label for="cons" id="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="cons" class="margin-toggle"/><span class="sidenote">
+The grammer rules here are slighltly incorrect. In most real lisps, the `list` is implemented not as multiple `sexp`s, but as something that is either a pair of `sexp`, `(sexp, sexp)`, or `NIL`. This definition looks even more so like a tree, and requires us to implement `cars` and `cons` as primatives of the language. It improves performance, and is a little bit more "real" as far as implementation goes, I expect that I'll come back and reword this later.
+</span>
+The grammar rules are translated into c++ with the help of forward declaration
 
-The grammar rules are translated into C++ with the help of forward declaration
-
-```C++
+```c++
 
 struct Symbol {
   std::variant<Keyword, std::string, std::uint64_t, bool> value;
@@ -210,7 +212,7 @@ struct SExp {
 
 Now that we have the representation set up, we should probably also create the tests which will verify it:
 
-```C++
+```c++
 TEST(ParserTests, KeywordsAndBools) {
   Parser parser(Lexer("(if #t 1 0)"));
   ast::AST ast = parser.parse();
@@ -257,7 +259,7 @@ TEST(ParserTests, KeywordsAndBools) {
 
 Here, the functions `list_item`, `as_symbol`, and `as_list` are helper functions which strip the `std::variant` and return back the struct itself. This functionality is not really necessary outside of testing the parser, so we relegate it to the test's namespace. We want our compilation process to stop here if the program contains any issues, so we include two obvious ones here, mismatched parentheses, and invalid atoms:
 
-```C++
+```c++
 TEST(ParserTests, MismatchedParensThrows) {
   Parser parser(Lexer(")"));
   EXPECT_THROW((void)parser.parse(), std::logic_error);
@@ -273,7 +275,7 @@ A quick note on testing methodology, you might have noticed I am only testing th
 
 Now that we can forge ahead with some confidence, we can finally implement recursive decent parsing with a relatively simple procedure: if the next value is `(`, then we go into the `create_list()` routine. In the `create_list()` routine, until a `)` is encountered, we create new S-expressions recursively by calling `create_sexp()`. These two methods will call each other until an atom is encountered, which is pushed into the list and continue the list creation loop. I genuinely love recursive solutions to things, stack safety and performance be damned.
 
-```C++
+```c++
 std::unique_ptr<SExp> Parser::create_sexp() {
   Token next = lex.next().value();
   switch (next.kind) {
@@ -316,7 +318,7 @@ List Parser::create_list() {
 
 The above passes the tests with flying colors, but we'd still like to verify visually what our AST looks like. Printing the AST is somewhat complicated by the fact that we used `std::variant`, reason being is that there is not a built in formatter for the container, so we have to either chain `std::get_if<T>` statements or use the `std::visit` method which applies the visitor pattern to the variant, we choose the former rather than the later for reasons we'll explain in a second.
 
-```C++
+```c++
 void print_symbol(const Symbol &sym, int level) {
   std::visit(
       [level](const auto &v) {
@@ -342,7 +344,7 @@ Despite using `std::get_if<T>` inside the visitor anyway, the benefit of `std::v
 
 Trying all of this out in a simple main function, 
 
-```C++
+```c++
 #include <frontend/lexer.hpp>
 #include <frontend/parser.hpp>
 #include <iostream>

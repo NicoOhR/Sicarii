@@ -80,8 +80,12 @@ impl Article {
             .select("pre > code[class^=\"language-\"]")
             .unwrap()
             .collect();
-        let ss = SyntaxSet::load_defaults_newlines();
-        let theme = ThemeSet::get_theme(Path::new("./src/Gruvbox-N.tmTheme")).unwrap();
+        let mut builder = SyntaxSet::load_defaults_newlines().into_builder();
+        builder.add_from_folder("./src/syntaxes", true).unwrap();
+        let ss = builder.build();
+        //let ts = ThemeSet::load_defaults();
+        //let theme = &ts.themes["Solarized (dark)"]; // or "Solarized (dark)", etc.
+        let theme = ThemeSet::get_theme(Path::new("./src/gruvbox.tmTheme")).unwrap();
 
         for css_match in matches {
             let code_node = css_match.as_node();
@@ -108,6 +112,8 @@ impl Article {
                     "syntect: no syntax matched for language '{}', falling back to plain text",
                     lang
                 );
+            } else {
+                eprintln!("syntect: using the '{}' syntax set", lang);
             }
             let syntax = syntax.unwrap_or_else(|| ss.find_syntax_plain_text());
 

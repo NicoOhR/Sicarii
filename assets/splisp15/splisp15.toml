@@ -1,0 +1,7 @@
+title = "Get In, We're Making A Lisp: Part 1.5"
+subtitle = "A Few More Details About the Parser and Lexer" 
+author = "Nico OR"
+content_path = "assets/splisp15/splisp15.md"
+link = "articles/splisp15.html"
+date = "2026-01-08"
+hidden = true

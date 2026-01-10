@@ -1,6 +1,6 @@
 title = "Get In, We're Making A Lisp: Part 1"
 subtitle = "A Lexer and Parser for a simple lisp implemented in C++" 
 author = "Nico OR"
-content_path = "assets/splisp/splisp.md"
-link = "articles/splisp.html"
+content_path = "assets/splisp1/splisp1.md"
+link = "articles/splisp1.html"
 date = "2025-12-26"

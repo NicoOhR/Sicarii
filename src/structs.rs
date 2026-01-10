@@ -20,6 +20,7 @@ pub struct Article {
     pub content_path: String,
     pub link: String,
     pub date: NaiveDate,
+    pub hidden: Option<bool>,
 }
 
 impl Ord for Article {
@@ -107,14 +108,14 @@ impl Article {
             let syntax = ss
                 .find_syntax_by_token(lang)
                 .or_else(|| ss.find_syntax_by_name(lang));
-            if syntax.is_none() && lang != "text" {
-                eprintln!(
-                    "syntect: no syntax matched for language '{}', falling back to plain text",
-                    lang
-                );
-            } else {
-                eprintln!("syntect: using the '{}' syntax set", lang);
-            }
+            //if syntax.is_none() && lang != "text" {
+            //    eprintln!(
+            //        "syntect: no syntax matched for language '{}', falling back to plain text",
+            //        lang
+            //    );
+            //} else {
+            //    eprintln!("syntect: using the '{}' syntax set", lang);
+            //}
             let syntax = syntax.unwrap_or_else(|| ss.find_syntax_plain_text());
 
             let highlighted = highlighted_html_for_string(&code_text, &ss, syntax, &theme).unwrap();

@@ -491,6 +491,3 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/lm/ec-lmri10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/lm/ts1-lmr10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/lm/ec-lmbx10.tfm
 OUTPUT portfolio_project_summaries.xdv
-INPUT portfolio_project_summaries.aux
-INPUT ./portfolio_project_summaries.out
-INPUT ./portfolio_project_summaries.out

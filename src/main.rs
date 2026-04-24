@@ -2,8 +2,10 @@ use askama::Template;
 use std::fs::*;
 use std::io;
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use structs::HomeTemplate;
+use syntect::highlighting::ThemeSet;
+use syntect::html::{css_for_theme_with_class_style, ClassStyle};
 
 mod article_meta;
 mod structs;
@@ -26,6 +28,15 @@ fn render_to_file(content: String, path: &str) -> io::Result<()> {
 fn main() -> io::Result<()> {
     let mut articles = article_meta::get_articles()?;
     articles.retain(|x| !x.hidden.unwrap_or(false));
+
+    let theme = ThemeSet::get_theme(Path::new("./src/gruvbox.tmTheme")).unwrap();
+    let highlight_css = css_for_theme_with_class_style(
+        &theme,
+        ClassStyle::SpacedPrefixed { prefix: "hl-" },
+    )
+    .unwrap();
+    render_to_file(highlight_css, "code_highlight.css")?;
+
     let homepage = HomeTemplate {
         articles: &articles,
     };

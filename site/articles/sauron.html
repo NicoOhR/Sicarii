@@ -11,27 +11,24 @@
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../tufte.css">
+  <link rel="stylesheet" href="../code_highlight.css">
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 </head>
 <body>
   <style>
-  :not(pre) > code{
+  :not(pre) > code {
       background: #2b303b;
       padding: 0.2em 0.4em;
       border-radius: 3px;
-      overflow-x: auto;
   }
-  pre.syntect,
-  pre[class*="syntax"],
-  pre.highlight,
-  pre codeblock,          
-  pre {
-    max-width: 100%;
-    overflow-x: auto;      
-    overflow-y: hidden;     
-    white-space: pre;        
-    background: #111111
-    -webkit-overflow-scrolling: touch;
+  pre.code {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: pre;
+      padding: 0.75em 1em;
+      border-radius: 4px;
+      -webkit-overflow-scrolling: touch;
   }
   </style>
   <nav class="nav editorial-nav">

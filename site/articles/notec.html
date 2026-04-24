@@ -11,27 +11,24 @@
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../tufte.css">
+  <link rel="stylesheet" href="../code_highlight.css">
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 </head>
 <body>
   <style>
-  :not(pre) > code{
+  :not(pre) > code {
       background: #2b303b;
       padding: 0.2em 0.4em;
       border-radius: 3px;
-      overflow-x: auto;
   }
-  pre.syntect,
-  pre[class*="syntax"],
-  pre.highlight,
-  pre codeblock,          
-  pre {
-    max-width: 100%;
-    overflow-x: auto;      
-    overflow-y: hidden;     
-    white-space: pre;        
-    background: #111111
-    -webkit-overflow-scrolling: touch;
+  pre.code {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: pre;
+      padding: 0.75em 1em;
+      border-radius: 4px;
+      -webkit-overflow-scrolling: touch;
   }
   </style>
   <nav class="nav editorial-nav">
@@ -122,35 +119,33 @@ as it decouples from the hardware. If I wanted to switch to an NXP chip
 instead, I would only have to re implement this layer, as the Application
 and Sensor layer uses the interfaces we make here.</p>
 <p>Here is an example of one of the interfaces, the GPIO interface:</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fdf4c1aa;">
-</span><span style="color:#fa5c4b;">class </span><span style="color:#8ec07c;">IGpio </span><span style="color:#fdf4c1aa;">{
-</span><span style="color:#fa5c4b;">public</span><span style="color:#fdf4c1aa;">:
-</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual </span><span style="color:#8ec07c;">~IGpio</span><span style="color:#fdf4c1aa;">() </span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">default</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">
-</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual bool </span><span style="color:#8ec07c;">Read</span><span style="color:#fdf4c1aa;">() </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">
-</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual void </span><span style="color:#8ec07c;">Write</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">bool </span><span style="color:#fdf4c1;">signal</span><span style="color:#fdf4c1aa;">) </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">
-</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">virtual bool </span><span style="color:#8ec07c;">ToggleDetected</span><span style="color:#fdf4c1aa;">() </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">};
-</span><span style="color:#fdf4c1aa;">
-</span></pre>
-</code></pre></body></html>
+<html><head></head><body><pre class="hl-code code language-c++"><code><span class="hl-source hl-c++">
+<span class="hl-meta hl-class hl-c++"><span class="hl-keyword hl-declaration hl-class hl-c++">class</span> </span><span class="hl-meta hl-class hl-c++"><span class="hl-entity hl-name hl-class hl-c++">IGpio</span></span><span class="hl-meta hl-class hl-c++"> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span></span></span><span class="hl-meta hl-class hl-c++"><span class="hl-meta hl-block hl-c++">
+<span class="hl-storage hl-modifier hl-c++">public</span><span class="hl-punctuation hl-section hl-class hl-c++">:</span>
+	<span class="hl-storage hl-modifier hl-c++">virtual</span> <span class="hl-meta hl-method hl-destructor hl-c++"><span class="hl-entity hl-name hl-function hl-destructor hl-c++">~IGpio</span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-method hl-c++"> <span class="hl-keyword hl-operator hl-assignment hl-c++">=</span> <span class="hl-storage hl-modifier hl-c++">default</span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+
+	<span class="hl-storage hl-modifier hl-c++">virtual</span> <span class="hl-storage hl-type hl-c">bool</span> <span class="hl-meta hl-method hl-c++"><span class="hl-entity hl-name hl-function hl-c++">Read</span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-method hl-c++"> <span class="hl-keyword hl-operator hl-assignment hl-c++">=</span> <span class="hl-meta hl-number hl-integer hl-decimal hl-c++"><span class="hl-constant hl-numeric hl-value hl-c++">0</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+
+	<span class="hl-storage hl-modifier hl-c++">virtual</span> <span class="hl-storage hl-type hl-c">void</span> <span class="hl-meta hl-method hl-c++"><span class="hl-entity hl-name hl-function hl-c++">Write</span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-storage hl-type hl-c">bool</span> <span class="hl-variable hl-parameter hl-c++">signal</span><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-method hl-c++"> <span class="hl-keyword hl-operator hl-assignment hl-c++">=</span> <span class="hl-meta hl-number hl-integer hl-decimal hl-c++"><span class="hl-constant hl-numeric hl-value hl-c++">0</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+
+	<span class="hl-storage hl-modifier hl-c++">virtual</span> <span class="hl-storage hl-type hl-c">bool</span> <span class="hl-meta hl-method hl-c++"><span class="hl-entity hl-name hl-function hl-c++">ToggleDetected</span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-method hl-c++"> <span class="hl-keyword hl-operator hl-assignment hl-c++">=</span> <span class="hl-meta hl-number hl-integer hl-decimal hl-c++"><span class="hl-constant hl-numeric hl-value hl-c++">0</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+</span></span><span class="hl-meta hl-class hl-c++"><span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+
+</span></code></pre></body></html>
 <p>And we implement the Write method like this</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">void </span><span style="color:#fdf4c1aa;">GpioStmF4::</span><span style="color:#8ec07c;">Write</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">bool </span><span style="color:#fdf4c1;">signal</span><span style="color:#fdf4c1aa;">) {
-</span><span style="color:#fdf4c1aa;">	GPIO_PinState pin_state;
-</span><span style="color:#fdf4c1aa;">
-</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fa5c4b;">if </span><span style="color:#fdf4c1aa;">(signal) {
-</span><span style="color:#fdf4c1aa;">		pin_state </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> GPIO_PIN_SET;
-</span><span style="color:#fdf4c1aa;">	} </span><span style="color:#fa5c4b;">else </span><span style="color:#fdf4c1aa;">{
-</span><span style="color:#fdf4c1aa;">		pin_state </span><span style="color:#fe8019;">=</span><span style="color:#fdf4c1aa;"> GPIO_PIN_RESET;
-</span><span style="color:#fdf4c1aa;">	}
-</span><span style="color:#fdf4c1aa;">
-</span><span style="color:#fdf4c1aa;">	</span><span style="color:#fdf4c1;">HAL_GPIO_WritePin(port_, pin_, pin_state)</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">}
-</span><span style="color:#fdf4c1aa;">
-</span></pre>
-</code></pre></body></html>
+<html><head></head><body><pre class="hl-code code language-c++"><code><span class="hl-source hl-c++"><span class="hl-storage hl-type hl-c">void</span> <span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-toc-list hl-full-identifier hl-c++">GpioStmF4<span class="hl-punctuation hl-accessor hl-double-colon hl-c++">::</span><span class="hl-entity hl-name hl-function hl-c++">Write</span></span></span><span class="hl-meta hl-function hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-function hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-storage hl-type hl-c">bool</span> <span class="hl-variable hl-parameter hl-c++">signal</span><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-function hl-c++"> </span><span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span></span></span><span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-block hl-c++">
+	GPIO_PinState pin_state<span class="hl-punctuation hl-terminator hl-c++">;</span>
+
+	<span class="hl-keyword hl-control hl-c++">if</span> <span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span>signal<span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span>
+		pin_state <span class="hl-keyword hl-operator hl-assignment hl-c">=</span> GPIO_PIN_SET<span class="hl-punctuation hl-terminator hl-c++">;</span>
+	<span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span> <span class="hl-keyword hl-control hl-c++">else</span> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span>
+		pin_state <span class="hl-keyword hl-operator hl-assignment hl-c">=</span> GPIO_PIN_RESET<span class="hl-punctuation hl-terminator hl-c++">;</span>
+	<span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span>
+
+	<span class="hl-meta hl-function-call hl-c++"><span class="hl-variable hl-function hl-c++">HAL_GPIO_WritePin</span><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-function-call hl-c++"><span class="hl-meta hl-group hl-c++">port_<span class="hl-punctuation hl-separator hl-c++">,</span> pin_<span class="hl-punctuation hl-separator hl-c++">,</span> pin_state</span></span><span class="hl-meta hl-function-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+</span></span><span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span></span>
+
+</span></code></pre></body></html>
 <p>With this we cut down on how verbose our code is, and reduce how likely
 a developer on the team is to misuse the (frankly dangerous) HAL.</p>
 <p>The next layer, Sensor, does exactly what it sounds like, this is where we
@@ -161,14 +156,13 @@ need to, however we haven't really had the opportunity to put this to the
 test as we haven't upgraded sensors in a long while.</p>
 <p>For example, here's the interface for the linear potentiometer, which
 reads the displacement of the suspension shocks.</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">class </span><span style="color:#8ec07c;">ILinearPotentiometer </span><span style="color:#fdf4c1aa;">{ </span><span style="color:#fa5c4b;">public</span><span style="color:#fdf4c1aa;">: </span><span style="color:#fa5c4b;">virtual </span><span style="color:#fe8019;">~</span><span style="color:#fdf4c1;">ILinearPotentiometer()
-</span><span style="color:#fe8019;">= </span><span style="color:#fa5c4b;">default</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">
-</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">virtual void </span><span style="color:#8ec07c;">DisplacementInches</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">float </span><span style="color:#fdf4c1;">quantized_counts</span><span style="color:#fdf4c1aa;">[]) </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">        </span><span style="color:#fa5c4b;">virtual void </span><span style="color:#8ec07c;">DisplacementMillimeters</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">float </span><span style="color:#fdf4c1;">quantized_counts</span><span style="color:#fdf4c1aa;">[]) </span><span style="color:#fe8019;">= </span><span style="color:#d3869b;">0</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">};
-</span></pre>
-</code></pre></body></html>
+<html><head></head><body><pre class="hl-code code language-c++"><code><span class="hl-source hl-c++"><span class="hl-meta hl-class hl-c++"><span class="hl-keyword hl-declaration hl-class hl-c++">class</span> </span><span class="hl-meta hl-class hl-c++"><span class="hl-entity hl-name hl-class hl-c++">ILinearPotentiometer</span></span><span class="hl-meta hl-class hl-c++"> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span></span></span><span class="hl-meta hl-class hl-c++"><span class="hl-meta hl-block hl-c++"> <span class="hl-storage hl-modifier hl-c++">public</span><span class="hl-punctuation hl-section hl-class hl-c++">:</span> <span class="hl-storage hl-modifier hl-c++">virtual</span> <span class="hl-keyword hl-operator hl-arithmetic hl-c">~</span><span class="hl-meta hl-function-call hl-c++"><span class="hl-variable hl-function hl-c++">ILinearPotentiometer</span><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-function-call hl-c++"></span><span class="hl-meta hl-function-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span>
+<span class="hl-keyword hl-operator hl-assignment hl-c">=</span> <span class="hl-keyword hl-control hl-c++">default</span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+
+        <span class="hl-storage hl-modifier hl-c++">virtual</span> <span class="hl-storage hl-type hl-c">void</span> <span class="hl-meta hl-method hl-c++"><span class="hl-entity hl-name hl-function hl-c++">DisplacementInches</span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-storage hl-type hl-c">float</span> <span class="hl-variable hl-parameter hl-c++">quantized_counts</span><span class="hl-meta hl-brackets hl-c++"><span class="hl-punctuation hl-section hl-brackets hl-begin hl-c++">[</span><span class="hl-punctuation hl-section hl-brackets hl-end hl-c++">]</span></span><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-method hl-c++"> <span class="hl-keyword hl-operator hl-assignment hl-c++">=</span> <span class="hl-meta hl-number hl-integer hl-decimal hl-c++"><span class="hl-constant hl-numeric hl-value hl-c++">0</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+        <span class="hl-storage hl-modifier hl-c++">virtual</span> <span class="hl-storage hl-type hl-c">void</span> <span class="hl-meta hl-method hl-c++"><span class="hl-entity hl-name hl-function hl-c++">DisplacementMillimeters</span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-storage hl-type hl-c">float</span> <span class="hl-variable hl-parameter hl-c++">quantized_counts</span><span class="hl-meta hl-brackets hl-c++"><span class="hl-punctuation hl-section hl-brackets hl-begin hl-c++">[</span><span class="hl-punctuation hl-section hl-brackets hl-end hl-c++">]</span></span><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-method hl-c++"> <span class="hl-keyword hl-operator hl-assignment hl-c++">=</span> <span class="hl-meta hl-number hl-integer hl-decimal hl-c++"><span class="hl-constant hl-numeric hl-value hl-c++">0</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+</span></span><span class="hl-meta hl-class hl-c++"><span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+</span></code></pre></body></html>
 <p>Lastly is the Application layer, which handles the state of the device,
 our mutexes for multi-threading, and how we talk to the Raspberry Pi. This
 is the most "userspace" the program gets.</p>

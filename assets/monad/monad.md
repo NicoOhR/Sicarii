@@ -14,10 +14,14 @@ this frankly hilarious graphic from the Haskell wiki:
 </div>
 
 However, after finishing that article up, I found that I do have a few
-things to say, and we'll try to keep this one short. In a couple hundered
-words I hope to explain what monads are from both the mathematical
-perspective (Eilenberg-Moore category) and the programming perspective
-(Klesili categoties).
+things to say, and we'll try to keep this one short. Mostly, I hope to
+motivate both the monad construction, as well as maybe explain why
+category theory is how we choose to talk about things in this case. To do
+this, I'll introduce the monoid and apply it to a programmatic intuition
+for about as far as we can before we have to introduce the category, which
+should land us at monad in a natural manner. Really, I'm trying to
+communicate what made monads "click" for me.
+
 
 ## A Word on Higher Algebra
 
@@ -28,29 +32,22 @@ you can. The reason being, I think, that abstraction is just difficult,
 and should usually be justified. While I by no means can speak for the
 field, personally, the study of abstract algebra is motivated by the fact
 that operations *induce* a structure on otherwise uncoordinanted objects,
-and understanding the structure they induce will organize objects into
-certain high level categories. Going off of that, we'll now introduce (or
-reintroduce) the concept of a *group*, explain how it explains the
-structure of *actual* things, and off that we'll discuss the *monoid*
-which will naturally lead us to monads.
+let's try to analyze the structure of a computer program.
 
-## The G
+## Monoid in `Set`
 
-Classically, a **group** $G$ is a set, equipped with an associative
-operation $(\cdot)$, with resepct to that operation, there is an identity
-element $i$, such that $\forall g \in G, g \cdot i = g$, and each element
-in the set of $G$ has an inverse, that is $\forall g \in G, \exists
-g^{-1}: g \cdot g^{-1} = i$. Because of Cayley's theorem, which we will
-not be covering today, we almost always view the operation $\cdot$ as
-a *composition* of the the elements of $G$ and we call it the *product* of
-$G$. If I can insist that you take away anything from this article is that
-a *product* is *compositional*. 
+In classical set based algebra, the monoid is a set $T$ equipped with
+a binary operation $(\cdot)$ which returns the an element in the set and
+a neutral $(1)$ element with respect to that operation. The monoid can
+also be thought of as a relaxed version of the group, which dictates that
+every element have an inverse element with resepct to the binary
+operation. We choose the monoid for our analysis instead of the group
+because many of the operations that we use to program are "lossy" by
+nature, we cannot undo overwriting memory, for example, so enforcing
+invertibility on our program seems unreasonable. 
 
-Again because of Cayely's theorem, all groups are permutation groups, that
-is, every group describes how to order a list of things. Before we use
-that, let's try a counting problem: How many ways can you arrange $n$
-objects, with $q$ of them being non-unique?
-
-While this is relatively easy to count out in your head for $n = 3$ and $q
-= 2$ ($3$), it gets prohibitive at $n = 5$ and on, and what if there are
-multiple classes of objecst which are non-unique?
+We can use the monoid to study a somewhat simplified register machine (a
+Turning machine could also be used, but I am slightly more comfortable
+thinking about registers and I suspect most programmers are). The register
+machine is composed of several registers with unique addresses which store
+non-negative integers. 

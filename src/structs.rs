@@ -6,11 +6,10 @@ use regex::{Captures, Regex};
 use serde::Deserialize;
 use std::fs;
 use std::io;
-use std::path::Path;
 use std::path::PathBuf;
-use syntect::highlighting::ThemeSet;
-use syntect::html::highlighted_html_for_string;
+use syntect::html::{ClassStyle, ClassedHTMLGenerator};
 use syntect::parsing::SyntaxSet;
+use syntect::util::LinesWithEndings;
 
 #[derive(Deserialize)]
 pub struct Article {
@@ -84,9 +83,6 @@ impl Article {
         let mut builder = SyntaxSet::load_defaults_newlines().into_builder();
         builder.add_from_folder("./src/syntaxes", true).unwrap();
         let ss = builder.build();
-        //let ts = ThemeSet::load_defaults();
-        //let theme = &ts.themes["Solarized (dark)"]; // or "Solarized (dark)", etc.
-        let theme = ThemeSet::get_theme(Path::new("./src/gruvbox.tmTheme")).unwrap();
 
         for css_match in matches {
             let code_node = css_match.as_node();
@@ -118,13 +114,21 @@ impl Article {
             //}
             let syntax = syntax.unwrap_or_else(|| ss.find_syntax_plain_text());
 
-            let highlighted = highlighted_html_for_string(&code_text, &ss, syntax, &theme).unwrap();
+            let mut generator = ClassedHTMLGenerator::new_with_class_style(
+                syntax,
+                &ss,
+                ClassStyle::SpacedPrefixed { prefix: "hl-" },
+            );
+            for line in LinesWithEndings::from(code_text.as_str()) {
+                generator.parse_html_for_line_which_includes_newline(line).unwrap();
+            }
+            let inner = generator.finalize();
 
             let pre_node = code_node.parent().expect("code should have a parent <pre>");
 
             let new_html = format!(
-                r#"<pre><code class="language-{}">{}</code></pre>"#,
-                lang, highlighted
+                r#"<pre class="hl-code code language-{}"><code>{}</code></pre>"#,
+                lang, inner
             );
 
             let fragment = kuchikiki::parse_html().one(new_html);

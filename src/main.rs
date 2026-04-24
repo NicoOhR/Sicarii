@@ -29,7 +29,7 @@ fn main() -> io::Result<()> {
     let mut articles = article_meta::get_articles()?;
     articles.retain(|x| !x.hidden.unwrap_or(false));
 
-    let theme = ThemeSet::get_theme(Path::new("./src/gruvbox.tmTheme")).unwrap();
+    let theme = ThemeSet::get_theme(Path::new("./src/Catppuccin Mocha.tmTheme")).unwrap();
     let highlight_css = css_for_theme_with_class_style(
         &theme,
         ClassStyle::SpacedPrefixed { prefix: "hl-" },

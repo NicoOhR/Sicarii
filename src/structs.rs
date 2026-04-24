@@ -80,9 +80,7 @@ impl Article {
             .select("pre > code[class^=\"language-\"]")
             .unwrap()
             .collect();
-        let mut builder = SyntaxSet::load_defaults_newlines().into_builder();
-        builder.add_from_folder("./src/syntaxes", true).unwrap();
-        let ss = builder.build();
+        let ss = SyntaxSet::load_from_folder("./src/syntaxes").unwrap();
 
         for css_match in matches {
             let code_node = css_match.as_node();
@@ -97,6 +95,7 @@ impl Article {
             let lang = class_attr
                 .split_whitespace()
                 .find_map(|c| c.strip_prefix("language-"))
+                .map(|l| l.trim_matches(|c: char| c == '{' || c == '}'))
                 .unwrap_or("text");
 
             let code_text = code_node.text_contents();

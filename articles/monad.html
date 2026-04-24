@@ -11,27 +11,24 @@
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../tufte.css">
+  <link rel="stylesheet" href="../code_highlight.css">
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 </head>
 <body>
   <style>
-  :not(pre) > code{
+  :not(pre) > code {
       background: #2b303b;
       padding: 0.2em 0.4em;
       border-radius: 3px;
-      overflow-x: auto;
   }
-  pre.syntect,
-  pre[class*="syntax"],
-  pre.highlight,
-  pre codeblock,          
-  pre {
-    max-width: 100%;
-    overflow-x: auto;      
-    overflow-y: hidden;     
-    white-space: pre;        
-    background: #111111
-    -webkit-overflow-scrolling: touch;
+  pre.code {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: pre;
+      padding: 0.75em 1em;
+      border-radius: 4px;
+      -webkit-overflow-scrolling: touch;
   }
   </style>
   <nav class="nav editorial-nav">
@@ -62,10 +59,13 @@ this frankly hilarious graphic from the Haskell wiki:</p>
 <p><img src="/img/Monad-tutorials-chart.png" alt="monads over time"></p>
 </div>
 <p>However, after finishing that article up, I found that I do have a few
-things to say, and we'll try to keep this one short. In a couple hundered
-words I hope to explain what monads are from both the mathematical
-perspective (Eilenberg-Moore category) and the programming perspective
-(Klesili categoties).</p>
+things to say, and we'll try to keep this one short. Mostly, I hope to
+motivate both the monad construction, as well as maybe explain why
+category theory is how we choose to talk about things in this case. To do
+this, I'll introduce the monoid and apply it to a programmatic intuition
+for about as far as we can before we have to introduce the category, which
+should land us at monad in a natural manner. Really, I'm trying to
+communicate what made monads "click" for me.</p>
 <h2>A Word on Higher Algebra</h2>
 <p>Even if you went to <em>higher education institution of choice</em> to study
 mathematics you've probably only taken a single class in abstract algebra,
@@ -74,28 +74,22 @@ you can. The reason being, I think, that abstraction is just difficult,
 and should usually be justified. While I by no means can speak for the
 field, personally, the study of abstract algebra is motivated by the fact
 that operations <em>induce</em> a structure on otherwise uncoordinanted objects,
-and understanding the structure they induce will organize objects into
-certain high level categories. Going off of that, we'll now introduce (or
-reintroduce) the concept of a <em>group</em>, explain how it explains the
-structure of <em>actual</em> things, and off that we'll discuss the <em>monoid</em>
-which will naturally lead us to monads.</p>
-<h2>The G</h2>
-<p>Classically, a <strong>group</strong> $G$ is a set, equipped with an associative
-operation $(\cdot)$, with resepct to that operation, there is an identity
-element $i$, such that $\forall g \in G, g \cdot i = g$, and each element
-in the set of $G$ has an inverse, that is $\forall g \in G, \exists
-g^{-1}: g \cdot g^{-1} = i$. Because of Cayley's theorem, which we will
-not be covering today, we almost always view the operation $\cdot$ as
-a <em>composition</em> of the the elements of $G$ and we call it the <em>product</em> of
-$G$. If I can insist that you take away anything from this article is that
-a <em>product</em> is <em>compositional</em>.</p>
-<p>Again because of Cayely's theorem, all groups are permutation groups, that
-is, every group describes how to order a list of things. Before we use
-that, let's try a counting problem: How many ways can you arrange $n$
-objects, with $q$ of them being non-unique?</p>
-<p>While this is relatively easy to count out in your head for $n = 3$ and $q
-= 2$ ($3$), it gets prohibitive at $n = 5$ and on, and what if there are
-multiple classes of objecst which are non-unique?</p>
+let's try to analyze the structure of a computer program.</p>
+<h2>Monoid in <code>Set</code></h2>
+<p>In classical set based algebra, the monoid is a set $T$ equipped with
+a binary operation $(\cdot)$ which returns the an element in the set and
+a neutral $(1)$ element with respect to that operation. The monoid can
+also be thought of as a relaxed version of the group, which dictates that
+every element have an inverse element with resepct to the binary
+operation. We choose the monoid for our analysis instead of the group
+because many of the operations that we use to program are "lossy" by
+nature, we cannot undo overwriting memory, for example, so enforcing
+invertibility on our program seems unreasonable.</p>
+<p>We can use the monoid to study a somewhat simplified register machine (a
+Turning machine could also be used, but I am slightly more comfortable
+thinking about registers and I suspect most programmers are). The register
+machine is composed of several registers with unique addresses which store
+non-negative integers.</p>
 </body></html>
       </article>
     </main>

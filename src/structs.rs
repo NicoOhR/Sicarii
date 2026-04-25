@@ -126,8 +126,8 @@ impl Article {
             let pre_node = code_node.parent().expect("code should have a parent <pre>");
 
             let new_html = format!(
-                r#"<pre class="hl-code code language-{}"><code>{}</code></pre>"#,
-                lang, inner
+                r#"<div class="code-block" data-lang="{}"><pre class="hl-code code language-{}"><code>{}</code></pre></div>"#,
+                lang, lang, inner
             );
 
             let fragment = kuchikiki::parse_html().one(new_html);

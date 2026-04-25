@@ -40,15 +40,14 @@ main {
 
 /* —— Two-column layout for index —— */
 .columns {
-  display: flex;
-  flex-direction: row;
-  gap: 2.5rem;                   /* Tailwind gap-10 */
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  column-gap: 2.5rem;
 }
 
 /* —— Left column (index) —— */
 .left-col {
-  width: 33.3333%;               /* Tailwind w-1/3 */
+  align-self: start;
 }
 .divider {
   width: 100%;
@@ -67,8 +66,6 @@ main {
 
 /* —— Right column (index) —— */
 .right-col {
-  width: 66.6667%;               /* w-2/3 */
-  padding-top: 6rem;             /* pt-24 */
 }
 .articles {
   display: flex;
@@ -227,10 +224,15 @@ main {
 .divider-link::after {
   content: "";
   position: absolute;
-  bottom: -0.35rem;          /* sits just below the text */
-  left: -20%;                /* extend 10% past the left edge */
-  width: 140%;               /* 120% of the link’s width */
-  height: 1px;               /* thickness of the line */
-  background-color: #ffffff; /* white */
+  bottom: -0.35rem;
+  left: -20%;
+  width: 140%;
+  height: 1px;
+  background-color: #ffffff;
+  transition: background-color 300ms ease-in-out;
+}
+
+.divider-link:hover::after {
+  background-color: #800000;
 }
 

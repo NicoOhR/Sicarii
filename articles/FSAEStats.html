@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../tufte.css">
   <link rel="stylesheet" href="../code_highlight.css">
@@ -20,7 +20,9 @@
       background: #313244;
       padding: 0.2em 0.4em;
       border-radius: 3px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       font-size: 0.875em;
   }
   .code-block {
@@ -34,7 +36,9 @@
       display: block;
       background: #800000;
       color: #ffffff;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       font-size: 0.72em;
       padding: 0.35em 1em;
       text-transform: uppercase;
@@ -45,6 +49,9 @@
       display: none;
   }
   pre.code {
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       max-width: 100%;
       overflow-x: auto;
       overflow-y: hidden;
@@ -53,6 +60,32 @@
       margin: 0;
       border-radius: 0;
       -webkit-overflow-scrolling: touch;
+  }
+  .post-content table {
+      border-collapse: collapse;
+      width: 55%;
+      margin: 1.5em auto;
+      font-size: 0.9em;
+  }
+  .post-content thead {
+      background: #313244;
+      border-bottom: 2px solid #800000;
+  }
+  .post-content th,
+  .post-content td {
+      padding: 0.5em 0.85em;
+      text-align: left;
+      border: 1px solid #45475a;
+  }
+  .post-content th {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+  }
+  .post-content tbody tr:nth-child(even) {
+      background: #1e1e2e;
+  }
+  .post-content tbody tr:hover {
+      background: #313244;
   }
   .divider-link {
       position: relative;
@@ -89,16 +122,18 @@
       </div>
 
       <article class="post-content">
-        <html><head></head><body><p>Motor racing, as a sport, is statistics-adjacent. In the
+        <html><head></head><body><nav class="toc"><ul>
+</ul></nav>
+<p>Motor racing, as a sport, is statistics-adjacent. In the
 same way that a baseball game, or an entire series, can be recreated from
 the key measures of players, the <em>story</em> of a race can be told almost
 entierly from the statistics. The ups and downs and emotional highs of
-a race, of course, can't quite be quantified (yet), but the image of
+a race, of course, can’t quite be quantified (yet), but the image of
 a driver, of their personality and strategy and legacy, is told in half
 floats entries on a CSV.</p>
 <p>Despite this, of course, the Formula Student competition provides the
 results of the yearly competition in a PDF format, which I would say is
-almost hostile to any form of analysis. And if it's hostile to
+almost hostile to any form of analysis. And if it’s hostile to
 excel-spreadsheet-accountant type data analysis, it is outright aggressive
 towards any attempts to do any data <em>science</em> with it.</p>
 <p>Extracting the data from the PDF, which is in tabular format already, is
@@ -106,11 +141,11 @@ actually quite easy with <code>Camelot</code>. I honestly cannot reccomend this
 package enough; I spent <a href="https://github.com/NicoOhR/FSAERawResults/commits/main/">far too
 much</a> time trying
 to clean up last years data which I extracted with <code>PdfPlumber</code>. Once
-we have a CSV we can do as we'd like with the data, I wrote up a small
+we have a CSV we can do as we’d like with the data, I wrote up a small
 analysis on last years competition that I would like to revise, and will
 probably push out on here soon (tm).</p>
 <p>What follows is a largely unnecessary exercise in data engineering;
-there's not enough data to necessitate a whole system to distribute it. It
+there’s not enough data to necessitate a whole system to distribute it. It
 would be just as easy to send someone CSVs, but what the hell, rust is
 fun. The goal from the outset was to have an API that would take care of
 the more tedious work of inner-joins and key-searches, and provide the end
@@ -120,12 +155,12 @@ was very messy. I wanted to keep the codebase lean, and reduce the amount
 of boilerplate necessary, this precluded for me most ORMs. Since the most
 natural representation of the data is as each event (autocross,
 acceleration, endurance, etc.) as its own table in the database, since
-each event has it's own fields and measures, that means that an ORM would
+each event has it’s own fields and measures, that means that an ORM would
 create a different struct for every single event, and then, in the rust
 code, force an inordinante amount of very similar looking <code>match</code>
 statements. Is this <em>really</em> an issue? No, not really, it just looks ugly.
 Thus, begins the somewhat painful journey from Diesal to sqlX to SeaORM to
-whatever else I could find. I frankly don't even remember some of the
+whatever else I could find. I frankly don’t even remember some of the
 experiments I made in forks that were never pushed.</p>
 <p>What I wanted was to be able to handle everything generically and quickly.
 A column/row from the acceleration results table is not essentially
@@ -179,29 +214,38 @@ generate the binary package</p>
 <span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span> 
 </span></span></code></pre></div></body></html>
 <p>From here, I anticipate adding a couple of things. Firstly, I need to add
-the rest of the years to the database, which I've put off primarily
-because of tedium. Then, I'd also like to give the user some more
+the rest of the years to the database, which I’ve put off primarily
+because of tedium. Then, I’d also like to give the user some more
 convinient end points, like, for example the option to sample all years of
 a teams performance for a specific event, or even a <code>summary</code> end
 point which would give the user some convinient statistics. Finally, just
-to finish it off I'd like to add Swagger Documentation for this API, and
+to finish it off I’d like to add Swagger Documentation for this API, and
 maybe spend a weekend cobbeling together a front end exhibition for this.</p>
 </body></html>
       </article>
     </main>
   </div>
   <script>
+    // pulldown-cmark emits <span class="math math-inline"> and
+    // <span class="math math-display"> with raw LaTeX but no delimiters.
+    // Inject \(...\) / \[...\] before MathJax scans the document.
     window.MathJax = {
       loader: {load: ['[tex]/ams']},
       tex: {
         packages: {'[+]':['ams']},
-        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-        displayMath: [ ['$$', '$$'], ['\\[', '\\]'] ],
+        inlineMath: [ ['\\(', '\\)'] ],
+        displayMath: [ ['\\[', '\\]'] ],
       },
-      options: {
-        // Only elements with one of these classes get processed
-        processHtmlClass: 'math math-inline math-display',
-        ignoreHtmlClass: 'no-mathjax'
+      startup: {
+        ready() {
+          document.querySelectorAll('span.math.math-inline').forEach(el => {
+            el.textContent = '\\(' + el.textContent + '\\)';
+          });
+          document.querySelectorAll('span.math.math-display').forEach(el => {
+            el.textContent = '\\[' + el.textContent + '\\]';
+          });
+          MathJax.startup.defaultReady();
+        }
       }
     };
   </script>

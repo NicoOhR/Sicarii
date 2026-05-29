@@ -11,27 +11,65 @@
     href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../tufte.css">
+  <link rel="stylesheet" href="../code_highlight.css">
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 </head>
 <body>
   <style>
-  :not(pre) > code{
-      background: #2b303b;
+  :not(pre) > code {
+      background: #313244;
       padding: 0.2em 0.4em;
       border-radius: 3px;
-      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875em;
   }
-  pre.syntect,
-  pre[class*="syntax"],
-  pre.highlight,
-  pre codeblock,          
-  pre {
-    max-width: 100%;
-    overflow-x: auto;      
-    overflow-y: hidden;     
-    white-space: pre;        
-    background: #111111
-    -webkit-overflow-scrolling: touch;
+  .code-block {
+      margin: 1.5em 0;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      overflow: hidden;
+  }
+  .code-block::before {
+      content: attr(data-lang);
+      display: block;
+      background: #800000;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72em;
+      padding: 0.35em 1em;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+  }
+  .code-block[data-lang="text"]::before,
+  .code-block[data-lang="plaintext"]::before {
+      display: none;
+  }
+  pre.code {
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: pre;
+      padding: 0.75em 1em;
+      margin: 0;
+      border-radius: 0;
+      -webkit-overflow-scrolling: touch;
+  }
+  .divider-link {
+      position: relative;
+      display: inline-block;
+  }
+  .divider-link::after {
+      content: "";
+      position: absolute;
+      bottom: -0.35rem;
+      left: -20%;
+      width: 140%;
+      height: 1px;
+      background-color: #ffffff;
+      transition: background-color 300ms ease-in-out;
+  }
+  .divider-link:hover::after {
+      background-color: #800000;
   }
   </style>
   <nav class="nav editorial-nav">
@@ -53,27 +91,25 @@
       <article class="post-content">
         <html><head></head><body><p>In the last article, we went through the construction of the parser and lexer for the Lisp compiler. While those componenets, as they were, would have worked for a lisp-y claculator, they lacked a very important feature(s) that would be required to make a more fully featured language. Lisp has a concept of a "special form", or a list with additional meaning to it, these forms are still lists, so the mental model that "everything is a list" is still correct, but these allow us to interpret control flow and define functions/lambdas/variables. These special forms are primitive to the evaluator (in an interpted lisp) or the compiler (in our case). Macros allow the programmer to essentially introduce new special forms into the language, and those are evaluated before runtime, while much of the expressive power of Lisp comes from these macros, we will not be implementing those in the near future.</p>
 <p>What changes are needed to introduce these into our AST? First, we need to define the node structure that represents the particular special form<label for="special" id="1" class="margin-toggle sidenote-number"></label><input type="checkbox" id="special" class="margin-toggle"><span class="sidenote"><code>if</code> is relatively easy to lower without the use of a special form, so I elected to not implement it. For error checking reasons I'll go back and implement the <code>if</code> special form later, but for this article we'll only worry about implementing the <code>function</code> special form, which covers functions, lambdas, and let bindings</span> For the <code>function</code> special form that struct looks like this:</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fa5c4b;">struct </span><span style="color:#8ec07c;">Function </span><span style="color:#fdf4c1aa;">{
-</span><span style="color:#fdf4c1aa;">  std::optional&lt;std::string&gt; name;
-</span><span style="color:#fdf4c1aa;">  </span><span style="color:#fabd2f;">size_t</span><span style="color:#fdf4c1aa;"> scope_id;
-</span><span style="color:#fdf4c1aa;">  std::unique_ptr&lt;SExp&gt; args;
-</span><span style="color:#fdf4c1aa;">  std::unique_ptr&lt;SExp&gt; body;
-</span><span style="color:#fdf4c1aa;">};
-</span></pre>
-</code></pre></body></html>
+<html><head></head><body><div class="code-block" data-lang="c++"><pre class="hl-code code language-c++"><code><span class="hl-source hl-c++"><span class="hl-meta hl-struct hl-c++"><span class="hl-keyword hl-declaration hl-struct hl-type hl-c++">struct</span> </span><span class="hl-meta hl-struct hl-c++"><span class="hl-entity hl-name hl-struct hl-c++">Function</span></span><span class="hl-meta hl-struct hl-c++"> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span></span></span><span class="hl-meta hl-struct hl-c++"><span class="hl-meta hl-block hl-c++">
+  std<span class="hl-punctuation hl-accessor hl-double-colon hl-c++">::</span>optional<span class="hl-punctuation hl-definition hl-generic hl-begin hl-c++">&lt;</span>std<span class="hl-punctuation hl-accessor hl-double-colon hl-c++">::</span>string<span class="hl-punctuation hl-definition hl-generic hl-end hl-c++">&gt;</span> name<span class="hl-punctuation hl-terminator hl-c++">;</span>
+  <span class="hl-support hl-type hl-stddef hl-c">size_t</span> scope_id<span class="hl-punctuation hl-terminator hl-c++">;</span>
+  std<span class="hl-punctuation hl-accessor hl-double-colon hl-c++">::</span>unique_ptr<span class="hl-punctuation hl-definition hl-generic hl-begin hl-c++">&lt;</span>SExp<span class="hl-punctuation hl-definition hl-generic hl-end hl-c++">&gt;</span> args<span class="hl-punctuation hl-terminator hl-c++">;</span>
+  std<span class="hl-punctuation hl-accessor hl-double-colon hl-c++">::</span>unique_ptr<span class="hl-punctuation hl-definition hl-generic hl-begin hl-c++">&lt;</span>SExp<span class="hl-punctuation hl-definition hl-generic hl-end hl-c++">&gt;</span> body<span class="hl-punctuation hl-terminator hl-c++">;</span>
+</span></span><span class="hl-meta hl-struct hl-c++"><span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+</span></code></pre></div></body></html>
 <p>The name of the function is optional since we'd like to be able to define lambdas as well. Largely speaking, there is not much of a difference between lambdas and functions at this level, we'll get more into the intercies of function calling when we do the name-resolution and closure conversion steps in the next article (hopefully). Remember that, in our parser, we are already matching the special <code>idents</code> against a <code>Keywords</code> enum, so our keywords already appear as identifiable nodes in the AST. It's possible to resolve those keywords as we encounter them, but since this is functionally a search and replacet ask, with $\mathcal{O}(1)$ complexity, I felt that the additional run time was a reasonable sacrifice for a simpler implementation. This way, the transformation we're implementing is <code>Valid AST -&gt; Valid AST</code> and not <code>Possibly Invalid Tokens -&gt; Valid AST</code>. So after we make our AST, we'll iterate over the top level <code>sexps</code> and call <code>resolve_forms</code> on them:</p>
-<html><head></head><body><pre><code class="language-c++"><pre style="background-color:#282828;"><span style="color:#fdf4c1aa;">AST Parser::</span><span style="color:#8ec07c;">parse</span><span style="color:#fdf4c1aa;">() {
-</span><span style="color:#fdf4c1aa;">  AST ast;
-</span><span style="color:#fdf4c1aa;">  </span><span style="color:#fa5c4b;">while </span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">this</span><span style="color:#fdf4c1aa;">-&gt;</span><span style="color:#fdf4c1;">lex</span><span style="color:#fdf4c1aa;">.</span><span style="color:#fdf4c1;">peek</span><span style="color:#fdf4c1aa;">()) {
-</span><span style="color:#fdf4c1aa;">    ast.</span><span style="color:#fdf4c1;">push_back</span><span style="color:#fdf4c1aa;">(</span><span style="color:#fdf4c1;">create_sexp()</span><span style="color:#fdf4c1aa;">);
-</span><span style="color:#fdf4c1aa;">  }
-</span><span style="color:#fdf4c1aa;">  </span><span style="color:#fa5c4b;">for </span><span style="color:#fdf4c1aa;">(</span><span style="color:#fa5c4b;">auto </span><span style="color:#fe8019;">&amp;</span><span style="color:#fdf4c1aa;">sexp </span><span style="color:#fe8019;">:</span><span style="color:#fdf4c1aa;"> ast) {
-</span><span style="color:#fdf4c1aa;">    </span><span style="color:#fdf4c1;">resolve_forms(</span><span style="color:#fe8019;">*</span><span style="color:#fdf4c1;">sexp)</span><span style="color:#fdf4c1aa;">;
-</span><span style="color:#fdf4c1aa;">  }
-</span><span style="color:#fdf4c1aa;">  </span><span style="color:#fa5c4b;">return</span><span style="color:#fdf4c1aa;"> ast;
-</span><span style="color:#fdf4c1aa;">}
-</span></pre>
-</code></pre></body></html>
+<html><head></head><body><div class="code-block" data-lang="c++"><pre class="hl-code code language-c++"><code><span class="hl-source hl-c++">AST <span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-toc-list hl-full-identifier hl-c++">Parser<span class="hl-punctuation hl-accessor hl-double-colon hl-c++">::</span><span class="hl-entity hl-name hl-function hl-c++">parse</span></span></span><span class="hl-meta hl-function hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-function hl-parameters hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-meta hl-function hl-c++"> </span><span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span></span></span><span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-block hl-c++">
+  AST ast<span class="hl-punctuation hl-terminator hl-c++">;</span>
+  <span class="hl-keyword hl-control hl-c++">while</span> <span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span><span class="hl-variable hl-language hl-this hl-c++">this</span><span class="hl-punctuation hl-accessor hl-arrow hl-c++">-&gt;</span><span class="hl-variable hl-other hl-readwrite hl-member hl-c++">lex</span><span class="hl-punctuation hl-accessor hl-dot hl-c++">.</span><span class="hl-meta hl-method-call hl-c++"><span class="hl-variable hl-function hl-member hl-c++">peek</span><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method-call hl-c++"></span><span class="hl-meta hl-method-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span>
+    ast<span class="hl-punctuation hl-accessor hl-dot hl-c++">.</span><span class="hl-meta hl-method-call hl-c++"><span class="hl-variable hl-function hl-member hl-c++">push_back</span><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-method-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-meta hl-function-call hl-c++"><span class="hl-variable hl-function hl-c++">create_sexp</span><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-function-call hl-c++"></span><span class="hl-meta hl-function-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span></span></span><span class="hl-meta hl-method-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+  <span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span>
+  <span class="hl-keyword hl-control hl-c++">for</span> <span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span><span class="hl-storage hl-type hl-c">auto</span> <span class="hl-keyword hl-operator hl-c">&amp;</span>sexp <span class="hl-keyword hl-operator hl-ternary hl-c">:</span> ast<span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span>
+    <span class="hl-meta hl-function-call hl-c++"><span class="hl-variable hl-function hl-c++">resolve_forms</span><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-begin hl-c++">(</span></span></span><span class="hl-meta hl-function-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-keyword hl-operator hl-c">*</span>sexp</span></span><span class="hl-meta hl-function-call hl-c++"><span class="hl-meta hl-group hl-c++"><span class="hl-punctuation hl-section hl-group hl-end hl-c++">)</span></span></span><span class="hl-punctuation hl-terminator hl-c++">;</span>
+  <span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span>
+  <span class="hl-keyword hl-control hl-flow hl-return hl-c++">return</span> ast<span class="hl-punctuation hl-terminator hl-c++">;</span>
+</span></span><span class="hl-meta hl-function hl-c++"><span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-end hl-c++">}</span></span></span>
+</span></code></pre></div></body></html>
 <p>The <code>resolve_forms(SExp &amp;sexp)</code> takes a reference to a <code>SExp</code> and, using the visitor pattern that we discussed in part 1, we look through the</p>
 </body></html>
       </article>

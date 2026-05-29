@@ -300,7 +300,9 @@ div.table-wrapper {
 }
 
 code, pre > code {
-    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-family: 'Fira Code', Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-variant-ligatures: contextual;
+    font-feature-settings: "calt" 1, "liga" 1;
     font-size: 1.0rem;
     line-height: 1.42;
     -webkit-text-size-adjust: 100%; /* Prevent adjustments of font size after orientation changes in iOS. See https://github.com/edwardtufte/tufte-css/issues/81#issuecomment-261953409 */
@@ -593,4 +595,49 @@ pre > code {
 
 pre {
   overflow-x: auto;   /* scrollbar only when needed */
+}
+
+nav.toc {
+  margin-bottom: 3rem;
+  margin-top: 1rem;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+nav.toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav.toc li {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem;
+  line-height: 1.8;
+  margin-top: 0;
+}
+
+nav.toc li a {
+  text-decoration: none;
+  color: inherit;
+}
+
+nav.toc li a:hover {
+  color: #800000;
+}
+
+nav.toc li.toc-h1 {
+  font-size: 2.0rem;
+  margin-top: 0.6rem;
+}
+
+nav.toc li.toc-h2 {
+  padding-left: 1.2rem;
+}
+
+nav.toc li.toc-h3 {
+  padding-left: 2.4rem;
+  font-size: 1.6rem;
 }

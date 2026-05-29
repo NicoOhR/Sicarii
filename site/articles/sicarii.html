@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../tufte.css">
   <link rel="stylesheet" href="../code_highlight.css">
@@ -20,7 +20,9 @@
       background: #313244;
       padding: 0.2em 0.4em;
       border-radius: 3px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       font-size: 0.875em;
   }
   .code-block {
@@ -34,7 +36,9 @@
       display: block;
       background: #800000;
       color: #ffffff;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       font-size: 0.72em;
       padding: 0.35em 1em;
       text-transform: uppercase;
@@ -45,6 +49,9 @@
       display: none;
   }
   pre.code {
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       max-width: 100%;
       overflow-x: auto;
       overflow-y: hidden;
@@ -53,6 +60,32 @@
       margin: 0;
       border-radius: 0;
       -webkit-overflow-scrolling: touch;
+  }
+  .post-content table {
+      border-collapse: collapse;
+      width: 55%;
+      margin: 1.5em auto;
+      font-size: 0.9em;
+  }
+  .post-content thead {
+      background: #313244;
+      border-bottom: 2px solid #800000;
+  }
+  .post-content th,
+  .post-content td {
+      padding: 0.5em 0.85em;
+      text-align: left;
+      border: 1px solid #45475a;
+  }
+  .post-content th {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+  }
+  .post-content tbody tr:nth-child(even) {
+      background: #1e1e2e;
+  }
+  .post-content tbody tr:hover {
+      background: #313244;
   }
   .divider-link {
       position: relative;
@@ -89,8 +122,10 @@
       </div>
 
       <article class="post-content">
-        <html><head></head><body><p>I always struggled with web development which for a software-guy (tm) is a bit of a personal tragedy. I have a hard time getting interested in the semantics and philosophies of different web framework, why are there so many ways to interact with the DOM? Why is the website thirsty? Still, without a personal website, what am I supposed to link to on linkedin?</p>
-<p>In a fit of "not made here" syndrome I figured that, all an SSG does is translate one markup language to another and push it into plain text templates, I might as well do it myself. I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>
+        <html><head></head><body><nav class="toc"><ul>
+</ul></nav>
+<p>I always struggled with web development which for a software-guy (tm) is a bit of a personal tragedy. I have a hard time getting interested in the semantics and philosophies of different web framework, why are there so many ways to interact with the DOM? Why is the website thirsty? Still, without a personal website, what am I supposed to link to on linkedin?</p>
+<p>In a fit of “not made here” syndrome I figured that, all an SSG does is translate one markup language to another and push it into plain text templates, I might as well do it myself. I decided to use Rust (because I use Rust for everything at this point), with the Askama templating library.</p>
 <p>Each article is kept in its own directory with a markdown file with the contents of the article and a toml file with the metadata of the article, as well as and any other assets which it need to include.</p>
 <html><head></head><body><div class="code-block" data-lang="Rust"><pre class="hl-code code language-Rust"><code><span class="hl-source hl-rust"><span class="hl-storage hl-modifier hl-rust">pub</span> <span class="hl-meta hl-function hl-rust"><span class="hl-keyword hl-declaration hl-function hl-rust">fn</span> <span class="hl-entity hl-name hl-function hl-rust">get_articles</span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-begin hl-rust">(</span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-function hl-parameters hl-rust"><span class="hl-punctuation hl-section hl-parameters hl-end hl-rust">)</span></span></span></span><span class="hl-meta hl-function hl-rust"> <span class="hl-meta hl-function hl-return-type hl-rust"><span class="hl-punctuation hl-separator hl-rust">-&gt;</span> <span class="hl-meta hl-path hl-rust"><span class="hl-variable hl-other hl-rust">io</span><span class="hl-meta hl-path hl-rust"><span class="hl-punctuation hl-accessor hl-rust">::</span></span></span><span class="hl-meta hl-path hl-rust"><span class="hl-storage hl-type hl-rust">Result</span></span><span class="hl-meta hl-generic hl-rust"><span class="hl-punctuation hl-definition hl-generic hl-begin hl-rust">&lt;</span><span class="hl-storage hl-type hl-rust">Vec</span><span class="hl-meta hl-generic hl-rust"><span class="hl-punctuation hl-definition hl-generic hl-begin hl-rust">&lt;</span><span class="hl-meta hl-path hl-rust"><span class="hl-variable hl-other hl-rust">structs</span><span class="hl-meta hl-path hl-rust"><span class="hl-punctuation hl-accessor hl-rust">::</span></span></span><span class="hl-meta hl-path hl-rust"><span class="hl-storage hl-type hl-rust">Article</span></span><span class="hl-punctuation hl-definition hl-generic hl-end hl-rust">&gt;</span></span><span class="hl-punctuation hl-definition hl-generic hl-end hl-rust">&gt;</span> </span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span></span></span></span><span class="hl-meta hl-function hl-rust"><span class="hl-meta hl-block hl-rust">
     <span class="hl-keyword hl-declaration hl-variable hl-rust">let</span> <span class="hl-variable hl-other hl-rust">dir_path</span> <span class="hl-keyword hl-operator hl-assignment hl-rust">=</span> <span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">"</span>./assets/<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">"</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>
@@ -126,8 +161,8 @@
     <span class="hl-support hl-type hl-rust">Ok</span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span>
 <span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span></span>
 </span></code></pre></div></body></html>
-<p>The markdown-to-html work is done by Pandoc, both because I already have all of the haskell dependencies on my machine, and it also handles $\rm\LaTeX$ best out of any rust markdown parsers I tried out. Code highlighting is done through <a href="https://github.com/trishume/syntect">syntect</a>, a charming library which lets you use sublime syntax definitions to highlight code. I was originaly using highlightjs, but ultimately couldn't help but further oxidize this project.</p>
-<p>The <code>markdown -&gt; pandoc -&gt; syntect-&gt; html</code> pipeline was not as smooth as I would have liked, and required a good bit of elbow grease to get to a well behaving state. In a nutshell after pandoc generated the initial HTML, I used <a href="https://github.com/brave/kuchikiki">kuchikiki</a> to find and the <code>&lt;code&gt;</code> and feed them to syntect, then replacing the original element with what syntect produces. Inevitably I think I'd like to make my own parser, since kuchikiki pulls in html5ever, which, while being a great library, adds a significant amount of additional dependencies to this project; which I feel already has too many.</p>
+<p>The markdown-to-html work is done by Pandoc, both because I already have all of the haskell dependencies on my machine, and it also handles <span class="math math-inline">\rm\LaTeX</span> best out of any rust markdown parsers I tried out. Code highlighting is done through <a href="https://github.com/trishume/syntect">syntect</a>, a charming library which lets you use sublime syntax definitions to highlight code. I was originaly using highlightjs, but ultimately couldn’t help but further oxidize this project.</p>
+<p>The <code>markdown -&gt; pandoc -&gt; syntect-&gt; html</code> pipeline was not as smooth as I would have liked, and required a good bit of elbow grease to get to a well behaving state. In a nutshell after pandoc generated the initial HTML, I used <a href="https://github.com/brave/kuchikiki">kuchikiki</a> to find and the <code>&lt;code&gt;</code> and feed them to syntect, then replacing the original element with what syntect produces. Inevitably I think I’d like to make my own parser, since kuchikiki pulls in html5ever, which, while being a great library, adds a significant amount of additional dependencies to this project; which I feel already has too many.</p>
 <html><head></head><body><div class="code-block" data-lang="Rust"><pre class="hl-code code language-Rust"><code><span class="hl-source hl-rust">        <span class="hl-keyword hl-declaration hl-variable hl-rust">let</span> <span class="hl-variable hl-other hl-rust">doc</span> <span class="hl-keyword hl-operator hl-assignment hl-rust">=</span> <span class="hl-meta hl-path hl-rust"><span class="hl-variable hl-other hl-rust">kuchikiki</span><span class="hl-meta hl-path hl-rust"><span class="hl-punctuation hl-accessor hl-rust">::</span></span></span><span class="hl-meta hl-path hl-rust"><span class="hl-variable hl-function hl-rust">parse_html</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-meta hl-path hl-rust"><span class="hl-punctuation hl-accessor hl-dot hl-rust">.</span><span class="hl-variable hl-function hl-rust">one</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-variable hl-other hl-rust">html</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>
         <span class="hl-keyword hl-declaration hl-variable hl-rust">let</span> <span class="hl-storage hl-modifier hl-rust">mut</span> <span class="hl-variable hl-other hl-rust">matches</span><span class="hl-punctuation hl-separator hl-rust">:</span> <span class="hl-storage hl-type hl-rust">Vec</span><span class="hl-meta hl-generic hl-rust"><span class="hl-punctuation hl-definition hl-generic hl-begin hl-rust">&lt;</span><span class="hl-storage hl-type hl-inference hl-rust">_</span><span class="hl-punctuation hl-definition hl-generic hl-end hl-rust">&gt;</span> </span><span class="hl-keyword hl-operator hl-assignment hl-rust">=</span> <span class="hl-meta hl-path hl-rust"><span class="hl-variable hl-other hl-rust">doc</span><span class="hl-meta hl-path hl-rust"><span class="hl-punctuation hl-accessor hl-dot hl-rust">.</span><span class="hl-variable hl-function hl-rust">select</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span><span class="hl-string hl-quoted hl-double hl-rust"><span class="hl-punctuation hl-definition hl-string hl-begin hl-rust">"</span>pre<span class="hl-punctuation hl-definition hl-string hl-end hl-rust">"</span></span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-meta hl-path hl-rust"><span class="hl-punctuation hl-accessor hl-dot hl-rust">.</span><span class="hl-variable hl-function hl-rust">unwrap</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-meta hl-path hl-rust"><span class="hl-punctuation hl-accessor hl-dot hl-rust">.</span><span class="hl-variable hl-function hl-rust">collect</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-begin hl-rust">(</span></span><span class="hl-meta hl-group hl-rust"><span class="hl-punctuation hl-section hl-group hl-end hl-rust">)</span></span><span class="hl-punctuation hl-terminator hl-rust">;</span>
         <span class="hl-keyword hl-control hl-rust">for</span> <span class="hl-variable hl-other hl-rust">css_match</span> <span class="hl-keyword hl-operator hl-rust">in</span> <span class="hl-variable hl-other hl-rust">matches</span> <span class="hl-meta hl-block hl-rust"><span class="hl-punctuation hl-section hl-block hl-begin hl-rust">{</span>
@@ -153,8 +188,8 @@
         <span class="hl-punctuation hl-section hl-block hl-end hl-rust">}</span></span>
 </span></code></pre></div></body></html>
 <p>This project gave me some appreciation for the static site generators
-which have taken over the tech-blogging space. It's easy to chalk up much
-of what they do to "translating one markup language to another" but
+which have taken over the tech-blogging space. It’s easy to chalk up much
+of what they do to “translating one markup language to another” but
 a great deal of thought goes into making the end user experience as easy
 anand flexible as possible.</p>
 </body></html>
@@ -162,17 +197,26 @@ anand flexible as possible.</p>
     </main>
   </div>
   <script>
+    // pulldown-cmark emits <span class="math math-inline"> and
+    // <span class="math math-display"> with raw LaTeX but no delimiters.
+    // Inject \(...\) / \[...\] before MathJax scans the document.
     window.MathJax = {
       loader: {load: ['[tex]/ams']},
       tex: {
         packages: {'[+]':['ams']},
-        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-        displayMath: [ ['$$', '$$'], ['\\[', '\\]'] ],
+        inlineMath: [ ['\\(', '\\)'] ],
+        displayMath: [ ['\\[', '\\]'] ],
       },
-      options: {
-        // Only elements with one of these classes get processed
-        processHtmlClass: 'math math-inline math-display',
-        ignoreHtmlClass: 'no-mathjax'
+      startup: {
+        ready() {
+          document.querySelectorAll('span.math.math-inline').forEach(el => {
+            el.textContent = '\\(' + el.textContent + '\\)';
+          });
+          document.querySelectorAll('span.math.math-display').forEach(el => {
+            el.textContent = '\\[' + el.textContent + '\\]';
+          });
+          MathJax.startup.defaultReady();
+        }
       }
     };
   </script>

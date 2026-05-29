@@ -1,20 +1,19 @@
+use article::HomeTemplate;
 use askama::Template;
 use std::fs::*;
 use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use structs::HomeTemplate;
 use syntect::highlighting::ThemeSet;
 use syntect::html::{css_for_theme_with_class_style, ClassStyle};
 
+mod article;
 mod article_meta;
-mod structs;
+mod render;
 
 fn render_to_file(content: String, path: &str) -> io::Result<()> {
-    //println!("Created Content Path");
     let mut content_path = PathBuf::from("./site/");
     content_path.push(path);
-    //println!("{content_path:?}");
 
     if let Some(parent) = content_path.parent() {
         create_dir_all(parent)?;
@@ -29,12 +28,10 @@ fn main() -> io::Result<()> {
     let mut articles = article_meta::get_articles()?;
     articles.retain(|x| !x.hidden.unwrap_or(false));
 
-    let theme = ThemeSet::get_theme(Path::new("./src/Catppuccin Mocha.tmTheme")).unwrap();
-    let highlight_css = css_for_theme_with_class_style(
-        &theme,
-        ClassStyle::SpacedPrefixed { prefix: "hl-" },
-    )
-    .unwrap();
+    let theme = ThemeSet::get_theme(Path::new("./themes/Catppuccin Mocha.tmTheme")).unwrap();
+    let highlight_css =
+        css_for_theme_with_class_style(&theme, ClassStyle::SpacedPrefixed { prefix: "hl-" })
+            .unwrap();
     render_to_file(highlight_css, "code_highlight.css")?;
 
     let homepage = HomeTemplate {
@@ -44,8 +41,6 @@ fn main() -> io::Result<()> {
     render_to_file(homepage.render().unwrap(), &String::from("index.html"))?;
     println!("rendered main");
     for article in articles.iter() {
-        //println!("trying to render articles");
-        //println!("{}", &article.link);
         render_to_file(article.create_template()?.render().unwrap(), &article.link)?;
     }
     Ok(())

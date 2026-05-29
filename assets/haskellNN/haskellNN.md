@@ -1,13 +1,15 @@
 {{{assets/haskellNN/training.html}}}
 
+# Overview
+
 ## Recruiter TL;DR
 
 I implemented a multilayer perceptron, using ReLU as the activation function, in Haskell from scratch (with the exception of linear algebra operations). In the first half, I detail the mathematical grounding of neural networks, and in the second half walk through the implementation. Above you see the plot of the learned function in blue and the actual funcion in red. The resulting neural network is able to learn trigonmetric functions, logical functions (AND, XOR, OR etc.), with more yet to be tested.
 
 ## Wait, why?
 
-Being honest, it never exactly sat right with me that I have never implemented a neural
-network from scratch by myself, being a Math/CS guy (tm), and as we will see Haskell is pretty
+It never exactly sat right with me that I have never implemented a neural
+network from scratch by myself, being a Math/CS guy (tm). Additionally as we will see Haskell is pretty
 awesome for linear algebra stuff, so I figured it would be
 fun to go through the implementation of a neural network in Haskell. This article
 assumes no knowledge of Haskell or machine learning, but does require some
@@ -16,6 +18,8 @@ this article, firstly I want to demonstrate that the basic primitive of
 the machine learning field, the neural network, is really not that
 complicated or hard to get your head around, and secondly I would like to
 answer the decently common question "why use Haskell?".
+
+# The Mathematics
 
 ## Setting Up
 
@@ -33,7 +37,7 @@ $x$ at all. In addition, we can add another vector after the
 transformation while maintaining linearity, for a reason that we'll get to
 in a minute, this is very useful.
 * A *non-linear function* is all other transformation, that is, non-linear
-function $f$ transforms $x$ differently depending on the specific value of
+function $f$ transforms $x$ by different amounts depending on the specific value of
 $x$
 * A *continuous function in* $\mathbb{R}^n$ is a vector valued function
 where a small variation of the input will lead to a similarly small
@@ -51,17 +55,9 @@ $$ g(x) = f(W^L(f(W^{L-1}f(...f(W^1x + b^1)))+b^{L-1})+b^L) $$
 With the correct values of $W^i$ and $b^i$, together referred to as the
 parameters of the neural network, and denoted as $theta$ (I pinky promise
 this will probably be the only Greek letter we use) we can approximate any
-function $f$. As a quick mathematical aside: there is a theorem named,
-badly, the universal approximation theorem, which states that for any
-continuous function $f$ and an arbitrary $\varepsilon > 0$, there exists
-an arbitrarily large linear transformation $A$ and some $b$ such that for
-all $x$, 
+function $h$.
 
-$$||f(x) - g(x)|| < \varepsilon$$
-
-We're in the real world, so we might not be able to compute the "arbitrarily large" $A$, but this is rarely if ever a problem.
-
-## Actually Finding the Parameters.
+## Finding the Parameters
 
 In optimization, we generally like thinking about minimization problems rather than maximization problems, more by convention than by any other reason. In this case we're trying to find the parameters which are *least wrong* which is the same as the parameters that are *most right*. This is expressed notationally as 
 
@@ -75,7 +71,7 @@ $$
 ||v|| = \sqrt{v_1^2 + v_2^2 + ... v_n^2}
 $$
 
-Sometimes, depending on your problem and what the output of your network is, other *metrics* should be used (for example, for probability distributions, we use the KL-divergence metric to quantify how far our network is from our function). Because we'll do the chosen metric operation a lot, we'd like it to be computationally cheap, and while the square root operation has become close to constant time as hardware and compiler optimizations have advanced, we would still like to not do it on every iteration. We can avoid doing the square root by recognizing that, because the square function is strictly increasing for positive values, minimizing the square of the norm is exactly the same as minimizing the norm itself, so, our goals becomes: 
+Sometimes, depending on your problem and what the output of your network is, other *metrics* should be used (for example, for probability distributions, we use the KL-divergence metric to quantify how far our network is from our function). Because we'll do the chosen metric operation a lot, we'd like it to be computationally cheap, and while the square root operation has become close to constant time as hardware and compiler optimizations have advanced, we would still like to not do it on every iteration. We can avoid doing the square root by recognizing that, because the square function is strictly increasing for positive values$$$which a distance always will be$$$ minimizing the square of the norm is exactly the same as minimizing the norm itself, so, our goals becomes: 
 
 
 $$
@@ -100,9 +96,9 @@ $$
 \end{pmatrix}
 $$
 
-I'll ask you to take the following on axiom, the gradient of $f$, $\nabla f$ evaluated at $x$ is the direction of fastest change positive change, and $-\nabla f$ is the direction of fastest negative change. When (read, if) I find the time to figure out javascript widgets, there will be a nice interactive diagram showing, geometrically, why this is the case. So if we follow the negative gradient of the cost function at every point, we'll eventually find *a* minimum! Importantly, this is not the global minimum, only a local minimum, where "moving" in any direction would increase the function.
+I'll ask you to take the following on axiom, the gradient of $f$, $\nabla f$ evaluated at $x$ is the direction of fastest change positive change, and $-\nabla f$ is the direction of fastest negative change. When (read, if) I find the time to figure out javascript widgets, there will be a nice interactive diagram showing, geometrically, why this is the case. So if we follow the negative gradient of the cost function at every point, we'll eventually find *a* minimum! Importantly, this is not the global minimum, only a local minimum, where moving a little bit in any direction would increase the function.
 
-So to find the optimal $\theta$, we find the negative gradient of the cost function, with respect to $\theta$ for each $x$ in our data set, and move along the direction of the gradient. There are really quite a lot of addenda and technicalities that we're glossing over with this coarse treatment. We're working fast here, and a more rigorous treatment which I suspect most people interested in machine learning have already read can be found [here](http://neuralnetworksanddeeplearning.com/index.html) , written by Michael Nielsen. Since I rather poorly timed this project with finals season, I will be skipping the derivation of back propagation for the time being. Taken from the link above, the governing equations we need to calculate how much we need to change our parameters by is given as: 
+So to find the locally optimal $\theta$, we find the negative gradient of the cost function, with respect to $\theta$ for each $x$ in our data set, and move along the direction of the gradient. There are really quite a lot of addenda and technicalities that we're glossing over with this coarse treatment. We're working fast here, and a more rigorous treatment which I suspect most people interested in machine learning have already read can be found [here](http://neuralnetworksanddeeplearning.com/index.html) , written by Michael Nielsen. Since I rather poorly timed this project with finals season, I will be skipping the derivation of back propagation for the time being. Taken from the link above, the governing equations we need to calculate how much we need to change our parameters by is given as: 
 
 
 $$
@@ -115,6 +111,8 @@ $$
 $$
 
 Where $z^l$ is the output of the $l$-th layer prior to going through the activation function $\sigma$, and $a^l$ is the result of passing $z^l$ though the activation function.
+
+# The Implementation
 
 ## Haskell my sweet prince ( ˘ ³˘)♥
 
@@ -296,6 +294,8 @@ main = do
 ```
 
 This funny looking operator `<$>` is the infixed version of `fmap` is really just saying, "take the function on the left and apply it to the list on the right".  The `.` operator is the infixed composition operator. I didn't include it since it's rather trivial but `scaleInput` simply normalizes the data input to range from $[0,1]$, which is mostly standard in machine learning since networks can be a little fussy about the magnitude of their inputs. We then scan over all of the training batches, keeping a record of the network at that point, and then we test it and extract the output by `fst . runWriter . forwardW`. Finally, we write the array to a file, which is rendered by plotly at the top of the page.
+
+# Conclusion
 
 ## Wrapping Up 
 

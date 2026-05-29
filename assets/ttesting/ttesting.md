@@ -26,6 +26,8 @@ statistical intuition. The hope of this article is to provide some
 mathematical meaning to the procedure that is often stated and briefly
 glossed over.
 
+# Constructing the Test Statistic
+
 ## Setting up
 
 Let's start with the problem statement, given a collection of data points
@@ -158,7 +160,7 @@ common place and calculating the CDF of a particular distribution was time
 consuming, having a common distribution that we can reference precomputed
 values of was very important.
 
-## the t-distribution
+## The t-Distribution
 
 However, this is not yet a t-distribution. If we assume that our data
 $X_i$ is normal, than the above transformed distribution is *exactly*
@@ -217,6 +219,8 @@ actually observed values $\bar x$ for $\bar X$, we can see how extreme
 extreme of a value our realization of $T$ is, the less likely it is that
 our hypothesis is correct. Finally, we have arrived at a way evaluate
 a hypothesis in a numerical manner. 
+
+# Applying the Test
 
 ## Some catching up
 

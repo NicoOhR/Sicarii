@@ -1,3 +1,5 @@
+# Preamble
+
 ## Introduction 
 
 Lisp is a language/concept/idea/philosophy that has been, by people a sizable margin older than me on the internet, sermonized to me on occasion. I've written a touch of it here and there, having started but never finished SICP, which I'll do one day soon I promise, and getting as far as 15 out of the famous 99 lisp problems. This is to say that I know enough lisp to understand why for a certain generation of programmers it was a synecdoche for software writ large. It's trivially easy to parse and writing an interpreter for it can famously be written in some 40 lines, in lisp itself no less! I've chosen to write a Lisp compiler for a couple of reasons, firstly, I've wanted to write a compiler for sometime; motivated by a basic hubris that I could do better, which I think all software people share to some extent. I was spurred into actually starting this project by Stevey's article, [Rich Programmer Food](https://steve-yegge.blogspot.com/2007/06/rich-programmer-food.html?) where this slightly bold claim: 
@@ -62,9 +64,11 @@ target_compile_options(splisp_lib PRIVATE
 
 I'll highlight two things here, one, we're using Boost, and I recommend anyone using c++ to add Boost, and secondly using generator expressions, what CMake calls the meta-commands like `$<INSTALL_INTERFACE:include>` will cost you some upfront complexity but simplify managing the CMake configuration down the line. I don't know if this is exactly the perfect project setup, but it really didn't seem like there was a decided upon community project template to work off of. Sorry, this article is about a lisp implementation, one day I'll write a programmer-polemic about CMake.
 
+# The Compiler Frontend
+
 ## Lexing
 
-The Lexer, full name lexical analyzer, is generally the entry point of a compiler or interpreter. Sometimes there's a pre-processor which works on plain text, and if you've worked with C macros enough you probably winced just now. The lexer is responsible for taking the plain text characters and categorizes them into broad categories in the same that we process natural language by nouns, verbs, adjectives etc, our lexer will identify keywords and operations, collectively called tokens. For a lisp implemented for pedagogical reasons, there is not typically much of a reason to make a fully fledged lexer as a result of Lisp's simple syntax, which can be summarized as "code is data and data is code and all are lists", a motto we'll revisit when we get to the parsing and compiling stage. I like having the lexer since it simplifies the usually extensive parsing process and it's not too hard. I've opted to make the lexer into an iterator-like class, so for our public interface we'll only expose the `next()` and `peek()` methods:
+The Lexer, full name lexical analyzer, is generally the entry point of a compiler or interpreter. Sometimes there's a pre-processor which works on plain text, and if you've worked with C macros enough you probably winced just now. The lexer is responsible for taking the plain text characters and categorize them into broad categories, in the same that we process natural language by nouns, verbs, adjectives etc, our lexer will identify keywords and operations. For a lisp implemented for pedagogical reasons, there is not typically much of a reason to make a fully fledged lexer because Lisp's simple syntax, which can be summarized as "code is data and data is code and all are lists", makes it trivially easy to bunch up this step into the parsing step. I like having the lexer since it simplifies the usually parsing process just that little bit, and it's not too hard. I've opted to make the lexer into an iterator-like class, so for our public interface we'll only expose the `next()` and `peek()` methods:
 
 ```c++
 class Lexer {
@@ -79,7 +83,7 @@ private:
 };
 ```
 
-We'll be using `std::optional` rather often, justified as Rust-withdrawals, which more conveniently use the result of `next` and `peek` as conditionals, and generally just makes working with these functions a bit more explicit. For midsized projects like this, where several componenets have to get implemented before we can verify that the component Just Works (tm), unit tests give us some confidence in proceeding. Using `gtest`, we can define a few tests to make sure we're on the right track. This test verifies that we can lex basic tokens:
+We'll be using `std::optional` rather often, justified as Rust-withdrawals, which more conveniently use the result of `next` and `peek` as conditionals, and generally just makes working with these functions a bit more explicit. For midsized projects like this, where several componenets have to get implemented before we can verify that the component *Just Works (tm)*, unit tests give us some confidence before proceeding. Using `gtest`, we can define a few tests to make sure we're on the right track. This test verifies that we can lex basic tokens:
 
 ```c++
 TEST(ParserTests, KeywordsAndBools) {
@@ -100,21 +104,7 @@ TEST(ParserTests, KeywordsAndBools) {
   ASSERT_NE(kw_val, nullptr);
   EXPECT_EQ(*kw_val, ast::Keyword::if_expr);
 
-  const auto *cond_item = list_item(*list, 1);
-  ASSERT_NE(cond_item, nullptr);
-  const auto *cond = as_symbol(*cond_item);
-  ASSERT_NE(cond, nullptr);
-  const auto *cond_val = std::get_if<bool>(&cond->value);
-  ASSERT_NE(cond_val, nullptr);
-  EXPECT_TRUE(*cond_val);
-
-  const auto *then_item = list_item(*list, 2);
-  ASSERT_NE(then_item, nullptr);
-  const auto *then_val = as_symbol(*then_item);
-  ASSERT_NE(then_val, nullptr);
-  const auto *then_num = std::get_if<std::uint64_t>(&then_val->value);
-  ASSERT_NE(then_num, nullptr);
-  EXPECT_EQ(*then_num, 1U);
+  //... other token verified here ...
 
   const auto *else_item = list_item(*list, 3);
   ASSERT_NE(else_item, nullptr);
@@ -126,7 +116,7 @@ TEST(ParserTests, KeywordsAndBools) {
 }
 ```
 
-The above is really enough for a simple component like the Lexer which has very few invariants, with that as a goal to shoot for, we can start implementing the lexer. In most simple lisp implementations, the lexer adds white space to either side of `(` and `)`, and then splits the text by white spaces. This is the first step for us as well. 
+The above is enough for a simple component like the Lexer, which has very few invariants. With those tests providing a goal to shoot for, we can start implementing the lexer. In most simple lisp implementations, the lexer adds white space to either side of `(` and `)`, and then splits the text by white spaces. This is the first step for us as well. 
 
 ```c++
 Lexer::Lexer(std::string program) {
@@ -175,23 +165,31 @@ The `lexeme` field of the `Token` struct is just the raw string of the token. Wi
 
 ## Parsing
 
-Now that we have the program in tokenized form, we start parsing the program. If lexing is recognizing individual words, we can think of parsing as organizing these words into sentences and paragraphs. Our goal is to take in tokens and output an Abstract Syntax Tree (AST). In general, tree's do a good job of capturing the meaning of *language-like things* because they describe the flow of composition naturally, where leaves describe basic objects and the intermediate nodes are "compose children by this rule". Extending this philosopical meandering going for a little bit, strings are linear and create meaning through composition, composition is recursive, and recursive structure is a tree.<label for="language" id="2" class="margin-toggle sidenote-number"></label><input type="checkbox" id="language" class="margin-toggle"/><span class="sidenote">I will not be contending with a Deluzian approach to compiler design today, though I guess DAGs are rhizomatic in a manner.</span> The AST is especially apt at describing a lisp because the basic object of a lisp, the S-expression, is in itself treelike. As I mentioned earlier, in lisp "code is data and data is code and all are lists", while that's philosophically accurate, it would be more accurate to say that "all are S-expressions", abbreviated as `sexp`. A S-expression is either an atom, $x$, or an expression $(x . y)$ where both $x$ and $y$ are S-expressions themselves, in modern syntax we usually just drop the $.$ all together. So all together, we have `Symbol`s which basic atoms of the language numbers, bools, keywords, we have `List`s which are a collection of `SExp`s, and we have `SExp`s which are either a `List` or a `Symbol`. The recursive definition of `SExp` is one of the more satisfying aspects of the language, <label for="rust" id="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="rust" class="margin-toggle"/><span class="sidenote">And also the only time I was actively glad to not be using Rust during this project</span>and likely the source of the taoist imagery that's often associated with lisp.
+Now that we have the program in tokenized form, we start parsing the program. If lexing is recognizing individual words, we can think of parsing as organizing these words into sentences and paragraphs. Our goal is to take in tokens and output an Abstract Syntax Tree (AST). Tree's do a good job of capturing the meaning of *language-like things* because they describe the flow of composition naturally, where leaves describe basic objects and the intermediate nodes are the rules which join those objects. Extending this philosopical meandering for a little bit, strings are linear $$$In the sense that the elements are in a totally ordered list$$$ and create meaning through composition, joining words together into what we call a grammer, grammers are recursive and hierarchical, and a recursive hierarchical structure is a tree. $$$I will not be contending with a Deluzian approach to compiler design today, though I guess DAGs are rhizomatic in a manner.$$$ The AST is especially apt at describing a lisp because the basic object of a lisp, the S-expression, is in itself treelike. 
 
-Let me take a quick aside to explain the syntax of lisp, it doesn't take very long. Lisp uses *prefix notation* also known as *polish notation*, where instead of a binary operation being *between* two operands, it is *before* operands. So in lisp the computation `(1 + 1)` is notated as `(+ 1 1)`. This simplifies the parsing process, since we don't have to consider the precedence of an operator, computing `(2 * 1 + 1)` would require us to recognize that `*` happens before `+`, using prefix notation `(+ 1 (* 2 1))` localizes the syntax and removes ambiguity. The other rule, and the only one we'll have to think about for a while is that `(` starts a list and `)` ends a list. That's about the size of it. 
+As I mentioned earlier, in lisp "code is data and data is code and all are lists", while that's philosophically accurate, it would be more accurate to say that "all are S-expressions", abbreviated as `sexp`. An S-expression is either an atom, $x$, or an expression $(x . y)$ where both $x$ and $y$ are S-expressions themselves, in modern syntax we usually just drop the $.$ 
+
+So in total 
+* we have `Symbol`s which are the basic atoms of the language, things like numbers, bools, keywords 
+* we have `List`s which are a collection of `SExp`s
+* and we have `SExp`s which are either a `List` or a `Symbol`. 
+ 
+The recursive definition of `SExp` is one of the more satisfying aspects of the language $$$And also the only time I was actively glad to not be using Rust during this project$$$ and likely the source of the taoist imagery that's often associated with lisp.
+
+Let me take a quick aside to explain the syntax of lisp, it doesn't take very long. Lisp uses *prefix notation* also known as *polish notation*, where instead of a binary operation being *between* two operands, it is *before* operands. So in lisp the computation `(1 + 1)` is notated as `(+ 1 1)`. This simplifies the parsing process, since we don't have to consider the precedence of an operator, computing `(2 * 1 + 1)` would require us to recognize that `*` happens before `+`, using prefix notation `(+ 1 (* 2 1))` localizes the syntax and removes ambiguity. The other rule, and the only one we'll have to think about for a while is that `(` starts a list and `)` ends a list.
 
 So how do we actually parse this? There's a number of ways to parse a string into a tree, but in the process of immanent critique it's been decided that *recursive decent* strikes the happy middle between being easy to implement and not having an obscene run time. First we have to start with a grammar rules, recall again that we're only concerning ourselves with lists, so in effect our rules look like:  
 
-```
-sexp := Symbol | list; 
+```text
+Symbol := Keyword | Number | Boolean
 
-list := "(" { sexp }  ")"
+Sexp := Symbol | List; 
+
+List := "(" { Sexp }  ")"
 ```
 
-Since the definitions are mutually recursive, we can append to our tree and then recur until we hit a symbol.
-<label for="cons" id="4" class="margin-toggle sidenote-number"></label><input type="checkbox" id="cons" class="margin-toggle"/><span class="sidenote">
-The grammer rules here are slighltly incorrect. In most real lisps, the `list` is implemented not as multiple `sexp`s, but as something that is either a pair of `sexp`, `(sexp, sexp)`, or `NIL`. This definition looks even more so like a tree, and requires us to implement `cars` and `cons` as primatives of the language. It improves performance, and is a little bit more "real" as far as implementation goes, I expect that I'll come back and reword this later.
-</span>
-The grammar rules are translated into c++ with the help of forward declaration
+Since the definitions are mutually recursive, we can append to our tree and then recur until we hit a symbol. $$$The grammer rules here are slighltly incorrect. In most real lisps, the `list` is implemented not as multiple `sexp`s, but as something that is either a pair of `sexp`, `(sexp, sexp)`, or `NIL`. This definition looks even more so like a tree, and requires us to implement `cars` and `cons` as primatives of the language. It improves performance, and is a little bit more "real" as far as implementation goes, I expect that I'll come back and reword this later.$$$
+The grammar rules are translated into C++ with the help of forward declaration
 
 ```c++
 
@@ -210,7 +208,7 @@ struct SExp {
 };
 ```
 
-Now that we have the representation set up, we should probably also create the tests which will verify it:
+Now that we have the representation set up, we should probably also create the tests which will verify the parser:
 
 ```c++
 TEST(ParserTests, KeywordsAndBools) {
@@ -231,21 +229,7 @@ TEST(ParserTests, KeywordsAndBools) {
   ASSERT_NE(kw_val, nullptr);
   EXPECT_EQ(*kw_val, ast::Keyword::if_expr);
 
-  const auto *cond_item = list_item(*list, 1);
-  ASSERT_NE(cond_item, nullptr);
-  const auto *cond = as_symbol(*cond_item);
-  ASSERT_NE(cond, nullptr);
-  const auto *cond_val = std::get_if<bool>(&cond->value);
-  ASSERT_NE(cond_val, nullptr);
-  EXPECT_TRUE(*cond_val);
-
-  const auto *then_item = list_item(*list, 2);
-  ASSERT_NE(then_item, nullptr);
-  const auto *then_val = as_symbol(*then_item);
-  ASSERT_NE(then_val, nullptr);
-  const auto *then_num = std::get_if<std::uint64_t>(&then_val->value);
-  ASSERT_NE(then_num, nullptr);
-  EXPECT_EQ(*then_num, 1U);
+  // ... rest of the tokens are checked here...
 
   const auto *else_item = list_item(*list, 3);
   ASSERT_NE(else_item, nullptr);
@@ -270,8 +254,6 @@ TEST(ParserTests, InvalidAtomThrows) {
   EXPECT_THROW((void)parser.parse(), std::invalid_argument);
 }
 ```
-
-A quick note on testing methodology, you might have noticed I am only testing the public methods for both the Lexer and the Parser, this is because I am almost certain that the implementation details for the internals might change as we introduce more complicated "nice to haves" later on, like error reporting or debugging capabilities.
 
 Now that we can forge ahead with some confidence, we can finally implement recursive decent parsing with a relatively simple procedure: if the next value is `(`, then we go into the `create_list()` routine. In the `create_list()` routine, until a `)` is encountered, we create new S-expressions recursively by calling `create_sexp()`. These two methods will call each other until an atom is encountered, which is pushed into the list and continue the list creation loop. I genuinely love recursive solutions to things, stack safety and performance be damned.
 
@@ -338,9 +320,9 @@ void print_symbol(const Symbol &sym, int level) {
 }
 ```
 
-Despite using `std::get_if<T>` inside the visitor anyway, the benefit of `std::visit` is that it *forces* us to implement a case for every possible type. So, if we introduce another thing that symbol can be, the program would fail to compile until we handle it in the print as well. The purpose of using `decay_t<decltype(t)>` is a little complex but boils down to the fact that since we're passing `v` by a constant reference to avoid copying, `std::decay_t` allows us to match the type concretly, `std::decay_t` strips the reference and gives us back what we're actually interested in matching against<label for="decay" id="3" class="margin-toggle sidenote-number"></label><input type="checkbox" id="decay" class="margin-toggle"/><span class="sidenote">More percisely, `decay_t` strips the *const and volatile qualifications* and references. The docs refer to this as "perform type conversions equivalent to the ones performed when passing to a function by value".</span>. That is, instead of checking if the `std::is_same_v<T, std::uint64&>`, we simply check `std::is_same_v<T, std::uint64>`. I feel like surely `std::variant` is worthy of having a built in formatter to hide this implementation from a frankly disinterested user, but there's probably some edge cases that need to be left up to the user which prevent this from being easily printable.
+Despite using `std::get_if<T>` inside the visitor anyway, the benefit of `std::visit` is that it *forces* us to implement a case for every possible type. So, if we introduce another thing that symbol can be, the program would fail to compile until we handle it in the print as well. The purpose of using `decay_t<decltype(t)>` is a little complex but boils down to the fact that since we're passing `v` by a constant reference to avoid copying, `std::decay_t` allows us to match the type concretly, `std::decay_t` strips the reference and gives us back what we're actually interested in matching against$$$More percisely, `decay_t` strips the *const and volatile qualifications* and references. The docs refer to this as "perform type conversions equivalent to the ones performed when passing to a function by value"$$$. That is, instead of checking if the `std::is_same_v<T, std::uint64&>`, we simply check `std::is_same_v<T, std::uint64>`. I feel like surely `std::variant` is worthy of having a built in formatter to hide this implementation from a frankly disinterested user, but there's probably some edge cases that need to be left up to the user which prevent this from being easily printable.
 
-## Simple results
+## First Results
 
 Trying all of this out in a simple main function, 
 
@@ -361,7 +343,8 @@ int main() {
 }
 ```
 Will output:
-```
+
+```text
 AST
   List
     Kword if

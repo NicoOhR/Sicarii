@@ -9,15 +9,11 @@ edition = "2021"
 askama = "0.12.1"
 regex = "1.12.2"
 chrono = {version = "^0", features = ["serde"]}
-katex = "0.4.6"
 kuchikiki = "0.8.2"
-markdown = "1.0.0-alpha.19"
-pandoc = "0.8.11"
 serde = {version = "1.0.210", features = ["derive"]}
 syntect = "5.2.0"
 toml = "0.8.19"
 walkdir = "2.5.0"
-yaml-rust = "0.4.5"
 pulldown-cmark = "0.13.0"
 
 [profile.release-with-debug]

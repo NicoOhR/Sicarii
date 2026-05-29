@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="../tufte.css">
   <link rel="stylesheet" href="../code_highlight.css">
@@ -20,7 +20,9 @@
       background: #313244;
       padding: 0.2em 0.4em;
       border-radius: 3px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       font-size: 0.875em;
   }
   .code-block {
@@ -34,7 +36,9 @@
       display: block;
       background: #800000;
       color: #ffffff;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       font-size: 0.72em;
       padding: 0.35em 1em;
       text-transform: uppercase;
@@ -45,6 +49,9 @@
       display: none;
   }
   pre.code {
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
       max-width: 100%;
       overflow-x: auto;
       overflow-y: hidden;
@@ -53,6 +60,32 @@
       margin: 0;
       border-radius: 0;
       -webkit-overflow-scrolling: touch;
+  }
+  .post-content table {
+      border-collapse: collapse;
+      width: 55%;
+      margin: 1.5em auto;
+      font-size: 0.9em;
+  }
+  .post-content thead {
+      background: #313244;
+      border-bottom: 2px solid #800000;
+  }
+  .post-content th,
+  .post-content td {
+      padding: 0.5em 0.85em;
+      text-align: left;
+      border: 1px solid #45475a;
+  }
+  .post-content th {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+  }
+  .post-content tbody tr:nth-child(even) {
+      background: #1e1e2e;
+  }
+  .post-content tbody tr:hover {
+      background: #313244;
   }
   .divider-link {
       position: relative;
@@ -89,11 +122,13 @@
       </div>
 
       <article class="post-content">
-        <html><head></head><body><p>This will be a very brief overview of our 2024 HackUTD hackathon project.
-There were a couple of very interesting sponsor prompts, and I'm still
+        <html><head></head><body><nav class="toc"><ul>
+</ul></nav>
+<p>This will be a very brief overview of our 2024 HackUTD hackathon project.
+There were a couple of very interesting sponsor prompts, and I’m still
 a little sad we never got the chance to use Pinata. We went
-with PNC's prompt, to build tooling for observability and data lifetimes.
-Of course, the word "observability" and "lifetimes" immediately caused us
+with PNC’s prompt, to build tooling for observability and data lifetimes.
+Of course, the word “observability” and “lifetimes” immediately caused us
 to think of Kafka and message queueing. So, for our project, we decided to
 build a platform to model and display the end to end life cycle of data
 cleanly and efficiently. To that end, with only one all-nighter pulled. We
@@ -113,14 +148,14 @@ directly into the service, which hooked up to a <code>Jaeger</code> instance
 Jaeger data into our front end, which you could see in the video.</p>
 <p>Overall it was a very good, although exhausting hackathon, and we produced
 a very interesting project. I learned a lot, and was definitely the most
-hands on experience that I've had with Kafka. A couple take aways:</p>
+hands on experience that I’ve had with Kafka. A couple take aways:</p>
 <ul>
-<li>Maybe python isn't the best language for a hackathon. Go is synonymous
+<li>Maybe python isn’t the best language for a hackathon. Go is synonymous
 with cloud native architecture, and it really felt like Jaeger and really
 the entire stack only <em>tolerated</em> python.</li>
 <li>Tooling, as opposed to consumer software, is difficult to build
-partially because the standards and protocols which are used have "rougher
-edges". This is very similar to my experience working in embedded spaces,
+partially because the standards and protocols which are used have “rougher
+edges”. This is very similar to my experience working in embedded spaces,
 where protocols designed to I/O with a non-technical user (e.g. USB, SCPI)
 are much easier to leverage than whatever is going on with QUADSPI.</li>
 </ul>
@@ -129,17 +164,26 @@ are much easier to leverage than whatever is going on with QUADSPI.</li>
     </main>
   </div>
   <script>
+    // pulldown-cmark emits <span class="math math-inline"> and
+    // <span class="math math-display"> with raw LaTeX but no delimiters.
+    // Inject \(...\) / \[...\] before MathJax scans the document.
     window.MathJax = {
       loader: {load: ['[tex]/ams']},
       tex: {
         packages: {'[+]':['ams']},
-        inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-        displayMath: [ ['$$', '$$'], ['\\[', '\\]'] ],
+        inlineMath: [ ['\\(', '\\)'] ],
+        displayMath: [ ['\\[', '\\]'] ],
       },
-      options: {
-        // Only elements with one of these classes get processed
-        processHtmlClass: 'math math-inline math-display',
-        ignoreHtmlClass: 'no-mathjax'
+      startup: {
+        ready() {
+          document.querySelectorAll('span.math.math-inline').forEach(el => {
+            el.textContent = '\\(' + el.textContent + '\\)';
+          });
+          document.querySelectorAll('span.math.math-display').forEach(el => {
+            el.textContent = '\\[' + el.textContent + '\\]';
+          });
+          MathJax.startup.defaultReady();
+        }
       }
     };
   </script>

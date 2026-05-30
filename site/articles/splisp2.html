@@ -136,72 +136,83 @@
   <li class="toc-h2"><a href="#variables">Variables</a></li>
   <li class="toc-h2"><a href="#the-calling-convention">The Calling Convention</a></li>
   <li class="toc-h2"><a href="#a-simple-example">A Simple Example</a></li>
-  <li class="toc-h2"><a href="#a-slightly-more-complex-example">A Slightly More Complex Example</a></li>
+  <li class="toc-h2"><a href="#tree-operations">Tree Operations</a></li>
+  <li class="toc-h1"><a href="#conclusion">Conclusion</a></li>
 </ul></nav>
 <h1 id="the-stack">The Stack</h1>
-<p>The exact phase boundary between an interpreted and compiled
-language is slightly fuzzy; Java, generally thought of as compiled,
-targets a virtual machine after several layers of IR, Python, generally
-thought of as interpreted… Targets a virtual machine after several layers
-of IR? What’s the difference?</p>
-<p>I attribute the fact that a good bunch of languages are a little bit of both
-is that a purely interpreted language, one
-which takes your mushy-human-programmer code and immediately executes it
-on a compatible abstract machine, will usually be a very unpleasant
-programming experience. Turns out, compilation, or at least intermediate
-representation of source code, is <em>very useful</em>. Compilation gives the
-language designer the opportunity to do optimizations, check for
+<p>The exact phase boundary between an interpreted and compiled language is
+slightly fuzzy; Java, generally thought of as compiled, targets a virtual
+machine after several layers of IR, Python, generally thought of as
+interpreted… Targets a virtual machine after several layers of IR? What’s the
+difference?</p>
+<p>I attribute the fact that a good bunch of languages are a little bit of both is
+that a purely interpreted language, one which takes your mushy-human-programmer
+code and immediately executes it on a compatible abstract machine, will usually
+be a very unpleasant programming experience. Turns out, compilation, or at least
+intermediate representation of source code, is <em>very useful</em>. Compilation gives
+the language designer the opportunity to do optimizations, check for
 correctness, and allow the programmer to use more intricate program
-organization, think classes and modules. However, compiling all the way
-down to something that talks to your hardware is not always feasible or
-even desirable. There are, and I am sorry to tell you this, a lot of
-different kinds of hardware, and not every language designer wants to
-spend the time and effort on designing the compiler backend for the sake
-of portability. Less to the point but still an important motivation for
-VMs in language design, it is relatively common for a language to be
-“embedded” in another system, notable examples include Lua, eBPF in
-the linux kernel, and maybe something like GDScript in Godot. If a domain
-specific language like this is a good idea or not is a question for the
-culture that I will not answer.</p>
+organization, think classes and modules. However, compiling all the way down to
+something that talks to your hardware is not always feasible or even desirable.
+There are, and I am sorry to tell you this, a lot of different kinds of
+hardware, and not every language designer wants to spend the time and effort on
+designing the compiler backend for the sake of portability. Less to the point
+but still an important motivation for VMs in language design, it is relatively
+common for a language to be “embedded” in another system, notable examples
+include Lua, eBPF in the linux kernel, and maybe something like GDScript in
+Godot. If a domain specific language like this is a good idea or not is a
+question for the culture that I will not answer.</p>
 <h2 id="the-abstract-machine">The Abstract Machine</h2>
-<p>A stack is an abstract data structure following LIFO semantics, that is,
-a piece of data enters, and does not leave until all entries added after
-it have been removed from the stack. <em>The Stack</em> is the name I took to
-calling the virtual machine that I was targeting for the purposes of this
-part of the project. Before I describe the full architecture I will do
-a little bit of apologia for the design. When I started the project I wanted most of the engineering to
-be “from first principles”, as such, this was probably the most naive
-part of the project, going off of no real specification, and only vaguely
-referencing sources like clox from crafting interpreters. This is also why this is not just an SECD machine, though I might
-implement it as a separate target later. When I started
-the project I had in mind a pure Forth-like stack machine, without heaps
-or registers and a relatively limited ISA. As it turns out, and I should
-have foreseen this from the onset frankly, it’s impossible to implement
-cool things like closures without dynamic data structures, for reasons
-that I will explain when we get there. Even giving up a completely static
-memory model only gets us so far before we need to contend with other
-difficult bits and pieces of a perfect stack model, namely that it becomes
-really ugly if a function uses variables in any order that is not precisely
-LIFO. The generator would need to pop out all of the variables above the variable of interest, pull that one to the top, and push them all back in. So when we say a “stack” vm, we generally mean a structure which
-enforces the stack semantics <em>for code environments</em> rather than for
-<em>individual variables</em>. With that little preamble out of the way we can
-finally get started on sketching out the virtual machine that we will be generating code for.</p>
+<p>A stack is an abstract data structure following LIFO semantics, that is, a piece
+of data enters, and does not leave until all entries added after it have been
+removed from the stack. <em>The Stack</em> is the name I took to calling the virtual
+machine that I was targeting for the purposes of this part of the project.
+Before I describe the full architecture I will do a little bit of apologia for
+the design. When I started the project I wanted most of the engineering to be
+“from first principles”, as such, this was probably the most naive part of the
+project, going off of no real specification, and only vaguely referencing
+sources like clox from crafting interpreters. This is also why this is not just
+an SECD machine, though I might implement it as a separate target later. When I
+started the project I had in mind a pure Forth-like stack machine, without heaps
+or registers and a relatively limited ISA. As it turns out, and I should have
+foreseen this from the onset frankly, it’s impossible to implement cool things
+like closures without dynamic data structures, for reasons that I will explain
+when we get there. Even giving up a completely static memory model only gets us
+so far before we need to contend with other difficult bits and pieces of a
+perfect stack model, namely that it becomes really ugly if a function uses
+variables in any order that is not precisely LIFO. The generator would need to
+pop out all of the variables above the variable of interest, pull that one to
+the top, and push them all back in. So when we say a “stack” vm, we generally
+mean a structure which enforces the stack semantics <em>for code environments</em>
+rather than for <em>individual variables</em>. With that little preamble out of the way
+we can finally get started on sketching out the virtual machine that we will be
+generating code for.</p>
 <p>The virtual machine is built of the following components</p>
 <ul>
-<li>A memory primitive, which the rest of the VM interacts with <em>only through shared pointers</em>, named <code>Cell</code>, imagine this as a physical memory location</li>
+<li>A memory primitive, which the rest of the VM interacts with <em>only through
+shared pointers</em>, named <code>Cell</code>, imagine this as a physical memory location</li>
 <li><code>program_mem</code> which stores our program instructions.</li>
-<li>A program counter register, <code>pc</code>, which points to where in <code>program_mem</code> the program currently is</li>
+<li>A program counter register, <code>pc</code>, which points to where in <code>program_mem</code> the
+program currently is</li>
 <li>A data “stack”, which is a vector of shared pointers to <code>Cells</code></li>
 <li>A return stack, which is an actual stack of <code>Cells</code></li>
-<li>A <code>frame_base</code> which points to where in the data stack our local scope starts, and a <code>frame_base_stack</code> which tracks where we should restore the base to after returning from a local scope</li>
-<li>A <code>heap</code> which stores heap objects, that is, code environments and list primitives</li>
-<li><code>global_tbl</code> which is a map of global variables and “where they live”, this is in itself a form of dynamic memory similar to heap</li>
+<li>A <code>frame_base</code> which points to where in the data stack our local scope starts,
+and a <code>frame_base_stack</code> which tracks where we should restore the base to
+after returning from a local scope</li>
+<li>A <code>heap</code> which stores heap objects, that is, code environments and list
+primitives</li>
+<li><code>global_tbl</code> which is a map of global variables and “where they live”, this is
+in itself a form of dynamic memory similar to heap</li>
 </ul>
-<p>This is, largely, isomorphic to an SECD machine<label for="cmake" id="1" class="margin-toggle sidenote-number">
+<p>This is, largely, isomorphic to an SECD
+machine<label for="cmake" id="1" class="margin-toggle sidenote-number">
 </label><input type="checkbox" id="cmake" class="margin-toggle">
-<span class="sidenote">the original SECD machine did not support global variables, but later extensions did. If you do not know what SECD machine is, it’s not necessary to understanding the rest of the article, but is a very interesting piece of programming history</span> but the general philosophy and code generation strategy are different enough as to be worth treating this machine as a separate entity.</p>
+<span class="sidenote">the original SECD machine did not support global variables, but later extensions did. If you do not know what SECD machine is, it’s not necessary to understanding the rest of the article, but is a very interesting piece of programming history</span>
+but the general philosophy and code generation strategy are different enough as
+to be worth treating this machine as a separate entity.</p>
 <h2 id="the-memory-model">The Memory Model</h2>
-<p>The <code>Cell</code> and <code>HeapObject</code> types underpin most of the operations of the VM, so it’s worth looking at them in greater detail</p>
+<p>The <code>Cell</code> and <code>HeapObject</code> types underpin most of the operations of the VM, so
+it’s worth looking at them in greater detail</p>
 <html><head></head><body><div class="code-block" data-lang="C++"><pre class="hl-code code language-C++"><code><span class="hl-source hl-c++"><span class="hl-meta hl-struct hl-c++"><span class="hl-keyword hl-declaration hl-struct hl-type hl-c++">struct</span> </span><span class="hl-meta hl-struct hl-c++"><span class="hl-entity hl-name hl-struct hl-c++">Cell</span></span><span class="hl-meta hl-struct hl-c++"> <span class="hl-meta hl-block hl-c++"><span class="hl-punctuation hl-section hl-block hl-begin hl-c++">{</span></span></span><span class="hl-meta hl-struct hl-c++"><span class="hl-meta hl-block hl-c++">
   <span class="hl-support hl-type hl-stdint hl-c">int64_t</span> value<span class="hl-punctuation hl-terminator hl-c++">;</span>
   <span class="hl-storage hl-type hl-c">bool</span> function <span class="hl-keyword hl-operator hl-assignment hl-c">=</span> <span class="hl-constant hl-language hl-boolean hl-false hl-c">false</span><span class="hl-punctuation hl-terminator hl-c++">;</span>
@@ -221,12 +232,29 @@ finally get started on sketching out the virtual machine that we will be generat
 
 <span class="hl-keyword hl-control hl-c++">using</span> <span class="hl-entity hl-name hl-type hl-using hl-c++">HeapObject</span> <span class="hl-keyword hl-operator hl-assignment hl-c">=</span> std<span class="hl-punctuation hl-accessor hl-double-colon hl-c++">::</span>variant<span class="hl-punctuation hl-definition hl-generic hl-begin hl-c++">&lt;</span>Pair<span class="hl-punctuation hl-separator hl-c++">,</span> CodeEnv<span class="hl-punctuation hl-definition hl-generic hl-end hl-c++">&gt;</span><span class="hl-punctuation hl-terminator hl-c++">;</span>
 </span></code></pre></div></body></html>
-<p><code>Cell</code> is an almost self explanatory single memory unit, it contains one signed, 64 bit integer value, a function pair and null flag<label for="cmake" id="2" class="margin-toggle sidenote-number">
+<p><code>Cell</code> is an almost self explanatory single memory unit, it contains one signed,
+64 bit integer value, a function pair and null
+flag<label for="cmake" id="2" class="margin-toggle sidenote-number">
 </label><input type="checkbox" id="cmake" class="margin-toggle">
-<span class="sidenote"> If, and this is not out of the question, I end up designing something in verilog to model this system, I will probably end up cutting into the most significant bits of the integer to represent the flags</span>. The <code>CodeEnv</code> struct represents the code environment that a lambda runs in, it’s necessary for this to be a heap structure, that is, to have a dynamic lifetime, because the lambda could be called past the lifetime of the variables that it originally lived in. For that reason, closures/closure environments generally require heap allocation, Rust being a notable exception (as it typically is), which gets around the problem of a closure using a dead variable by way of its ownership model.</p>
-<p><code>Pair</code> is just a cons cell, this object allows us to support lists and list programming in the virtual machine. The <code>Pair</code> struct has to be a heap object for a similar reason to the <code>CodeEnv</code> object, namely, we can’t actually say at comp time how large a tree represented by the cons cells taken together will be.</p>
+<span class="sidenote"> If, and this is not out of the question, I end up designing something in verilog to model this system, I will probably end up cutting into the most significant bits of the integer to represent the flags</span>.
+The <code>CodeEnv</code> struct represents the code environment that a lambda runs in, it’s
+necessary for this to be a heap structure, that is, to have a dynamic lifetime,
+because the lambda could be called past the lifetime of the variables that it
+originally lived in. For that reason, closures/closure environments generally
+require heap allocation, Rust being a notable exception (as it typically is),
+which gets around the problem of a closure using a dead variable by way of its
+ownership model.</p>
+<p><code>Pair</code> is just a cons cell, this object allows us to support lists and list
+programming in the virtual machine. The <code>Pair</code> struct has to be a heap object
+for a similar reason to the <code>CodeEnv</code> object, namely, we can’t actually say at
+comp time how large a tree represented by the cons cells taken together will be.</p>
 <h1 id="the-isa">The ISA</h1>
-<p>With that, we’re ready to look at the ISA that the program uses to interact with the virtual machine. A lot of these are likely familiar, so we’ll be skipping the arithmetic, logic, and transfer opcodes to focus on the control and list instructions in the next section, where we detail how variables are handled, and then the calling convention<label for="cmake" id="3" class="margin-toggle sidenote-number">
+<p>With that, we’re ready to look at the ISA that the program uses to interact with
+the virtual machine. A lot of these are likely familiar, so we’ll be skipping
+the arithmetic, logic, and transfer opcodes to focus on the control and list
+instructions in the next section, where we detail how variables are handled, and
+then the calling
+convention<label for="cmake" id="3" class="margin-toggle sidenote-number">
 </label><input type="checkbox" id="cmake" class="margin-toggle">
 <span class="sidenote"> I am certain that I will eventually, probably after this particular write up, get around to writing  more cohesive documentation </span>.</p>
 <h2 id="arithmetic-operations">Arithmetic Operations</h2>
@@ -283,26 +311,59 @@ finally get started on sketching out the virtual machine that we will be generat
 </tbody></table>
 <h1 id="programming-the-machine">Programming the Machine</h1>
 <h2 id="variables">Variables</h2>
-<p>First we should understand how variables work. We can take it as a promise from the language front end that all variables have a globally unique name, which we’ll call <code>SymbolID</code>. A variable can be either global or local, let’s begin with the simpler of the two and inspect how we interact with locally scoped variables:</p>
+<p>First we should understand how variables work. We can take it as a promise from
+the language front end that all variables have a globally unique name, which
+we’ll call <code>SymbolID</code>. A variable can be either global or local, let’s begin
+with the simpler of the two and inspect how we interact with locally scoped
+variables:</p>
 <ul>
 <li>
-<p><code>GETLOCAL n</code> loads the <code>n</code>th variable from the <code>frame_base</code> up to the top of the stack. On an implementation level, this pushes a copy of the pointer at <code>data_stack[frame_base + n]</code> up to the top of the stack.</p>
+<p><code>GETLOCAL n</code> loads the <code>n</code>th variable from the <code>frame_base</code> up to the top of
+the stack. On an implementation level, this pushes a copy of the pointer at
+<code>data_stack[frame_base + n]</code> up to the top of the stack.</p>
 </li>
 <li>
-<p><code>SETLOCAL n</code> pop a <code>Cell</code> pointer from the top of the stack and then replaces the dereferenced <code>Cell</code> found at <code>data_stack[frame_base + n]</code>. This propagates to all other shared pointers which pointed at that <code>Cell</code> previously.</p>
+<p><code>SETLOCAL n</code> pop a <code>Cell</code> pointer from the top of the stack and then replaces
+the dereferenced <code>Cell</code> found at <code>data_stack[frame_base + n]</code>. This propagates
+to all other shared pointers which pointed at that <code>Cell</code> previously.</p>
 </li>
 </ul>
-<p>Local variables are kind of automatic in the way that if it’s on the stack above the current frame index, it’s accessible as a local variable. Global variables are a bit more tricky as we need to indicate that this global variable should be accessible from everywhere, so we need to add a way to create a new global variable.</p>
+<p>Local variables are kind of automatic in the way that if it’s on the stack above
+the current frame index, it’s accessible as a local variable. Global variables
+are a bit more tricky as we need to indicate that this global variable should be
+accessible from everywhere, so we need to add a way to create a new global
+variable.</p>
 <ul>
-<li><code>MKGLOBAL n</code> creates a new entry in the <code>global_tbl</code> with the key <code>n</code>, pointing to a shared pointer to the <code>Cell</code> which holds the value we want to be global.</li>
-<li><code>LOADGLOBAL n</code> pushes to the stack the variable in the <code>n</code> key of the <code>global_tbl</code></li>
-<li><code>MUTGLOBAL n</code>  changes the underlying reference of the <code>n</code> key of the <code>global_tbl</code> to the top of the stack.</li>
+<li><code>MKGLOBAL n</code> creates a new entry in the <code>global_tbl</code> with the key <code>n</code>,
+pointing to a shared pointer to the <code>Cell</code> which holds the value we want to be
+global.</li>
+<li><code>LOADGLOBAL n</code> pushes to the stack the variable in the <code>n</code> key of the
+<code>global_tbl</code></li>
+<li><code>MUTGLOBAL n</code> changes the underlying reference of the <code>n</code> key of the
+<code>global_tbl</code> to the top of the stack.</li>
 </ul>
-<p>Since we ultimately are the ones who control the code generation, and we’re pretty ok that <code>SETLOCAL</code> can interact with a global variable unwittingly.</p>
+<p>Since we ultimately are the ones who control the code generation, and we’re
+pretty ok that <code>SETLOCAL</code> can interact with a global variable unwittingly.</p>
 <h2 id="the-calling-convention">The Calling Convention</h2>
-<p>In programming language design, the <em>calling convention</em> is <del>the scheme</del> the contract for how functions receive and interact with their parameters, and how functions are expected to provide their outputs. This is almost always considered to be part of the ABI,abstract binary interface, and determines how subroutines and programs are expected to interact with one another.  I will save you the details of the three or four revisions of this calling convention.</p>
-<p>First, we should internalize what we mean by code environments being subject to stack semantics rather than the variables. When we <code>CALL</code> a closure, which is all functions in this language, we expect it’s local variables to be the arguments passed to it by the callee, and the variables that it references in its body, formals and captured variables respectively. To achieve this, we should tell the VM where those start, which we do by setting <code>frame_base</code>, and allowing the closure to interact with it’s local variables <em>only in reference to that frame base</em>.</p>
-<p>But when that called closure has concluded, and the result lies on top of the stack, the callee, which might be a closure in and of it self, still may need to do some work, so we have to restore the frame base to what it was prior to the call, which we achieve through the <code>frame_base_stack</code>! Diagramatically, we have the following procedure. The <em>caller</em>, just before <code>CALL n</code> is invoked:</p>
+<p>In programming language design, the <em>calling convention</em> is <del>the scheme</del> the
+contract for how functions receive and interact with their parameters, and how
+functions are expected to provide their outputs. This is almost always
+considered to be part of the ABI,abstract binary interface, and determines how
+subroutines and programs are expected to interact with one another. I will save
+you the details of the three or four revisions of this calling convention.</p>
+<p>First, we should internalize what we mean by code environments being subject to
+stack semantics rather than the variables. When we <code>CALL</code> a closure, which is
+all functions in this language, we expect it’s local variables to be the
+arguments passed to it by the callee, and the variables that it references in
+its body, formals and captured variables respectively. To achieve this, we
+should tell the VM where those start, which we do by setting <code>frame_base</code>, and
+allowing the closure to interact with it’s local variables <em>only in reference to
+that frame base</em>.</p>
+<p>But when that called closure has concluded, and the result lies on top of the
+stack, the callee, which might be a closure in and of it self, still may need to
+do some work, so we have to restore the frame base to what it was prior to the
+call, which we achieve through the <code>frame_base_stack</code>! Diagramatically, we have
+the following procedure. The <em>caller</em>, just before <code>CALL n</code> is invoked:</p>
 <html><head></head><body><div class="code-block" data-lang="text"><pre class="hl-code code language-text"><code><span class="hl-text hl-plain">+-----------------+
 |      argn       |
 +-----------------+
@@ -312,14 +373,16 @@ finally get started on sketching out the virtual machine that we will be generat
 +-----------------+
 |       c0        | &lt;- Cell containing CodeEnv
 +-----------------+
-|       ...       | 
+|       ...       |
 +-----------------+
 |      argX       | &lt;- frame_base
 +-----------------+
 |     Bottom      |
 +-----------------+
 </span></code></pre></div></body></html>
-<p><code>CALL</code> consumes <code>c0</code>, pushes the captured variables, saves <code>frame_base</code> to <code>frame_base_stack</code>, then moves <code>frame_base</code> up to <code>arg0</code> — entering the <em>callee</em>:</p>
+<p><code>CALL</code> consumes <code>c0</code>, pushes the captured variables, saves <code>frame_base</code> to
+<code>frame_base_stack</code>, then moves <code>frame_base</code> up to <code>arg0</code> — entering the
+<em>callee</em>:</p>
 <html><head></head><body><div class="code-block" data-lang="text"><pre class="hl-code code language-text"><code><span class="hl-text hl-plain">+-----------------+
 |      capm       |
 +-----------------+
@@ -340,7 +403,10 @@ finally get started on sketching out the virtual machine that we will be generat
 |     Bottom      |
 +-----------------+
 </span></code></pre></div></body></html>
-<p>The closure does what work it needs to, accessing the arguments and captures through <code>GETLOCAL</code>. After <code>NROT n+1</code> and <code>DROP n</code> clean the frame slots, <code>RET</code> pops <code>frame_base_stack</code>, restoring the caller’s view with only the result on top:</p>
+<p>The closure does what work it needs to, accessing the arguments and captures
+through <code>GETLOCAL</code>. After <code>NROT n+1</code> and <code>DROP n</code> clean the frame slots, <code>RET</code>
+pops <code>frame_base_stack</code>, restoring the caller’s view with only the result on
+top:</p>
 <html><head></head><body><div class="code-block" data-lang="text"><pre class="hl-code code language-text"><code><span class="hl-text hl-plain">+-----------------+
 |     result      |
 +-----------------+
@@ -349,15 +415,16 @@ finally get started on sketching out the virtual machine that we will be generat
 |     Bottom      |
 +-----------------+
 </span></code></pre></div></body></html>
-<p>Let’s now walk through what a function call looks like at the assembly level. Starting with the declaration of a function at comp time:</p>
-<html><head></head><body><div class="code-block" data-lang="stack"><pre class="hl-code code language-stack"><code><span class="hl-text hl-plain">[0]     JMP  [M+3]          ; skip over the body 
+<p>Let’s now walk through what a function call looks like at the assembly level.
+Starting with the declaration of a function at comp time:</p>
+<html><head></head><body><div class="code-block" data-lang="stack"><pre class="hl-code code language-stack"><code><span class="hl-text hl-plain">[0]     JMP  [M+3]          ; skip over the body
 
 [1]     ENTER  n            ; n = #formals + #captured-outer-locals
 
-&lt;body&gt;                      
+&lt;body&gt;
 
 [M]     NROT  n+1           ; Function clean up
-                           
+
 [M+1]   DROP  n             ; discard the n frame slots, intermediate results of the procedure
                             ; result is now on top for the caller
 
@@ -366,9 +433,22 @@ finally get started on sketching out the virtual machine that we will be generat
 [M+3]   MKCLOSURE [1]       ; heap-allocate a CodeEnv:
                             ;   .captured_vars = snapshot of data_stack[frame_base..top)
 </span></code></pre></div></body></html>
-<p><code>JMP</code> simply sets the program counter to the operand, in the above, we use it to skip over the function definition so that we do not accidentally execute the function before it is invoked, skipping to <code>[M+3]</code>, the <code>MKCLOSURE</code> command copies all of the shared pointers on the stack into a code environment, pushes a handle to the stack, and points to <code>[1]</code> in the program memory. The <code>ENTER</code> operation moves the frame base down the stack so that the closure can see its arguments, with the explicit understanding that on call, all of the necessary arguments will be provided either by the closure environment or the callee, on the stack. After that the function body is executed, then <code>NROT n+1</code> moves the final result under the arguments, then <code>DROP n</code> drops those. Finally <code>RET</code> pops a destination from the <code>return</code> stack and sets the program counter to it, then it sets the frame base to be what it was before the <code>ENTER</code> instruction was executed.</p>
+<p><code>JMP</code> simply sets the program counter to the operand, in the above, we use it to
+skip over the function definition so that we do not accidentally execute the
+function before it is invoked, skipping to <code>[M+3]</code>, the <code>MKCLOSURE</code> command
+copies all of the shared pointers on the stack into a code environment, pushes a
+handle to the stack, and points to <code>[1]</code> in the program memory. The <code>ENTER</code>
+operation moves the frame base down the stack so that the closure can see its
+arguments, with the explicit understanding that on call, all of the necessary
+arguments will be provided either by the closure environment or the callee, on
+the stack. After that the function body is executed, then <code>NROT n+1</code> moves the
+final result under the arguments, then <code>DROP n</code> drops those. Finally <code>RET</code> pops
+a destination from the <code>return</code> stack and sets the program counter to it, then
+it sets the frame base to be what it was before the <code>ENTER</code> instruction was
+executed.</p>
 <h2 id="a-simple-example">A Simple Example</h2>
-<p>To see what a function definition and call site look like, consider a program which takes one argument and increments it by one:</p>
+<p>To see what a function definition and call site look like, consider a program
+which takes one argument and increments it by one:</p>
 <html><head></head><body><div class="code-block" data-lang="stack"><pre class="hl-code code language-stack"><code><span class="hl-text hl-plain">[0]     JMP 72
 [9]     ENTER 1
 [18]    GET_LOCAL 0
@@ -385,8 +465,8 @@ finally get started on sketching out the virtual machine that we will be generat
 [117]   HALT
 </span></code></pre></div></body></html>
 <p>This corresponds to the following lisp code</p>
-<html><head></head><body><div class="code-block" data-lang="lisp"><pre class="hl-code code language-lisp"><code><span class="hl-source hl-lisp"><span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>define <span class="hl-support hl-function hl-lisp">f</span> 
-    <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-support hl-function hl-lisp">lambda</span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>x<span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span> 
+<html><head></head><body><div class="code-block" data-lang="lisp"><pre class="hl-code code language-lisp"><code><span class="hl-source hl-lisp"><span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>define <span class="hl-support hl-function hl-lisp">f</span>
+    <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-support hl-function hl-lisp">lambda</span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>x<span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span>
       <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-operator hl-arithmetic hl-lisp">+</span> x <span class="hl-constant hl-numeric hl-lisp">1</span> <span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span>
 <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-support hl-function hl-lisp">f</span> <span class="hl-constant hl-numeric hl-lisp">3</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span>
 </span></code></pre></div></body></html>
@@ -407,59 +487,88 @@ pc=63   op=RET          stack=[4]
 pc=117  op=HALT         stack=[4]
 </span></code></pre></div></body></html>
 <ul>
-<li>First we <code>JMP</code> past the function body to <code>pc = 72</code>, where we make the closure, since this function only takes <span class="math math-inline">1</span> argument and doesn’t close over anything, it’s <code>CodeEnv.captured_vars</code> is empty.</li>
-<li>Then we <code>MKGLOBAL 15</code>, that is, we take the value on the top of the stack, which right now is the closure handler, and add it to the heap with global name <span class="math math-inline">15</span>. Now we can call this function from anywhere else in the code</li>
-<li>Then we add the function argument, in this case <span class="math math-inline">3</span>, and <code>CALL 1</code>, the operand to the <code>CALL</code> instruction tells it how far down in the stack the function we’re calling is. So we take that global variable, look inside and find a <code>CodeEnv</code> with <code>code_idx = 9</code></li>
-<li>We follow that and pull <code>GET_LOCAL 0</code> into the stack, which is the first argument to the function, then push <span class="math math-inline">1</span>, and <code>ADD</code>. Then we clean up the argument that was passed to the function, leaving only the <span class="math math-inline">4</span> on top, as desired.</li>
+<li>First we <code>JMP</code> past the function body to <code>pc = 72</code>, where we make the closure,
+since this function only takes <span class="math math-inline">1</span> argument and doesn’t close over anything,
+it’s <code>CodeEnv.captured_vars</code> is empty.</li>
+<li>Then we <code>MKGLOBAL 15</code>, that is, we take the value on the top of the stack,
+which right now is the closure handler, and add it to the heap with global
+name <span class="math math-inline">15</span>. Now we can call this function from anywhere else in the code</li>
+<li>Then we add the function argument, in this case <span class="math math-inline">3</span>, and <code>CALL 1</code>, the operand
+to the <code>CALL</code> instruction tells it how far down in the stack the function
+we’re calling is. So we take that global variable, look inside and find a
+<code>CodeEnv</code> with <code>code_idx = 9</code></li>
+<li>We follow that and pull <code>GET_LOCAL 0</code> intothe stack, which is the first
+argument to the function, then push <span class="math math-inline">1</span>, and <code>ADD</code>. Then we clean up the
+argument that was passed to the function, leaving only the <span class="math math-inline">4</span> on top, as
+desired.</li>
 </ul>
-<h2 id="a-slightly-more-complex-example">A Slightly More Complex Example</h2>
-<p>The prior example lacks two elements which are critical to a virtual machine which hopes
-to host a lisp language: the closure list is empty, we dont demonstrate conditionals
-and more importantly, the example is not recursive. To this end, let’s see what the
-classic <code>fib</code> implementation looks like on this machine. As a reminder, a recursive
-<code>fib</code> implementation looks something like this</p>
-<html><head></head><body><div class="code-block" data-lang="lisp"><pre class="hl-code code language-lisp"><code><span class="hl-source hl-lisp">  <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>define <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>fib n<span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span>
-    <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-control hl-lisp">if</span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-operator hl-comparison hl-lisp">eq</span> n <span class="hl-constant hl-numeric hl-lisp">0</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span> <span class="hl-constant hl-numeric hl-lisp">0</span>
-      <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-control hl-lisp">if</span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-operator hl-comparison hl-lisp">eq</span> n <span class="hl-constant hl-numeric hl-lisp">1</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span> <span class="hl-constant hl-numeric hl-lisp">1</span>
-        <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-operator hl-arithmetic hl-lisp">+</span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>fib <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-operator hl-arithmetic hl-lisp">-</span> n <span class="hl-constant hl-numeric hl-lisp">1</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>fib <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-keyword hl-operator hl-arithmetic hl-lisp">-</span> n <span class="hl-constant hl-numeric hl-lisp">2</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span>
-  <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span>fib <span class="hl-constant hl-numeric hl-lisp">2</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span>
+<h2 id="tree-operations">Tree Operations</h2>
+<p>The last thing that we should discuss before closing this chapter of the project
+are the list/tree instructions, <code>CONS</code>, <code>CAR</code> and <code>CDR</code>. We need these
+primatives primarily because, at compilation time, we can not determine the size
+of the list, so we must give the user a way to access the <code>heap</code> and interact
+with it. A brief explaination for each follows</p>
+<ul>
+<li><code>CONS</code> creates a new cons cell in the heap and pushes it’s index into the
+stack . The cons cell is a heap object which has a <code>left</code> and <code>right</code> element,
+each one can point to another cons cell, or hold a value (or a function for
+that matter).</li>
+<li><code>CAR</code> pops the top element and, if it’s a cons cell handler, pushes the <code>left</code>
+element to the data stack</li>
+<li><code>CDR</code> does the same but gets the <code>right</code> element instead</li>
+</ul>
+<p>Those are the three orthodox primitives required for a lisp, any target has to
+somehow support them. Two additional, slightly apocryphal instructions are also
+added to make it a bit easier to generate code which deals with lists:</p>
+<ul>
+<li><code>PUSHNIL</code> creates a unique null value which, typically terminates a list</li>
+<li><code>ISNULL</code> checks the top cell in the stack for the <code>null</code> flag, and pushes a
+new cell containing that truth value.</li>
+</ul>
+<p>It’s worth thinking a little bit about how targets which aren’t taylored
+specifically for a lisp would support this: the cons cell is just a sum type
+with pointers to two other objects in memory, <code>CONS</code> then just creates a static
+structure which holds two pointers, which in themselves point to two others and
+so on and so on. However this creates a lot of structure that might or might not
+be accessible, which is where more sophisticated garbage collection mechanisms
+come in. There’s also the problem that a naive pointer-to-somewhere could be
+incredibly slow on cache miss, which is where rather sophisticated caching comes
+into play.</p>
+<p>Lets work through an example of the creating a list, a simple list becomes</p>
+<html><head></head><body><div class="code-block" data-lang="lisp"><pre class="hl-code code language-lisp"><code><span class="hl-source hl-lisp"><span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-constant hl-numeric hl-lisp">1</span> <span class="hl-constant hl-numeric hl-lisp">2</span> <span class="hl-constant hl-numeric hl-lisp">3</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span> -&gt; <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-support hl-function hl-lisp">cons</span> <span class="hl-constant hl-numeric hl-lisp">1</span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-support hl-function hl-lisp">cons</span> <span class="hl-constant hl-numeric hl-lisp">2</span> <span class="hl-meta hl-group hl-lisp"><span class="hl-punctuation hl-definition hl-group hl-begin hl-lisp">(</span><span class="hl-support hl-function hl-lisp">cons</span> <span class="hl-constant hl-numeric hl-lisp">3</span> <span class="hl-constant hl-language hl-lisp">nil</span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span><span class="hl-punctuation hl-definition hl-group hl-end hl-lisp">)</span></span>
 </span></code></pre></div></body></html>
-<p>Which becomes this:</p>
-<html><head></head><body><div class="code-block" data-lang="ISA"><pre class="hl-code code language-ISA"><code><span class="hl-text hl-plain">[0] jmp 252
-[9] enter 1
-[18] get_local 0
-[27] push 0
-[36] eq
-[45] cjmp 216
-[54] get_local 0
-[63] push 1
-[72] eq
-[81] cjmp 198
-[90] loadglobal 15
-[99] get_local 0
-[108] push 1
-[117] sub
-[126] call 1
-[135] loadglobal 15
-[144] get_local 0
-[153] push 2
-[162] sub
-[171] call 1
-[180] add
-[189] jmp 207
-[198] push 1
-[207] jmp 225
-[216] push 0
-[225] nrot 2
-[234] drop 1
-[243] ret
-[252] mkclosure 9
-[261] mkglobal 15
-[270] loadglobal 15
-[279] push 4
-[288] call 1
-[297] halt
+<p>Which produces the following bytecode:</p>
+<html><head></head><body><div class="code-block" data-lang="stack"><pre class="hl-code code language-stack"><code><span class="hl-text hl-plain">PUSHNIL
+PUSH 3
+CONS
+PUSH 2
+CONS
+PUSH 1
+CONS
 </span></code></pre></div></body></html>
+<p>After the final <code>CONS</code>, the data stack holds a single handle into the heap,
+where three <code>Pair</code> objects form the linked structure:</p>
+<html><head></head><body><div class="code-block" data-lang="text"><pre class="hl-code code language-text"><code><span class="hl-text hl-plain">Stack
++---------+
+|   h2 ───────► Pair @ h2
++---------+      ├─ head ──► Cell { value: 1 }
+                 └─ tail ──► Pair @ h1
+                              ├─ head ──► Cell { value: 2 }
+                              └─ tail ──► Pair @ h0
+                                          ├─ head ──► Cell { value: 3 }
+                                          └─ tail ──► Cell { null: true }
+</span></code></pre></div></body></html>
+<p>This is the key contrast with the calling convention diagrams above: the stack
+stays flat, holding only a single pointer, while the structure fans out entirely
+in the heap. <code>CAR</code> and <code>CDR</code> follow that pointer one level at a time, and
+<code>ISNULL</code> tests whether the cell at the current node is the null sentinel, giving
+the language everything needed to recurse over a list without any stack growth
+beyond the call frames themselves.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>In the next entry to this only slightly protracted write up we’ll focus on the
+code generator which turns the AST from part 1 into the ISA in this part. Code
+generation is probably the most visible and obvious role of the compiler, but
+ironically the one I had to spend the least time on to get to an MVP.</p>
 </body></html>
       </article>
     </main>

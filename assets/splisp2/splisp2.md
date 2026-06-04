@@ -237,10 +237,12 @@ arguments passed to it by the callee, and the variables that it references in
 its body, formals and captured variables respectively. To achieve this, we
 should tell the VM where those start, which we do by setting `frame_base`, and
 allowing the closure to interact with it's local variables _only in reference to
-that frame base_.
+that frame base_.$$$This is, by the way, the same for most ISAs, when we talk about
+"stack" allocation, we're really just talking about a contiguous region of memory with
+a pointer to the top which grows in one direction, which we use in a LIFO fashion$$$
 
 But when that called closure has concluded, and the result lies on top of the
-stack, the callee, which might be a closure in and of it self, still may need to
+stack, the callee, which might be a closure in and of it self, could still need to
 do some work, so we have to restore the frame base to what it was prior to the
 call, which we achieve through the `frame_base_stack`! Diagramatically, we have
 the following procedure. The _caller_, just before `CALL n` is invoked:

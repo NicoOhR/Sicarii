@@ -39,6 +39,14 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: "Monaspace Argon";
+    src: url("https://cdn.jsdelivr.net/fontsource/fonts/monaspace-argon@latest/latin-600-normal.woff2") format("woff2"), url("https://cdn.jsdelivr.net/fontsource/fonts/monaspace-argon@latest/latin-600-normal.woff") format("woff");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* Tufte CSS styles */
 html {
     font-size: 15px;
@@ -300,7 +308,8 @@ div.table-wrapper {
 }
 
 code, pre > code {
-    font-family: 'Fira Code', Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-family: 'Monaspace Argon', Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-weight: 600;
     font-variant-ligatures: contextual;
     font-feature-settings: "calt" 1, "liga" 1;
     font-size: 1.0rem;

@@ -233,3 +233,18 @@ void Generator::emit_apply(const core::Apply &application) {
 
 For a user-defined function the closure handle is pushed first, then each
 argument, then `CALL` with the argument count as its operand.
+
+# Conclusion
+
+At this point, we're done. You might have noticed how, at least compared to part 2, parts 1, 1.5, and 3 are all pretty short.
+This structure, although ad hoc, does reflect the actual complexity in every part of the project. The compilation process itself is primarily a 
+series of transformations on vaguely linguistic-ly shaped things. The actual target, the virtual machine we described and implemented at 
+part 2, required a lot more tweaking. Each constituent part of the virtual machine is mostly straight forward to implement, its the selection of which 
+parts, and clicking them together, which poses most of the complexity.There's similar amount of ways to skin either cats, the compilation cat and virtual machine cat, but we only need to taxidermy the virtual machine cat.
+
+As a result of pretty arduosly debugging each part of the project, the output of the current program is already usable as visualization, but I think it might be 
+neat to clean the plaintext output a little bit and present the project as a compiler-explorer like front end. Allowing users to input their own programs
+would probably require slightly nicer error reporting; which requires us to pass the position of each token along each step of the process, but also gives us nicer 
+visualizations as a gimmie.
+
+In any case, build a compiler, you'll probably learn a thing or two.

@@ -66,7 +66,7 @@ main {
   margin: 0 0 1rem;  /* push down 6rem to match pt-24 on right column */
 }
 .about {
-  margin: 1.25rem 0;             /* my-5 */
+  margin: 0.75rem 0 1.25rem;
   font-family: 'Wittgenstein', serif;
   font-size: 1.2rem;             /* text-[1.2rem] */
   color: #ffffff;
@@ -74,10 +74,39 @@ main {
 .about p + p {
   margin-top: 1rem;              /* space-y-4 */
 }
-/* The about disclosure only exists on mobile — see the media query below */
-.about-toggle,
-.about-summary {
+/* On desktop this is a static heading: the checkbox is inert and the blurb is
+   always shown. Mobile turns the pair into a real disclosure — see below. */
+.about-toggle {
   display: none;
+}
+.about-summary {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #800000;
+  pointer-events: none;
+}
+/* Link out to Fishbowl, set in the About heading's voice so the left column
+   reads as two labelled sections. */
+.more-art,
+.more-art:visited {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #ffffff;
+  transition: color 200ms ease-in-out;
+}
+.more-art::after {
+  content: " \2192";
+}
+.more-art:hover,
+.more-art:visited:hover {
+  color: #800000;
 }
 
 /* —— Right column (index) —— */
@@ -287,6 +316,7 @@ main {
     text-transform: uppercase;
     color: #ffffff;
     cursor: pointer;
+    pointer-events: auto;        /* re-arm the label; it's inert on desktop */
     transition: color 200ms ease-in-out;
   }
   .about-summary::after {

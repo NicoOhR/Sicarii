@@ -102,13 +102,14 @@ html {
 
 body {
   width: 85%;
-  /* ~63 characters at the current type size — the measure was 960px, which
-       ran to ~88 and read long. Sidenotes hang 44% of the column to the right,
-       so on screens too narrow to seat both, the measure yields rather than
+  /* ~76 characters at the current type size, splitting the difference between
+       the original 960px (~88 characters, which read long) and a 660px measure
+       that came out cramped. Sidenotes hang 44% of the column to the right, so
+       on screens too narrow to seat both, the measure yields rather than
        pushing the notes off the edge into a horizontal scrollbar. The 61vw
        ceiling is 0.59V/(0.5 + 0.44), i.e. the widest column whose note still
        lands inside the viewport; it needs revisiting if the overhang changes. */
-  max-width: min(660px, 61vw);
+  max-width: min(800px, 61vw);
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 100px;

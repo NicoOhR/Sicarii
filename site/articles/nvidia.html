@@ -1,0 +1,290 @@
+<!-- post.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+  article p {
+    text-align: justify;
+  }
+  </style>
+  <!-- Marker only: justif's auto entry reads this selector off whatever script
+       tag carries the attribute, and is imported later (see bootJustif at the
+       bottom of the page) so it measures typeset math rather than LaTeX source.
+       Default selector is "p, li, dd, blockquote, figcaption"; the drop-cap
+       paragraph is excluded so its lines can wrap around the floated cap. -->
+  <script
+    data-justif-selector="p:not(.dropcap), li, dd, blockquote, figcaption"
+  ></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Nvidia File</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Baskervville:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Wittgenstein:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../tufte.css">
+  <link rel="stylesheet" href="../code_highlight.css">
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+</head>
+<body>
+  <style>
+  /* Inline code reads as a shift of voice, not a chip: no box, the site's
+     JetBrains Mono instead of the Fira Code the blocks use, and the maroon
+     accent carrying the emphasis. */
+  :not(pre) > code {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
+      font-size: 0.85em;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: #800000;
+  }
+  /* Same reason the sidenote markers sit at #a33232: the raw accent goes muddy
+     against #151515, so dark mode gets a lifted tint of it (7:1 on the body). */
+  @media (prefers-color-scheme: dark) {
+      :not(pre) > code {
+          color: #d98b8b;
+      }
+  }
+  .code-block {
+      margin: 1.5em 0;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      overflow: hidden;
+  }
+  .code-block::before {
+      content: attr(data-lang);
+      display: block;
+      background: #800000;
+      color: #ffffff;
+      font-family: 'Fira Code', monospace;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
+      font-size: 0.72em;
+      padding: 0.35em 1em;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+  }
+  .code-block[data-lang="text"]::before,
+  .code-block[data-lang="plaintext"]::before {
+      display: none;
+  }
+  pre.code {
+      font-family: 'Fira Code', monospace;
+      font-weight: 600;
+      font-variant-ligatures: contextual;
+      font-feature-settings: "calt" 1, "liga" 1;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: pre;
+      padding: 0.75em 1em;
+      margin: 0;
+      border-radius: 0;
+      -webkit-overflow-scrolling: touch;
+  }
+  .post-content table {
+      border-collapse: collapse;
+      width: 55%;
+      margin: 1.5em auto;
+      font-size: 0.9em;
+  }
+  .post-content thead {
+      background: #313244;
+      border-bottom: 2px solid #800000;
+  }
+  .post-content th,
+  .post-content td {
+      padding: 0.5em 0.85em;
+      text-align: left;
+      border: 1px solid #45475a;
+  }
+  .post-content th {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+  }
+  .post-content tbody tr:nth-child(even) {
+      background: #1e1e2e;
+  }
+  .post-content tbody tr:hover {
+      background: #313244;
+  }
+  .divider-link {
+      position: relative;
+      display: inline-block;
+  }
+  .divider-link::after {
+      content: "";
+      position: absolute;
+      bottom: -0.35rem;
+      left: -20%;
+      width: 140%;
+      height: 1px;
+      background-color: #ffffff;
+      transition: background-color 300ms ease-in-out;
+  }
+  .divider-link:hover::after {
+      background-color: #800000;
+  }
+  /* Code sits inside the text column, so the type carries the line density
+     instead of the width: 0.8rem ≈ 15.2px against 20.9px prose, which fits
+     roughly 72 characters in the 660px measure. Specificity note — the pair of
+     selectors is needed because tufte's `pre > code` sets a size on the inner
+     element and would otherwise win over inheritance from `pre.code`. */
+  @media (min-width: 761px) {
+      pre.code,
+      pre.code > code {
+          font-size: 0.8rem;
+      }
+  }
+  /* Mobile: trade type size and chrome for characters-per-line, and let the
+     block bleed past the text column to the edge of the screen. */
+  @media (max-width: 760px) {
+      .code-block {
+          margin: 1.1em -4.5%;   /* just shy of full bleed, so the corners read */
+          border-radius: 4px;
+      }
+      .code-block::before {
+          font-size: 0.62em;
+          padding: 0.3em 0.7em;
+          letter-spacing: 0.08em;
+      }
+      pre.code,
+      pre.code > code {
+          font-size: 0.72rem;    /* beats tufte's `pre > code` on specificity */
+          line-height: 1.35;
+      }
+      pre.code {
+          padding: 0.6em 0.7em;
+      }
+      .post-content table {
+          width: 100%;
+          font-size: 0.8em;
+      }
+      .post-content th,
+      .post-content td {
+          padding: 0.35em 0.5em;
+      }
+  }
+  </style>
+  <nav class="nav editorial-nav">
+    <div class="nav-center">
+      <a href="../" class="nav-title divider-link">Sicarii</a>
+    </div>
+  </nav>
+
+  <div class="editorial">
+    <main class="post-container">
+      <div class="post-header">
+        <h1 class="post-title">The Nvidia File</h1>
+        <div class="post-meta">
+          <div class="author">Nico OR</div>
+          <div class="date">2026-08-10</div>
+        </div>
+      </div>
+
+      <article class="post-content">
+        <html><head></head><body><nav class="toc"><ul>
+</ul></nav>
+<p class="dropcap">The tech sector is entirely incoherent as a product class. The string which ties
+together unrelated corporations which are regarded as the technology sector is
+primarily a set of cultural norms and cost curves which are unique to it. This
+is not an interesting observation. The product of <em>all</em> technology companies is
+<em>not</em> code. I am not claiming that “coding was never the hard part”. What I want
+to establish before a more quantitative breakdown is that the technology is the
+always the means and never the end. Google is an advertising company, Meta is an
+addiction conglomerate, the budding canker sores of “exchanges” are gambling
+bookies without the hats. Uber’s primary product is arbitrage on the value of
+labour, they are Pinkertons with two deployed Kafka instances.</p>
+<p>The members of the tech sector which do not sell to consumers and rather market
+to other businesses, are arguably parts of the industry which truly sell
+technology as a product. Even then, the B2B SaaS model relies on some underlying
+asset that can be capitalized on for profit. Salesforce owns the digital real
+estate where customer data lives; it is a landlord business, and its pricing
+reflects switching costs rather than the quality of the technology. This is to
+say that the actual value proposition of the technology sector is not how good
+their software is, but their ability to leverage a particular class of asset.
+What unites these companies is that the assets which they trade on require
+a high fixed cost and a marginal cost of replication, which produces similar
+strategic problems for the cohort. It is conceptually incorrect to analyze the
+balance sheets of any company classified in tech in the same way one could
+analyze any other sector. These companies sell different products to different
+customers and on completely different time tables. The tech sector is only
+coherent on the level of capital structure.</p>
+<p>Hardware companies, which are often included in the tech sector a la ETFs like
+QQQ or XLK, make even the capital structure relation dubious. Each piece of
+hardware produced retains the high fixed cost of design but also has
+a significant marginal cost. This discrepancy is resolved specifically for the
+subject of this report, Nvidia; Nvidia is fabless, their moat is switching cost
+from their industry standard CUDA ecosystem. Nvidia is the purest expression of
+the tech capital structure that I am aware of. It has become clear that Nvidia
+has become the engine behind the massive capex cycle that the market has seen in
+the last two years. Their customers, Google, Meta, OpenAI, etc. absorb Nvidia’s
+output in an attempt to accelerate their own profit drivers, maybe cynically,
+Nvidia in turn acts as the guarantor of their customers purchases, as well as
+customers in and of themselves to the same companies. This report seeks to test
+if NVIDIA’s reinvestment into it’s own customers overstates the quality of the
+reported earnings, and if current market evaluation depends on that
+exaggeration.</p>
+</body></html>
+      </article>
+
+      <!-- Decorative end-of-article flourish; no alt text by design -->
+      <!-- Relative, like ../tufte.css above: an absolute /img/... breaks under
+           file:// and on Pages, which serves this repo under /Sicarii/. -->
+      <img class="dinkus" src="../img/dinkus.png" alt="" aria-hidden="true">
+    </main>
+  </div>
+  <script>
+    // pulldown-cmark emits <span class="math math-inline"> and
+    // <span class="math math-display"> with raw LaTeX but no delimiters.
+    // Inject \(...\) / \[...\] before MathJax scans the document.
+    window.MathJax = {
+      loader: {load: ['[tex]/ams']},
+      tex: {
+        packages: {'[+]':['ams']},
+        inlineMath: [ ['\\(', '\\)'] ],
+        displayMath: [ ['\\[', '\\]'] ],
+      },
+      startup: {
+        ready() {
+          document.querySelectorAll('span.math.math-inline').forEach(el => {
+            el.textContent = '\\(' + el.textContent + '\\)';
+          });
+          document.querySelectorAll('span.math.math-display').forEach(el => {
+            el.textContent = '\\[' + el.textContent + '\\]';
+          });
+          MathJax.startup.defaultReady();
+        },
+        // justif measures a paragraph once and commits fixed line boxes, so it
+        // has to run AFTER MathJax swaps the raw LaTeX for typeset math. Boot
+        // it on DOMContentLoaded (the auto entry's default) and a line holding
+        // inline math gets measured against source text — "\delta" is six
+        // characters wide, the glyph that replaces it is one — leaving the
+        // line visibly gappy once MathJax lands.
+        pageReady() {
+          return MathJax.startup.defaultPageReady().then(bootJustif);
+        }
+      }
+    };
+
+    let justifBooted = false;
+    function bootJustif() {
+      if (justifBooted) return;
+      justifBooted = true;
+      // The auto entry reads data-justif-selector off the marker tag in <head>
+      // and boots on import, since readyState is well past "loading" by now.
+      return import('https://cdn.jsdelivr.net/npm/justif@0.4.2/dist/auto.js');
+    }
+    // Fallback: if MathJax never loads, justify anyway rather than leaving the
+    // page on native CSS justification forever.
+    window.addEventListener('load', () => setTimeout(bootJustif, 3000));
+  </script>
+<script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+</body>
+</html>

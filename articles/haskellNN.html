@@ -747,16 +747,16 @@ function as:</p>
 L = \mathrm{Loss} \circ \sigma \circ A^{(N)} \circ \sigma \circ A^{(N-1)} \circ
 \cdots \circ \sigma \circ A^{(n+1)}\left(z^{(n)}\right)
 </span></p>
-<p>The multivariate chain rule states the derivative of a composition $<span class="math math-inline">h = h_k
-\circ \cdots \circ h_1</span>$ is the product of the derivatives of its pieces, in
-reverse order <label for="sn-3" id="3" class="margin-toggle sidenote-number">
+<p>The multivariate chain rule states the derivative of a composition <span class="math math-display">h = h_1
+\circ \cdots \circ h_k</span> is the composition of the derivatives of its pieces
+<label for="sn-3" id="3" class="margin-toggle sidenote-number">
 </label><input type="checkbox" id="sn-3" class="margin-toggle">
-<span class="sidenote">To fully appreciate this would require a little bit of time
-invested in multivariate calculus and probably a little bit of analysis (and a
-bit of category theory if you ask me), so we’ll be skipping the proof for now.
-The main take away is that we have a closed form way to take the derivative of a
-function made up of other functions.</span>:</p>
-<p><span class="math math-display"> Dh = Dh_k \cdot Dh_{k-1} \cdots Dh_1 </span></p>
+<span class="sidenote">To fully appreciate this would require a little bit of time invested in
+multivariate calculus and probably a little bit of analysis (and a bit of
+category theory if you ask me), so we’ll be skipping the proof for now. The main
+take away is that we have a closed form way to take the derivative of a function
+made up of other functions.</span>:</p>
+<p><span class="math math-display"> Dh = Dh_1 \cdot Dh_2 \cdots Dh_k </span></p>
 <p>We already know each individual component. The derivative of <span class="math math-inline">A^{(n)}</span> is just
 <span class="math math-inline">W^{(n)}</span>, and because <span class="math math-inline">\sigma</span> is applied elementwise, its derivative is a
 diagonal matrix:</p>

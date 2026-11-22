@@ -202,15 +202,15 @@ L = \mathrm{Loss} \circ \sigma \circ A^{(N)} \circ \sigma \circ A^{(N-1)} \circ
 \cdots \circ \sigma \circ A^{(n+1)}\left(z^{(n)}\right)
 $$
 
-The multivariate chain rule states the derivative of a composition \$$h = h_k
-\circ \cdots \circ h_1$\$ is the product of the derivatives of its pieces, in
-reverse order !!!To fully appreciate this would require a little bit of time
-invested in multivariate calculus and probably a little bit of analysis (and a
-bit of category theory if you ask me), so we'll be skipping the proof for now.
-The main take away is that we have a closed form way to take the derivative of a
-function made up of other functions.!!!:
+The multivariate chain rule states the derivative of a composition $$h = h_1
+\circ \cdots \circ h_k$$ is the composition of the derivatives of its pieces
+!!!To fully appreciate this would require a little bit of time invested in
+multivariate calculus and probably a little bit of analysis (and a bit of
+category theory if you ask me), so we'll be skipping the proof for now. The main
+take away is that we have a closed form way to take the derivative of a function
+made up of other functions.!!!:
 
-$$ Dh = Dh_k \cdot Dh_{k-1} \cdots Dh_1 $$
+$$ Dh = Dh_1 \cdot Dh_2 \cdots Dh_k $$
 
 We already know each individual component. The derivative of $A^{(n)}$ is just
 $W^{(n)}$, and because $\sigma$ is applied elementwise, its derivative is a
